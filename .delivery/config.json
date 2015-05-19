@@ -1,0 +1,19 @@
+{
+    "version": "2",
+    "build_cookbook": {
+        "name": "delivery-sugar-build_cookbook",
+        "path": ".delivery/build_cookbook"
+    },
+    "build_nodes": {
+        "default": ["name:builder-*.delivery.chef.co"]
+    },
+    "skip_phases": [
+        "deploy",
+        "functional",
+        "publish",
+        "quality",
+        "security",
+        "smoke",
+        "syntax"
+    ]
+}

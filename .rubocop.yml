@@ -1,0 +1,4 @@
+# Don't worry about the number of spaces between param and value.
+# This is used for styling in some Chef files.
+Style/SingleSpaceBeforeFirstArg:
+  Enabled: false
