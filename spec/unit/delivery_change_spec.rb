@@ -39,7 +39,8 @@ describe DeliverySugar::Change do
     let(:stage) { 'stage_name' }
 
     it 'returns the fully qualified environment name' do
-      expect(subject.acceptance_environment).to eql('acceptance-ent-org-proj-pipe')
+      expect(subject.acceptance_environment)
+        .to eql('acceptance-ent-org-proj-pipe')
     end
   end
 
@@ -65,7 +66,7 @@ describe DeliverySugar::Change do
 
   describe '#changed_files' do
     let(:stage) { 'unused' }
-    let(:client) { double("DeliverySugar::SCM") }
+    let(:client) { double('DeliverySugar::SCM') }
     let(:list_of_files) { [] }
     let(:branch1) { 'pipe' }
     let(:branch2) { 'patchset_branch' }
@@ -73,7 +74,8 @@ describe DeliverySugar::Change do
 
     it 'calls the git client' do
       expect(subject).to receive(:scm_client).and_return(client)
-      expect(client).to receive(:changed_files).with(workspace, branch1, branch2).and_return(list_of_files)
+      expect(client).to receive(:changed_files)
+        .with(workspace, branch1, branch2).and_return(list_of_files)
 
       expect(subject.changed_files).to eql(list_of_files)
     end
