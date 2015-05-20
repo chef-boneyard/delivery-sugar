@@ -13,13 +13,19 @@ describe DeliverySugar::SCM::Git do
     let(:cmd) { 'git diff --name-only abcdef branch2' }
     let(:sha_cmd) { 'git merge-base branch1 branch2' }
     let(:options) { { cwd: workspace } }
-    let(:result) { double('shellout', stdout: '') }
-    let(:sha) { double('shellout', stdout: 'abcdef') }
+    let(:sha_shellout) { double('shellout', stdout: 'abcdef') }
+    let(:diff_shellout) do
+      double('shellout', stdout: "src/file1.txt\ntest/file2.txt\n")
+    end
 
     it 'runs a valid git command to get changed files' do
-      expect(@scm).to receive(:shell_out).with(sha_cmd, options).and_return(sha)
-      expect(@scm).to receive(:shell_out).with(cmd, options).and_return(result)
-      @scm.changed_files(workspace, branch1, branch2)
+      expect(@scm).to receive(:shell_out).with(sha_cmd, options)
+        .and_return(sha_shellout)
+      expect(@scm).to receive(:shell_out).with(cmd, options)
+        .and_return(diff_shellout)
+
+      expect(@scm.changed_files(workspace, branch1, branch2))
+        .to eql(['src/file1.txt', 'test/file2.txt'])
     end
   end
 end
