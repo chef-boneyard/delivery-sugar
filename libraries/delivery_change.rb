@@ -18,15 +18,18 @@
 module DeliverySugar
   class Change
     attr_reader :enterprise, :organization, :project, :pipeline,
-                :stage
+                :stage, :patchset_branch, :scm_client, :workspace_repo
 
     def initialize(node)
       change = node['delivery']['change']
+      workspace = node['delivery']['workspace']
       @enterprise = change['enterprise']
       @organization = change['organization']
       @project = change['project']
       @pipeline = change['pipeline']
       @stage = change['stage']
+      @patchset_branch = change['patchset_branch']
+      @workspace_repo = workspace['repo']
     end
 
     def acceptance_environment
@@ -35,6 +38,16 @@ module DeliverySugar
 
     def environment_for_current_stage
       @stage == 'acceptance' ? acceptance_environment : @stage
+    end
+
+    def changed_files
+      scm_client.changed_files @workspace_repo, @pipeline, @patchset_branch
+    end
+
+    private
+
+    def scm_client
+      @scm_client ||= DeliverySugar::SCM.new
     end
   end
 end
