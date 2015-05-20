@@ -1,6 +1,6 @@
 require 'rspec'
 
-TOPDIR = File.expand_path(File.join(File.dirname(__FILE__), ".."))
+TOPDIR = File.expand_path(File.join(File.dirname(__FILE__), '..'))
 $LOAD_PATH << File.expand_path(File.dirname(__FILE__))
 
 # Require all our libraries
