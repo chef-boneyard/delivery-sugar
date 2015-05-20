@@ -18,13 +18,15 @@
 module DeliverySugar
   module DSL
     def delivery_change
-      @@delivery_change ||= DeliverySugar::Change.new(node)
+      @delivery_change ||= DeliverySugar::Change.new(node)
     end
 
     def delivery_environment
       delivery_change.environment_for_current_stage
     end
 
+    # Rubocop disabled because this is established API
+    # rubocop:disable AccessorMethodName
     def get_acceptance_environment
       delivery_change.acceptance_environment
     end
