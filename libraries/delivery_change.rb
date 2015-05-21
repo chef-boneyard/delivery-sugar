@@ -16,10 +16,22 @@
 #
 
 module DeliverySugar
+  #
+  # This class will represent a Delivery change object and provide information
+  # and helpers for use inside Delivery phase run recipes.
+  #
   class Change
     attr_reader :enterprise, :organization, :project, :pipeline,
                 :stage, :patchset_branch, :scm_client, :workspace_repo
 
+    #
+    # Create a new DeliverySugar::Change object
+    #
+    # @param [Chef::Node] node
+    #   The Chef::Node object from the current runtime
+    #
+    # @return [DeliverySugar::Change]
+    #
     def initialize(node)
       change = node['delivery']['change']
       workspace = node['delivery']['workspace']
@@ -32,22 +44,92 @@ module DeliverySugar
       @workspace_repo = workspace['repo']
     end
 
+    #
+    # Return the acceptance environment name for the given change
+    #
+    # @return [String]
+    #
     def acceptance_environment
       "acceptance-#{@enterprise}-#{@organization}-#{@project}-#{@pipeline}"
     end
 
+    #
+    # Return the environment name for the current stage
+    #
+    # @return [String]
+    #
     def environment_for_current_stage
       @stage == 'acceptance' ? acceptance_environment : @stage
     end
 
+    #
+    # Return a list of files that have changed in the current changset
+    #
+    # @return [Array#String]
+    #
     def changed_files
       scm_client.changed_files @workspace_repo, @pipeline, @patchset_branch
     end
 
+    #
+    # Return a list of Cookbook objects representing the cookbooks that have
+    # been modified in the current changeset.
+    #
+    # @return [Array#DeliverySugar::Cookbook]
+    #
+    def changed_cookbooks
+      cookbooks = Set.new
+
+      # Iterate throught the changed files to see if any belong to a cookbook
+      changed_files.each do |changed_file|
+        cookbooks << cookbook_from_member_file(changed_file)
+      end
+
+      # Check to see if the default workspace is a cookbook
+      cookbooks << load_cookbook('/') if changed_files.length > 0
+
+      # remove nil
+      cookbooks.to_a.compact
+    end
+
     private
 
+    #
+    # Create a new SCM client to use to inspect the current changeset on disk
+    #
+    # @return [DeliverySugar::SCM]
+    #
     def scm_client
       @scm_client ||= DeliverySugar::SCM.new
+    end
+
+    #
+    # Try and create a Cookbook object based on a path. If that path is not a
+    # cookbook, return nil.
+    #
+    # @param relative_path [String]
+    #   The relative path to the cookbook in the project
+    #
+    # @return [DeliverySugar::Cookbook, NilClass]
+    #
+    def load_cookbook(relative_path)
+      DeliverySugar::Cookbook.new(File.join(@workspace_repo, relative_path))
+    rescue DeliverySugar::Exceptions::NotACookbook
+      nil
+    end
+
+    #
+    # Determine if the provided filename is part of a cookbook in the
+    # cookbooks directory.
+    #
+    # @param changed_filed [String]
+    #   The relative path to a file in the project
+    #
+    # @return [DeliverySugar::Cookbook, NilClass]
+    #
+    def cookbook_from_member_file(changed_file)
+      result = changed_file.match(%r{^cookbooks/(.+)/})
+      load_cookbook(result[0]) unless result.nil?
     end
   end
 end

@@ -2,12 +2,11 @@ require 'spec_helper'
 
 describe DeliverySugar::SCM::Git do
   include Chef::Mixin::ShellOut
-  support_dir = File.join(TOPDIR, 'spec', 'support')
-  test_repo = File.join(support_dir, 'temp')
+  test_repo = File.join(SUPPORT_DIR, 'temp')
 
   before(:all) do
-    shell_out('git clone functional_test_repo.bundle -b master temp',
-              cwd: support_dir)
+    shell_out('git clone git_scm_spec_repo.bundle -b master temp',
+              cwd: SUPPORT_DIR)
   end
 
   after(:all) do

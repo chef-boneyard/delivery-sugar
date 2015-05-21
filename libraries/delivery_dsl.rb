@@ -34,5 +34,9 @@ module DeliverySugar
     def changed_files
       delivery_change.changed_files
     end
+
+    def changed_cookbooks
+      delivery_change.changed_cookbooks
+    end
   end
 end
