@@ -6,3 +6,7 @@ Style/SingleSpaceBeforeFirstArg:
 # Don't force us to write documentation
 Documentation:
     Enabled: false
+
+# Give us some breathing room on line length
+Metrics/LineLength:
+  Max: 90
