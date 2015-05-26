@@ -92,6 +92,15 @@ module DeliverySugar
       cookbooks.to_a.compact
     end
 
+    #
+    # Return a unique string to identify a Delivery project.
+    #
+    # @return [String]
+    #
+    def project_slug
+      "#{@enterprise}-#{@organization}-#{@project}"
+    end
+
     private
 
     #

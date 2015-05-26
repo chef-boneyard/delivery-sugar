@@ -38,5 +38,9 @@ module DeliverySugar
     def changed_cookbooks
       delivery_change.changed_cookbooks
     end
+
+    def project_slug
+      delivery_change.project_slug
+    end
   end
 end
