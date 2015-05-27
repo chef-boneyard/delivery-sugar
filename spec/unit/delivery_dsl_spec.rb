@@ -50,15 +50,15 @@ describe DeliverySugar::DSL do
 
   describe '.project_slug' do
     it 'gets slug from Change object' do
-      expect(subject).to receive_message_chain(:delivery_change, :project_slug)
+      expect(subject).to receive_message_chain(:project, :slug)
       subject.project_slug
     end
   end
 
   describe '.get_project_secrets' do
     it 'gets the secrets from the Change object' do
-      expect(subject).to receive_message_chain(:delivery_change,
-                                               :project_secrets)
+      expect(subject).to receive_message_chain(:project,
+                                               :secrets)
       subject.get_project_secrets
     end
   end

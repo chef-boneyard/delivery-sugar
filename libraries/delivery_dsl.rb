@@ -36,11 +36,11 @@ module DeliverySugar
     end
 
     def get_project_secrets
-      delivery_change.project_secrets
+      project.secrets
     end
 
     def project_slug
-      delivery_change.project_slug
+      project.slug
     end
 
     def delivery_chef_server
@@ -54,7 +54,7 @@ module DeliverySugar
     end
 
     def delivery_change
-      @delivery_change ||= DeliverySugar::Change.new(node)
+      @delivery_change ||= DeliverySugar::Change.new(project, node)
     end
 
     #
