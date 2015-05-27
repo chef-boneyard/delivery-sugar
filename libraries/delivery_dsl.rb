@@ -17,8 +17,13 @@
 
 module DeliverySugar
   module DSL
-    def delivery_change
-      @delivery_change ||= DeliverySugar::Change.new(node)
+
+    def changed_cookbooks
+      delivery_change.changed_cookbooks
+    end
+
+    def changed_files
+      delivery_change.changed_files
     end
 
     def delivery_environment
@@ -31,16 +36,18 @@ module DeliverySugar
       delivery_change.acceptance_environment
     end
 
-    def changed_files
-      delivery_change.changed_files
+    def get_project_secrets
+      delivery_change.project_secrets
     end
-
-    def changed_cookbooks
-      delivery_change.changed_cookbooks
-    end
-
+    
     def project_slug
       delivery_change.project_slug
+    end
+
+    private
+
+    def delivery_change
+      @delivery_change ||= DeliverySugar::Change.new(node)
     end
   end
 end

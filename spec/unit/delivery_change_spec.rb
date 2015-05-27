@@ -118,4 +118,26 @@ describe DeliverySugar::Change do
       expect(subject.project_slug).to eql('ent-org-proj')
     end
   end
+
+  describe '#project_secrets' do
+    let(:data_bag) { 'delivery-secrets' }
+    let(:data_bag_item) { 'ent-org-proj' }
+    let(:data_bag_contents) do
+      {
+        'id' => 'ent-org-proj',
+        'secret' => 'password'
+      }
+    end
+
+    let(:chef_server) { double('chef_server', encrypted_data_bag_item: data_bag_contents) }
+
+    before do
+      allow(DeliverySugar::ChefServer).to receive(:new).and_return(chef_server)
+    end
+
+    it 'returns the specified encrypted data bag item from the Chef Server' do
+      expect(chef_server).to receive(:encrypted_data_bag_item).with(data_bag, data_bag_item).and_return(data_bag_contents)
+      expect(subject.project_secrets).to eql(data_bag_contents)
+    end
+  end
 end
