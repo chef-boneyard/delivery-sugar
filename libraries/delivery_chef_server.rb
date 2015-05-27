@@ -56,6 +56,23 @@ module DeliverySugar
       unload_server_config
     end
 
+    #
+    # Return a hash that can be fed into Cheffish resources.
+    #
+    # @return [Hash]
+    #
+    def cheffish_details
+      load_server_config
+      {
+        chef_server_url: Chef::Config[:chef_server_url],
+        options: {
+          client_name: Chef::Config[:node_name],
+          signing_key_filename: Chef::Config[:client_key]
+        }
+      }
+    ensure
+      unload_server_config
+    end
 
     private
 

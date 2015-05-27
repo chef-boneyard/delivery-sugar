@@ -16,7 +16,19 @@ describe DeliverySugar::DSL do
   describe '.changed_files' do
     it 'gets a list of changed files from the change object' do
       expect(subject).to receive_message_chain(:delivery_change, :changed_files)
+      # delivery_change.changed_files
       subject.changed_files
+    end
+  end
+
+  describe '.delivery_chef_server' do
+    let(:chef_server_configuration) { double 'a configuration hash' }
+
+    it 'returns a cheffish configuration for interacting with the chef server' do
+      expect(subject).to receive_message_chain(:chef_server, :cheffish_details)
+        .and_return(chef_server_configuration)
+
+      expect(subject.delivery_chef_server).to eql(chef_server_configuration)
     end
   end
 

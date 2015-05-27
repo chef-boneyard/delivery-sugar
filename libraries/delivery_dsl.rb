@@ -17,7 +17,6 @@
 
 module DeliverySugar
   module DSL
-
     def changed_cookbooks
       delivery_change.changed_cookbooks
     end
@@ -39,15 +38,33 @@ module DeliverySugar
     def get_project_secrets
       delivery_change.project_secrets
     end
-    
+
     def project_slug
       delivery_change.project_slug
     end
 
+    def delivery_chef_server
+      chef_server.cheffish_details
+    end
+
     private
+
+    def chef_server
+      @delivery_chef_server ||= DeliverySugar::ChefServer.new(delivery_knife_rb)
+    end
 
     def delivery_change
       @delivery_change ||= DeliverySugar::Change.new(node)
+    end
+
+    #
+    # The default path for the Chef Config file to use with the Delivery Chef
+    # Server.
+    #
+    # @return [String]
+    #
+    def delivery_knife_rb
+      '/var/opt/delivery/workspace/.chef/knife.rb'
     end
   end
 end

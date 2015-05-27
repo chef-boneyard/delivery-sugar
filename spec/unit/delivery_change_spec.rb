@@ -129,14 +129,17 @@ describe DeliverySugar::Change do
       }
     end
 
-    let(:chef_server) { double('chef_server', encrypted_data_bag_item: data_bag_contents) }
+    let(:chef_server) do
+      double('chef_server', encrypted_data_bag_item: data_bag_contents)
+    end
 
     before do
       allow(DeliverySugar::ChefServer).to receive(:new).and_return(chef_server)
     end
 
     it 'returns the specified encrypted data bag item from the Chef Server' do
-      expect(chef_server).to receive(:encrypted_data_bag_item).with(data_bag, data_bag_item).and_return(data_bag_contents)
+      expect(chef_server).to receive(:encrypted_data_bag_item)
+        .with(data_bag, data_bag_item).and_return(data_bag_contents)
       expect(subject.project_secrets).to eql(data_bag_contents)
     end
   end
