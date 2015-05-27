@@ -18,29 +18,29 @@
 module DeliverySugar
   module DSL
     def changed_cookbooks
-      delivery_change.changed_cookbooks
+      change.changed_cookbooks
     end
 
     def changed_files
-      delivery_change.changed_files
+      change.changed_files
     end
 
     def delivery_environment
-      delivery_change.environment_for_current_stage
+      change.environment_for_current_stage
     end
 
     # Rubocop disabled because this is established API
     # rubocop:disable AccessorMethodName
     def get_acceptance_environment
-      delivery_change.acceptance_environment
+      change.acceptance_environment
     end
 
     def get_project_secrets
-      delivery_change.project_secrets
+      change.project_secrets
     end
 
     def project_slug
-      delivery_change.project_slug
+      change.project_slug
     end
 
     def delivery_chef_server
@@ -53,8 +53,8 @@ module DeliverySugar
       @delivery_chef_server ||= DeliverySugar::ChefServer.new(delivery_knife_rb)
     end
 
-    def delivery_change
-      @delivery_change ||= DeliverySugar::Change.new(node)
+    def change
+      @change ||= DeliverySugar::Change.new(node)
     end
 
     #
