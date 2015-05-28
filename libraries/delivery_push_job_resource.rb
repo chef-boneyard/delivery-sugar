@@ -29,11 +29,19 @@ class Chef
         @command = name
         @timeout = 30 * 60 # 30 minutes
         @nodes = []
-        @server_url = Chef::Config[:chef_server_url]
+        @chef_config_file = '/var/opt/delivery/workspace/.chef/knife.rb'
 
         @provider = Chef::Provider::DeliveryPushJob
         @action = :dispatch
         @allowed_actions.push(:dispatch)
+      end
+
+      def chef_config_file(arg = nil)
+        set_or_return(
+          :chef_config_file,
+          arg,
+          kind_of: String
+        )
       end
 
       def command(arg = nil)
@@ -49,14 +57,6 @@ class Chef
           :nodes,
           arg,
           kind_of: Array
-        )
-      end
-
-      def server_url(arg = nil)
-        set_or_return(
-          :server_url,
-          arg,
-          kind_of: String
         )
       end
 

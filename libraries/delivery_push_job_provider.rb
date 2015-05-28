@@ -26,11 +26,26 @@ class Chef
         true
       end
 
+      def load_current_resource
+        # There is no existing resource to evaluate, but we are required
+        # to override it.
+      end
+
+      def define_resource_requirements
+        requirements.assert(:dispatch) do |a|
+          a.assertion { ::File.exist?(new_resource.chef_config_file) }
+          a.failure_message(
+            RuntimeError,
+            "The config file \"#{new_resource.chef_config_file}\" does not exist."
+          )
+        end
+      end
+
       def initialize(new_resource, run_context)
         super
 
         @push_job = DeliverySugar::PushJob.new(
-          new_resource.server_url,
+          new_resource.chef_config_file,
           new_resource.command,
           new_resource.nodes,
           new_resource.timeout

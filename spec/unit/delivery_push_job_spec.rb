@@ -1,14 +1,20 @@
 require 'spec_helper'
 
 describe DeliverySugar::PushJob do
-  let(:server_url) { 'http://push.example.com' }
+  def mock_job_rest_get
+    subject.instance_variable_set(:@job_uri, job_uri)
+    allow(chef_server).to receive(:rest).with(:get, job_uri).and_return(job)
+  end
+
+  let(:chef_config_file) { '/var/opt/delivery/workspace/.chef/knife.rb' }
   let(:command) { 'chef-client' }
   let(:nodes) { %w(node1 node2) }
   let(:nodes_body) { {} }
   let(:status) { 'voting' }
   let(:timeout) { 10 }
-  let(:rest) { double('Chef::REST', get_rest: job) }
+  let(:chef_server) { double('ChefServer Object') }
 
+  let(:job_uri) { 'http://localhost/organizations/ORG_NAME/pushy/jobs/ID' }
   let(:job) do
     {
       'id' => 'aaaaaaaaaaaa25fd67fa8715fd547d3d',
@@ -21,23 +27,22 @@ describe DeliverySugar::PushJob do
     }
   end
 
-  before do
-    allow(Chef::REST).to receive(:new).with(server_url).and_return(rest)
-  end
+  subject { described_class.new(chef_config_file, command, nodes, timeout) }
 
-  subject { described_class.new(server_url, command, nodes, timeout) }
+  before do
+    allow(DeliverySugar::ChefServer).to receive(:new).with(chef_config_file)
+      .and_return(chef_server)
+  end
 
   describe '#initialize' do
     it 'sets the variables' do
-      expect(subject.server_url).to eql(server_url)
+      expect(subject.chef_server).to eql(chef_server)
       expect(subject.command).to eql(command)
       expect(subject.nodes).to eql(nodes)
-      expect(subject.rest).to eql(rest)
     end
   end
 
   describe '#dispatch' do
-    let(:job_uri) { 'http://localhost/organizations/ORG_NAME/pushy/jobs/ID' }
     let(:response) { { 'uri' => job_uri } }
     let(:body) do
       {
@@ -48,15 +53,21 @@ describe DeliverySugar::PushJob do
     end
 
     it 'submits job to Push Job Server' do
-      expect(subject.rest).to receive(:post_rest).with('pushy/jobs', body)
+      expect(chef_server).to receive(:rest).with(:post, '/pushy/jobs', {}, body)
         .and_return(response)
+      allow(chef_server).to receive(:rest).with(:get, job_uri).and_return(job)
       subject.dispatch
       expect(subject.job_uri).to eql(job_uri)
     end
   end
 
   describe '#refresh' do
+    before do
+      subject.instance_variable_set(:@job_uri, job_uri)
+    end
+
     it 'sets/updates state attributes in the object' do
+      expect(chef_server).to receive(:rest).with(:get, job_uri).and_return(job)
       subject.refresh
       expect(subject.id).to eql(job['id'])
       expect(subject.status).to eql(job['status'])
@@ -68,6 +79,7 @@ describe DeliverySugar::PushJob do
 
   describe '#wait' do
     let(:push_job_failed_error) { DeliverySugar::Exceptions::PushJobFailed }
+    before { mock_job_rest_get }
 
     context 'when timeout has passed' do
       before do
@@ -110,7 +122,10 @@ describe DeliverySugar::PushJob do
   end
 
   describe '#successful?' do
-    before(:each) { subject.refresh }
+    before do
+      mock_job_rest_get
+      subject.refresh
+    end
 
     context 'when status is not complete' do
       before { allow(subject).to receive(:complete?).and_return(false) }
@@ -151,7 +166,10 @@ describe DeliverySugar::PushJob do
   end
 
   describe '#failed?' do
-    before(:each) { subject.refresh }
+    before(:each) do
+      mock_job_rest_get
+      subject.refresh
+    end
 
     context 'when status is not complete' do
       before { allow(subject).to receive(:complete?).and_return(false) }
@@ -192,6 +210,8 @@ describe DeliverySugar::PushJob do
   end
 
   describe '#timed_out?' do
+    before { mock_job_rest_get }
+
     context 'when job_status is timed_out' do
       let(:status) { 'timed_out' }
       it 'returns true' do
@@ -228,8 +248,11 @@ describe DeliverySugar::PushJob do
   end
 
   describe '#complete?' do
-    subject { described_class.new(server_url, command, nodes, timeout) }
-    before(:each) { subject.refresh }
+    before(:each) do
+      mock_job_rest_get
+      subject.refresh
+    end
+
     let(:push_job_error) { DeliverySugar::Exceptions::PushJobError }
 
     context 'when job status equals' do

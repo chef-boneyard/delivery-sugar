@@ -20,7 +20,7 @@ module DeliverySugar
   # This class is our interface to execute push jobs against a push jobs server.
   #
   class PushJob
-    attr_reader :server_url, :command, :nodes, :rest, :job_uri, :job
+    attr_reader :chef_server, :command, :nodes, :job_uri, :job
 
     # Variables for the Job itself
     attr_reader :id, :status, :created_at, :updated_at, :results
@@ -31,9 +31,8 @@ module DeliverySugar
     #
     # Create a new PushJob object
     #
-    # @param server_url [String]
-    #   The hostname for the server where the push jobs server is installed.
-    #   The most common value for this will be Chef::Config[:chef_server_url]
+    # @param chef_config_file [String]
+    #   The fully-qualified path to a chef config file to load settings from.
     # @param command [String]
     #   The white-listed command to execute via push jobs
     # @param nodes [Array#String]
@@ -43,12 +42,11 @@ module DeliverySugar
     #
     # @return [DeliverySugar::PushJob]
     #
-    def initialize(server_url, command, nodes, timeout)
-      @server_url = server_url
+    def initialize(chef_config_file, command, nodes, timeout)
       @command = command
       @nodes = nodes
       @timeout = timeout
-      @rest = Chef::REST.new(@server_url)
+      @chef_server = DeliverySugar::ChefServer.new(chef_config_file)
     end
 
     #
@@ -61,7 +59,7 @@ module DeliverySugar
         'run_timeout' => @timeout
       }
 
-      resp = @rest.post_rest('pushy/jobs', body)
+      resp = @chef_server.rest(:post, '/pushy/jobs', {}, body)
       @job_uri = resp['uri']
       refresh
     end
@@ -82,7 +80,7 @@ module DeliverySugar
     #
     # Return whether or not a push job has completed or not
     #
-    # @return [TrueClass, FalseClass]
+    # @return [true, false]
     #
     def complete?
       case @status
@@ -98,7 +96,7 @@ module DeliverySugar
     #
     # Return whether or not the completed push job was successful.
     #
-    # @return [TrueClass, FalseClass]
+    # @return [true, false]
     #
     def successful?
       complete? && all_nodes_succeeded?
@@ -107,7 +105,7 @@ module DeliverySugar
     #
     # Return whether or not the completed push job failed.
     #
-    # @return [TrueClass, FalseClass]
+    # @return [true, false]
     #
     def failed?
       complete? && !all_nodes_succeeded?
@@ -118,7 +116,7 @@ module DeliverySugar
     # would otherwise allow. We do this as a backup to the timeout in the
     # Push Job API itself.
     #
-    # @return [TrueClass, FalseClass]
+    # @return [true, false]
     #
     def timed_out?
       @status == 'timed_out' || (@created_at + @timeout < current_time)
@@ -128,7 +126,7 @@ module DeliverySugar
     # Poll the API for an update on the Job data.
     #
     def refresh
-      @job = @rest.get_rest(@job_uri)
+      @job = @chef_server.rest(:get, @job_uri)
       @id ||= job['id']
       @status = job['status']
       @created_at = DateTime.parse(job['created_at'])
@@ -150,7 +148,7 @@ module DeliverySugar
     #
     # Return whether or not all nodes are marked as successful.
     #
-    # @return [TrueClass, FalseClass]
+    # @return [true, false]
     #
     def all_nodes_succeeded?
       @results['succeeded'] && @results['succeeded'].length == @nodes.length

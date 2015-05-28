@@ -11,6 +11,8 @@ describe Chef::Resource::DeliveryPushJob do
       expect(@resource).to be_a(Chef::Resource)
       expect(@resource).to be_a(described_class)
       expect(@resource.provider).to be(Chef::Provider::DeliveryPushJob)
+      expect(@resource.chef_config_file)
+        .to eql('/var/opt/delivery/workspace/.chef/knife.rb')
       expect(@resource.command).to eql('push_job')
       expect(@resource.timeout).to eql(30 * 60)
       expect(@resource.nodes).to eql([])
@@ -18,6 +20,14 @@ describe Chef::Resource::DeliveryPushJob do
 
     it 'has a resource name of :delivery_push_job' do
       expect(@resource.resource_name).to eql(:delivery_push_job)
+    end
+  end
+
+  describe '#chef_config_file' do
+    it 'must be a string' do
+      @resource.chef_config_file 'my_file'
+      expect(@resource.chef_config_file).to eql('my_file')
+      expect { @resource.send(:chef_config_file, ['r']) }.to raise_error(ArgumentError)
     end
   end
 
