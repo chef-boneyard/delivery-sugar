@@ -36,7 +36,7 @@ module DeliverySugar
       # @param [String] branch2
       #   The name of a branch
       #
-      # @return [Array#String]
+      # @return [Array<String>]
       #
       def changed_files(workspace, branch1, branch2)
         sha1 = shell_out("git merge-base #{branch1} #{branch2}", cwd: workspace)

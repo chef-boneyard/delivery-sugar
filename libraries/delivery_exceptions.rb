@@ -28,10 +28,57 @@ module DeliverySugar
       end
 
       def to_s
+        "'#{@path}' is not a valid cookbook"
+      end
+    end
+
+    #
+    # A parent class to handle various different types of PushJob Exceptions
+    #
+    class PushJobException < RuntimeError
+      def initialize(job, msg)
+        @job = job
+        @msg = msg
+      end
+
+      def to_s
         <<-EOM
-The directory below is not a valid cookbook:
-#{@path}
+#{@msg}
+
+Command: #{@job['command']}
+Nodes:
+#{node_output}
         EOM
+      end
+
+      private
+
+      def node_output
+        output = ''
+        @job['nodes'].each do |status, node_list|
+          output += "   #{status}: #{node_list.join(', ')}\n"
+        end
+        output
+      end
+    end
+
+    #
+    # Raise when a push job completes unsuccessfully
+    #
+    class PushJobFailed < PushJobException
+      def initialize(job)
+        msg = "The push-job #{job['id']} failed to complete successfully."
+        super(job, msg)
+      end
+    end
+
+    #
+    # Raise when a push job errors out
+    #
+    class PushJobError < PushJobException
+      def initialize(job)
+        msg = "The push-job #{job['id']} failed with error state \"#{job['status']}\"."
+        super(job, msg)
       end
     end
   end

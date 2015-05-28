@@ -21,7 +21,7 @@ module DeliverySugar
     # Return a list of cookbooks that have files that have changed in the current
     # changeset.
     #
-    # @return [Array#String]
+    # @return [Array<String>]
     #
     def changed_cookbooks
       change.changed_cookbooks
@@ -31,7 +31,7 @@ module DeliverySugar
     # Return a list of filenames (relative to the project root) that have been
     # modified in the current changeset.
     #
-    # @return [Array#String]
+    # @return [Array<String>]
     #
     def changed_files
       change.changed_files

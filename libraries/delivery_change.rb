@@ -57,7 +57,7 @@ module DeliverySugar
     # Return a list of Cookbook objects representing the cookbooks that have
     # been modified in the current changeset.
     #
-    # @return [Array#DeliverySugar::Cookbook]
+    # @return [Array<DeliverySugar::Cookbook>]
     #
     def changed_cookbooks
       cookbooks = Set.new
@@ -77,10 +77,10 @@ module DeliverySugar
     #
     # Return a list of files that have changed in the current changset
     #
-    # @return [Array#String]
+    # @return [Array<String>]
     #
     def changed_files
-      scm_client.changed_files @workspace_repo, @pipeline, @patchset_branch
+      scm_client.changed_files(@workspace_repo, @pipeline, @patchset_branch)
     end
 
     #
@@ -110,7 +110,7 @@ module DeliverySugar
     # @param changed_filed [String]
     #   The relative path to a file in the project
     #
-    # @return [DeliverySugar::Cookbook, NilClass]
+    # @return [DeliverySugar::Cookbook, nil]
     #
     def cookbook_from_member_file(changed_file)
       result = changed_file.match(%r{^cookbooks/(.+)/})

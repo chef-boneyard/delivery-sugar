@@ -46,10 +46,12 @@ module DeliverySugar
     # @param other [DeliverySugar::Cookbook]
     #   The Cookbook object we are comparing against.
     #
-    # @return [TrueClass, FalseClass]
+    # @return [true, false]
     #
     def ==(other)
-      @name == other.name && @path == other.path && @version == other.version
+      (@name == other.name) &&
+        (@path == other.path) &&
+        (@version == other.version)
     end
 
     private
