@@ -36,7 +36,7 @@ module DeliverySugar
     end
 
     def get_project_secrets
-      change.project_secrets
+      chef_server.encrypted_data_bag_item('delivery-secrets', project_slug)
     end
 
     def project_slug

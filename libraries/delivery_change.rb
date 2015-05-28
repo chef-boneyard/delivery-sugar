@@ -101,21 +101,7 @@ module DeliverySugar
       "#{@enterprise}-#{@organization}-#{@project}"
     end
 
-    def project_secrets
-      chef_server.encrypted_data_bag_item('delivery-secrets', project_slug)
-    end
-
     private
-
-    #
-    # Create a new Chef Server client to use to talk to the Delivery
-    # Chef Server.
-    #
-    # @return [DeliverySugar::ChefServer]
-    #
-    def chef_server
-      @chef_server ||= DeliverySugar::ChefServer.new(delivery_knife_rb)
-    end
 
     #
     # Determine if the provided filename is part of a cookbook in the
@@ -129,16 +115,6 @@ module DeliverySugar
     def cookbook_from_member_file(changed_file)
       result = changed_file.match(%r{^cookbooks/(.+)/})
       load_cookbook(result[0]) unless result.nil?
-    end
-
-    #
-    # The default path for the Chef Config file to use with the Delivery Chef
-    # Server.
-    #
-    # @return [String]
-    #
-    def delivery_knife_rb
-      '/var/opt/delivery/workspace/.chef/knife.rb'
     end
 
     #
