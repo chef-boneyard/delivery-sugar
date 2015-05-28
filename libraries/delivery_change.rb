@@ -50,7 +50,7 @@ module DeliverySugar
     # @return [String]
     #
     def acceptance_environment
-      "acceptance-#{@enterprise}-#{@organization}-#{@project}-#{@pipeline}"
+      "acceptance-#{project_slug}-#{@pipeline}"
     end
 
     #

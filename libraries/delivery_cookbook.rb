@@ -49,7 +49,7 @@ module DeliverySugar
     # @return [TrueClass, FalseClass]
     #
     def ==(other)
-      @name == other.name && @path == other.path &&  @version == other.version
+      @name == other.name && @path == other.path && @version == other.version
     end
 
     private
