@@ -50,21 +50,11 @@ module DeliverySugar
     private
 
     def chef_server
-      @delivery_chef_server ||= DeliverySugar::ChefServer.new(delivery_knife_rb)
+      @delivery_chef_server ||= DeliverySugar::ChefServer.new
     end
 
     def change
       @change ||= DeliverySugar::Change.new(node)
-    end
-
-    #
-    # The default path for the Chef Config file to use with the Delivery Chef
-    # Server.
-    #
-    # @return [String]
-    #
-    def delivery_knife_rb
-      '/var/opt/delivery/workspace/.chef/knife.rb'
     end
   end
 end

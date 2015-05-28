@@ -13,6 +13,21 @@ describe DeliverySugar::ChefServer do
   end
 
   describe '#new' do
+    context 'when no chef config is passed in during instantiation' do
+      let(:deliv_knife_rb) { '/var/opt/delivery/workspace/.chef/knife.rb' }
+      it 'defaults to the delivery knife.rb' do
+        expect(Chef::Config).to receive(:from_file).with(deliv_knife_rb)
+        described_class.new
+      end
+    end
+
+    context 'when a specific chef config is passed in during instantation' do
+      it 'uses that chef config' do
+        expect(Chef::Config).to receive(:from_file).with('/my/fake/config.rb')
+        described_class.new('/my/fake/config.rb')
+      end
+    end
+
     it 'loads a valid chef server configuration' do
       Chef::Config.reset
       before_config = Chef::Config.save

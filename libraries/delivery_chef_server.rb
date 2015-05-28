@@ -30,7 +30,7 @@ module DeliverySugar
     #
     # @return [DeliverySugar::ChefServer]
     #
-    def initialize(chef_config_rb)
+    def initialize(chef_config_rb = delivery_knife_rb)
       before_config = Chef::Config.save
       Chef::Config.from_file(chef_config_rb)
       @server_config = Chef::Config.save
@@ -99,6 +99,16 @@ module DeliverySugar
     #
     def unload_server_config
       Chef::Config.restore(@stored_config)
+    end
+
+    #
+    # The default path for the Chef Config file to use with the Delivery Chef
+    # Server.
+    #
+    # @return [String]
+    #
+    def delivery_knife_rb
+      '/var/opt/delivery/workspace/.chef/knife.rb'
     end
   end
 end
