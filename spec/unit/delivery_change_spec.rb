@@ -1,7 +1,5 @@
 require 'spec_helper'
 
-require 'chef/cookbook/metadata'
-
 describe DeliverySugar::Change do
   let(:stage) { 'unused' }
   let(:node) do
@@ -68,7 +66,6 @@ describe DeliverySugar::Change do
   end
 
   describe '#changed_files' do
-    let(:stage) { 'unused' }
     let(:client) { double('DeliverySugar::SCM') }
     let(:list_of_files) { [] }
     let(:branch1) { 'pipe' }
@@ -84,7 +81,7 @@ describe DeliverySugar::Change do
     end
   end
 
-  describe '.changed_cookbooks' do
+  describe '#changed_cookbooks' do
     let(:changed_files) do
       [
         'cookbooks/a/recipe.rb',
@@ -108,6 +105,12 @@ describe DeliverySugar::Change do
         .with('workspace_repo/').and_return(nil)
 
       expect(subject.changed_cookbooks).to eql([cookbook_a, cookbook_b])
+    end
+  end
+
+  describe '#project_slug' do
+    it 'returns a composition of the ent, org and project names' do
+      expect(subject.project_slug).to eql('ent-org-proj')
     end
   end
 end

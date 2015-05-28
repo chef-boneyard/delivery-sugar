@@ -50,32 +50,14 @@ module DeliverySugar
     # @return [String]
     #
     def acceptance_environment
-      "acceptance-#{@enterprise}-#{@organization}-#{@project}-#{@pipeline}"
-    end
-
-    #
-    # Return the environment name for the current stage
-    #
-    # @return [String]
-    #
-    def environment_for_current_stage
-      @stage == 'acceptance' ? acceptance_environment : @stage
-    end
-
-    #
-    # Return a list of files that have changed in the current changset
-    #
-    # @return [Array#String]
-    #
-    def changed_files
-      scm_client.changed_files @workspace_repo, @pipeline, @patchset_branch
+      "acceptance-#{project_slug}-#{@pipeline}"
     end
 
     #
     # Return a list of Cookbook objects representing the cookbooks that have
     # been modified in the current changeset.
     #
-    # @return [Array#DeliverySugar::Cookbook]
+    # @return [Array<DeliverySugar::Cookbook>]
     #
     def changed_cookbooks
       cookbooks = Set.new
@@ -92,15 +74,47 @@ module DeliverySugar
       cookbooks.to_a.compact
     end
 
+    #
+    # Return a list of files that have changed in the current changset
+    #
+    # @return [Array<String>]
+    #
+    def changed_files
+      scm_client.changed_files(@workspace_repo, @pipeline, @patchset_branch)
+    end
+
+    #
+    # Return the environment name for the current stage
+    #
+    # @return [String]
+    #
+    def environment_for_current_stage
+      @stage == 'acceptance' ? acceptance_environment : @stage
+    end
+
+    #
+    # Return a unique string to identify a Delivery project.
+    #
+    # @return [String]
+    #
+    def project_slug
+      "#{@enterprise}-#{@organization}-#{@project}"
+    end
+
     private
 
     #
-    # Create a new SCM client to use to inspect the current changeset on disk
+    # Determine if the provided filename is part of a cookbook in the
+    # cookbooks directory.
     #
-    # @return [DeliverySugar::SCM]
+    # @param changed_filed [String]
+    #   The relative path to a file in the project
     #
-    def scm_client
-      @scm_client ||= DeliverySugar::SCM.new
+    # @return [DeliverySugar::Cookbook, nil]
+    #
+    def cookbook_from_member_file(changed_file)
+      result = changed_file.match(%r{^cookbooks/(.+)/})
+      load_cookbook(result[0]) unless result.nil?
     end
 
     #
@@ -119,17 +133,12 @@ module DeliverySugar
     end
 
     #
-    # Determine if the provided filename is part of a cookbook in the
-    # cookbooks directory.
+    # Create a new SCM client to use to inspect the current changeset on disk
     #
-    # @param changed_filed [String]
-    #   The relative path to a file in the project
+    # @return [DeliverySugar::SCM]
     #
-    # @return [DeliverySugar::Cookbook, NilClass]
-    #
-    def cookbook_from_member_file(changed_file)
-      result = changed_file.match(%r{^cookbooks/(.+)/})
-      load_cookbook(result[0]) unless result.nil?
+    def scm_client
+      @scm_client ||= DeliverySugar::SCM.new
     end
   end
 end
