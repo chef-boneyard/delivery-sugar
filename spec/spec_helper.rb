@@ -17,4 +17,4 @@ SUPPORT_DIR = File.join(TOPDIR, 'spec', 'support')
 $LOAD_PATH << File.expand_path(File.dirname(__FILE__))
 
 # Require all our libraries
-Dir['libraries/*.rb'].each { |f| require File.expand_path(f) }
+Dir['libraries/delivery_*.rb'].each { |f| require File.expand_path(f) }
