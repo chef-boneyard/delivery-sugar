@@ -7,7 +7,7 @@ describe DeliverySugar::DSL do
 
   describe '.changed_cookbooks' do
     it 'gets a list of changed cookbook from the change object' do
-      expect(subject).to receive_message_chain(:delivery_change,
+      expect(subject).to receive_message_chain(:change,
                                                :changed_cookbooks)
       subject.changed_cookbooks
     end
@@ -15,8 +15,7 @@ describe DeliverySugar::DSL do
 
   describe '.changed_files' do
     it 'gets a list of changed files from the change object' do
-      expect(subject).to receive_message_chain(:delivery_change, :changed_files)
-      # delivery_change.changed_files
+      expect(subject).to receive_message_chain(:change, :changed_files)
       subject.changed_files
     end
   end
@@ -34,7 +33,7 @@ describe DeliverySugar::DSL do
 
   describe '.delivery_environment' do
     it 'get the current environment from the Change object' do
-      expect(subject).to receive_message_chain(:delivery_change,
+      expect(subject).to receive_message_chain(:change,
                                                :environment_for_current_stage)
       subject.delivery_environment
     end
@@ -42,7 +41,7 @@ describe DeliverySugar::DSL do
 
   describe '.get_acceptance_environment' do
     it 'gets the acceptance environment for the pipeline from the change object' do
-      expect(subject).to receive_message_chain(:delivery_change,
+      expect(subject).to receive_message_chain(:change,
                                                :acceptance_environment)
       subject.get_acceptance_environment
     end
@@ -50,16 +49,28 @@ describe DeliverySugar::DSL do
 
   describe '.project_slug' do
     it 'gets slug from Change object' do
-      expect(subject).to receive_message_chain(:project, :slug)
+      expect(subject).to receive_message_chain(:change, :project_slug)
       subject.project_slug
     end
   end
 
   describe '.get_project_secrets' do
+    let(:project_slug) { 'ent-org-proj' }
+    let(:data_bag_contents) do
+      {
+        'id' => 'ent-org-proj',
+        'secret' => 'password'
+      }
+    end
+
     it 'gets the secrets from the Change object' do
-      expect(subject).to receive_message_chain(:project,
-                                               :secrets)
-      subject.get_project_secrets
+      expect(subject).to receive_message_chain(:change, :project_slug)
+        .and_return(project_slug)
+      expect(subject)
+        .to receive_message_chain(:chef_server, :encrypted_data_bag_item)
+        .with('delivery-secrets', project_slug).and_return(data_bag_contents)
+
+      expect(subject.get_project_secrets).to eql(data_bag_contents)
     end
   end
 end
