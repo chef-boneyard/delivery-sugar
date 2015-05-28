@@ -19,7 +19,6 @@ describe DeliverySugar::Change do
       }
     }
   end
-  let(:stage) { 'unused' }
 
   subject { DeliverySugar::Change.new node }
 

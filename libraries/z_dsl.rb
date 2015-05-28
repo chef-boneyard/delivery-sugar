@@ -20,11 +20,13 @@
 # have already been loaded removing the need to require them each individually.
 
 # By including this file, the DSL exposed by DeliverySugar will be made available
-# in your Chef Recipes, Resources and Providers. In general this is a bad idea
-# because it can easily cause naming collisions. However, because delivery-sugar
+# in your Chef Recipes, Resources and Providers.
+
+# In general, the way we are doing this (using .send) is a bad idea because in
+# other places easily cause naming collisions. However, because delivery-sugar
 # is only intended to run inside Delivery Phase Runs, the risk of method naming
 # collissions is lessened.
 
-Chef::Recipe.send(:include, DeliveryTruck::DSL)
-Chef::Resource.send(:include, DeliveryTruck::DSL)
-Chef::Provider.send(:include, DeliveryTruck::DSL)
+Chef::Recipe.send(:include, DeliverySugar::DSL)
+Chef::Resource.send(:include, DeliverySugar::DSL)
+Chef::Provider.send(:include, DeliverySugar::DSL)
