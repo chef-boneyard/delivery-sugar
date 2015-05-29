@@ -72,6 +72,16 @@ module DeliverySugar
     end
 
     #
+    # Run the block with the @server_config Chef::Config global scope.
+    #
+    def with_server_config(&block)
+      load_server_config
+      block.call
+    ensure
+      unload_server_config
+    end
+
+    #
     # Make a JSON REST API call to the Chef Server using Chef::REST. Returns the
     # the JSON response data as a Ruby Hash.
     #
@@ -94,16 +104,6 @@ module DeliverySugar
     #
     def rest(type, path, headers = {}, data = false)
       rest_client.request(type, path, headers, data)
-    end
-
-    #
-    # Run the block with the @server_config Chef::Config global scope.
-    #
-    def with_server_config(&block)
-      load_server_config
-      block.call
-    ensure
-      unload_server_config
     end
 
     private
