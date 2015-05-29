@@ -17,4 +17,6 @@ SUPPORT_DIR = File.join(TOPDIR, 'spec', 'support')
 $LOAD_PATH << File.expand_path(File.dirname(__FILE__))
 
 # Require all our libraries
+# We don't require 'z_dsl' here because we need to put assertions in place
+# before we require it.
 Dir['libraries/delivery_*.rb'].each { |f| require File.expand_path(f) }
