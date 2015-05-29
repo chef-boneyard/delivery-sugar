@@ -1,4 +1,10 @@
-chef_gem 'rubocop'
-chef_gem 'knife-supermarket'
-chef_gem 'chefspec'
-chef_gem 'simplecov'
+%w(
+  rubocop
+  knife-supermarket
+  chefspec
+  simplecov
+).each do |gem|
+  chef_gem gem do
+    action :upgrade
+  end
+end
