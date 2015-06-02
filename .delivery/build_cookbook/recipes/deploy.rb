@@ -1,7 +1,7 @@
 
 if delivery_environment == 'delivered'
   # Pull the encrypted secrets from the Chef Server
-  secrets = get_project_secret
+  secrets = get_project_secrets
 
   # Deploy to Github
   delivery_github 'chef-cookbooks/delivery-sugar' do
