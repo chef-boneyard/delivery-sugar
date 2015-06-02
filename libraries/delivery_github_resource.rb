@@ -15,6 +15,9 @@
 # limitations under the License.
 #
 
+# Including this is a temporary workaround to address a bug in chef-12.4.0.rc0
+require 'chef/mixin/shell_out'
+
 require 'chef/resource'
 
 class Chef
