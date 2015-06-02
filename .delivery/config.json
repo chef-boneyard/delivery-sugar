@@ -8,7 +8,6 @@
         "default": ["name:builder-*.delivery.chef.co"]
     },
     "skip_phases": [
-        "deploy",
         "publish",
         "security",
         "smoke",
