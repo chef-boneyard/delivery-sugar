@@ -83,7 +83,7 @@ github  #{github_remote_b} (push)
   end
 
   describe '#create_deploy_key' do
-    let(:file_resource) { Chef::Resource::File.new('deploy_key') }
+    let(:file_resource) { double('File#deploy_key') }
 
     it 'uses a Chef File resource to create the deploy key file' do
       expect(Chef::Resource::File).to receive(:new).with('deploy_key', run_context)
@@ -98,7 +98,7 @@ github  #{github_remote_b} (push)
   end
 
   describe '#create_ssh_wrapper_file' do
-    let(:file_resource) { Chef::Resource::File.new('ssh_wrapper') }
+    let(:file_resource) { double('File#ssh_wrapper_file') }
     let(:git_ssh) do
       <<-EOH
 unset SSH_AUTH_SOCK
