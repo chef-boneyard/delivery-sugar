@@ -61,7 +61,6 @@ class Chef
           f.path ::File.join(new_resource.cache_path,
                              "#{new_resource.remote_name}.pem")
           f.content new_resource.deploy_key
-          f.owner 'dbuild'
           f.mode '0600'
           f.sensitive true
         end
@@ -78,7 +77,6 @@ class Chef
         file = Chef::Resource::File.new('ssh_wrapper_file', run_context).tap do |f|
           f.path ::File.join(new_resource.cache_path, 'git_ssh')
           f.content ssh_wrapper_command
-          f.owner 'dbuild'
           f.mode '0755'
         end
         file.run_action(:create)
