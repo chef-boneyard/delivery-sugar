@@ -30,7 +30,7 @@ class Chef
       def load_current_resource
         @current_resource = Chef::Resource::DeliveryGithub.new(new_resource.name)
 
-        git_remote_out = shell_out!('git remote --verbose').stdout.chomp
+        git_remote_out = git_remote_shell_out('git remote --verbose').stdout.chomp
         match = git_remote_out.match(/^github\s+(\S+)/)
         @current_resource.remote_url match.nil? ? '' : match[1]
       end

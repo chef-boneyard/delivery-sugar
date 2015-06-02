@@ -38,7 +38,7 @@ describe Chef::Provider::DeliveryGithub do
 
     before do
       expect(provider).to receive(:shell_out!)
-        .with('git remote --verbose').and_return(shellout_git)
+        .with('git remote --verbose', shellout_options).and_return(shellout_git)
     end
 
     context 'when the remote is not present' do
