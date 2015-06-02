@@ -57,7 +57,7 @@ class Chef
       # rubocop:disable AbcSize
       #
       def create_deploy_key
-        file = Chef::Resource::File.new('deploy_key').tap do |f|
+        file = Chef::Resource::File.new('deploy_key', run_context).tap do |f|
           f.path ::File.join(new_resource.cache_path,
                              "#{new_resource.remote_name}.pem")
           f.content new_resource.deploy_key
@@ -75,7 +75,7 @@ class Chef
       # we placed on disk in `create_deploy_key`.
       #
       def create_ssh_wrapper_file
-        file = Chef::Resource::File.new('ssh_wrapper_file').tap do |f|
+        file = Chef::Resource::File.new('ssh_wrapper_file', run_context).tap do |f|
           f.path ::File.join(new_resource.cache_path, 'git_ssh')
           f.content ssh_wrapper_command
           f.owner 'dbuild'

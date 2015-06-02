@@ -86,7 +86,7 @@ github  #{github_remote_b} (push)
     let(:file_resource) { Chef::Resource::File.new('deploy_key') }
 
     it 'uses a Chef File resource to create the deploy key file' do
-      expect(Chef::Resource::File).to receive(:new).with('deploy_key')
+      expect(Chef::Resource::File).to receive(:new).with('deploy_key', run_context)
         .and_return(file_resource)
       expect(file_resource).to receive(:path).with('workspace/cache/unit.pem')
       expect(file_resource).to receive(:content).with('secret')
@@ -115,7 +115,7 @@ ssh -o CheckHostIP=no \
     end
 
     it 'uses a Chef File resource to create the SSH wrapper file' do
-      expect(Chef::Resource::File).to receive(:new).with('ssh_wrapper_file')
+      expect(Chef::Resource::File).to receive(:new).with('ssh_wrapper_file', run_context)
         .and_return(file_resource)
       expect(file_resource).to receive(:path).with('workspace/cache/git_ssh')
       expect(file_resource).to receive(:content).with(git_ssh)
