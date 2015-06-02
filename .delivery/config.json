@@ -11,6 +11,8 @@
         "publish",
         "security",
         "smoke",
-        "syntax"
+        "syntax",
+        "quality",
+        "functional"
     ]
 }
