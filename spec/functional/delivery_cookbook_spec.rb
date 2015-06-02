@@ -18,6 +18,12 @@ describe DeliverySugar::Cookbook do
     expect(obj.version).to eql('0.1.0')
   end
 
+  it 'raises exception when metadata is missing' do
+    cookbook_path = File.join(SUPPORT_DIR, 'cookbooks', 'smeagol')
+    expect { described_class.new(cookbook_path) }
+      .to raise_error(DeliverySugar::Exceptions::NotACookbook)
+  end
+
   describe '#==' do
     it 'returns true when the cookbooks are the same' do
       c1 = c2 = described_class.new(File.join(SUPPORT_DIR, 'cookbooks', 'frodo'))
