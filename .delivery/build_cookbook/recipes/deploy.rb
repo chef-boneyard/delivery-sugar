@@ -7,8 +7,6 @@ secrets = get_project_secret
 
 # Deploy to Github
 delivery_github 'chef-cookbooks/delivery-sugar' do
-  user_name 'Delivery Team'
-  user_email 'delivery@chef.io'
   deploy_key secrets['github']
   branch node['delivery']['change']['pipeline']
   remote_url 'git@github.com:chef-cookbooks/delivery-sugar.git'

@@ -36,6 +36,10 @@ class Chef
         @allowed_actions.push(:dispatch)
       end
 
+      #
+      # The fully-qualified path to the chef config associated with the Chef
+      # Server that is hosting the Push Jobs server.
+      #
       def chef_config_file(arg = nil)
         set_or_return(
           :chef_config_file,
@@ -44,6 +48,9 @@ class Chef
         )
       end
 
+      #
+      # The white-listed command you wish the Push Job server to execute.
+      #
       def command(arg = nil)
         set_or_return(
           :command,
@@ -52,6 +59,9 @@ class Chef
         )
       end
 
+      #
+      # The list of nodes you wish to execute the push job on.
+      #
       def nodes(arg = nil)
         set_or_return(
           :nodes,
@@ -60,6 +70,9 @@ class Chef
         )
       end
 
+      #
+      # The timeout for the push job
+      #
       def timeout(arg = nil)
         set_or_return(
           :timeout,
