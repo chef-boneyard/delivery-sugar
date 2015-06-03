@@ -33,13 +33,11 @@ module Chef_Delivery
       chef_server.send(:load_server_config)
     end
 
-    private
-
     def self.chef_server
       @chef_server ||= DeliverySugar::ChefServer.new
     end
 
-    def print_deprecation_warning(mode)
+    def self.print_deprecation_warning(mode)
       ::Chef::Log.deprecation('Chef_Delivery::ClientHelper.' \
         "#{mode}_client_mode_as_delivery` is now deprecated. Please consider " \
         'using DeliverySugar::ChefServer#with_server_config instead.')
