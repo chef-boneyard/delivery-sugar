@@ -2,6 +2,9 @@ require 'spec_helper'
 
 describe DeliverySugar::Change do
   let(:stage) { 'unused' }
+  let(:patchset_branch) { 'patchset_branch' }
+  let(:sha) { nil }
+
   let(:node) do
     {
       'delivery' => {
@@ -14,7 +17,8 @@ describe DeliverySugar::Change do
           'organization' => 'org',
           'project' => 'proj',
           'pipeline' => 'pipe',
-          'patchset_branch' => 'patchset_branch'
+          'patchset_branch' => patchset_branch,
+          'sha' => sha
         }
       }
     }
@@ -33,6 +37,7 @@ describe DeliverySugar::Change do
       expect(subject.stage).to eql('stage_name')
       expect(subject.patchset_branch).to eql('patchset_branch')
       expect(subject.workspace_repo).to eql('workspace_repo')
+      expect(subject.merge_sha).to eql(nil)
     end
   end
 
@@ -70,14 +75,30 @@ describe DeliverySugar::Change do
     let(:list_of_files) { [] }
     let(:branch1) { 'pipe' }
     let(:branch2) { 'patchset_branch' }
+    let(:sha2) { 'sha~1' }
     let(:workspace) { 'workspace_repo' }
 
-    it 'calls the git client' do
-      expect(subject).to receive(:scm_client).and_return(client)
-      expect(client).to receive(:changed_files)
-        .with(workspace, branch1, branch2).and_return(list_of_files)
+    context 'before the merge' do
+      it 'uses the patchset_branch for the compare' do
+        expect(subject).to receive(:scm_client).and_return(client)
+        expect(client).to receive(:changed_files)
+          .with(workspace, branch1, branch2).and_return(list_of_files)
 
-      expect(subject.changed_files).to eql(list_of_files)
+        expect(subject.changed_files).to eql(list_of_files)
+      end
+    end
+
+    context 'after the merge' do
+      let(:patchset_branch) { '' }
+      let(:sha) { 'sha' }
+
+      it 'uses the sha~1 for the compare' do
+        expect(subject).to receive(:scm_client).and_return(client)
+        expect(client).to receive(:changed_files)
+          .with(workspace, branch1, sha2).and_return(list_of_files)
+
+        expect(subject.changed_files).to eql(list_of_files)
+      end
     end
   end
 
