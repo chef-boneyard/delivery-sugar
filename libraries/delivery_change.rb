@@ -22,7 +22,8 @@ module DeliverySugar
   #
   class Change
     attr_reader :enterprise, :organization, :project, :pipeline,
-                :stage, :patchset_branch, :scm_client, :workspace_repo
+                :stage, :patchset_branch, :scm_client, :workspace_repo,
+                :merge_sha
 
     #
     # Create a new DeliverySugar::Change object
@@ -31,6 +32,8 @@ module DeliverySugar
     #   The Chef::Node object from the current runtime
     #
     # @return [DeliverySugar::Change]
+    #
+    # rubocop:disable AbcSize
     #
     def initialize(node)
       change = node['delivery']['change']
@@ -41,6 +44,7 @@ module DeliverySugar
       @pipeline = change['pipeline']
       @stage = change['stage']
       @patchset_branch = change['patchset_branch']
+      @merge_sha = change['sha']
       @workspace_repo = workspace['repo']
     end
 
@@ -80,7 +84,8 @@ module DeliverySugar
     # @return [Array<String>]
     #
     def changed_files
-      scm_client.changed_files(@workspace_repo, @pipeline, @patchset_branch)
+      second_branch = @merge_sha.nil? ? @patchset_branch : "#{@merge_sha}~1"
+      scm_client.changed_files(@workspace_repo, @pipeline, second_branch)
     end
 
     #
