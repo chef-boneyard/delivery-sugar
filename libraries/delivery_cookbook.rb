@@ -49,9 +49,9 @@ module DeliverySugar
     # @return [true, false]
     #
     def ==(other)
-      (self.name == other.name) &&
-        (self.path == other.path) &&
-        (self.version == other.version)
+      (@name == other.name) &&
+        (@path == other.path) &&
+        (@version == other.version)
     end
     alias_method :eql?, :==
 

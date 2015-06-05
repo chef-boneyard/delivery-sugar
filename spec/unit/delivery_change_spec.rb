@@ -95,7 +95,6 @@ describe DeliverySugar::Change do
       let(:patchset_branch) { '' }
       let(:sha) { 'sha' }
 
-
       it 'uses the sha~1 for the compare' do
         allow(subject).to receive(:scm_client).and_return(client)
         expect(client).to receive(:changed_files)

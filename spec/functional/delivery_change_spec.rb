@@ -3,7 +3,6 @@ require 'spec_helper'
 describe DeliverySugar::Change do
   include Chef::Mixin::ShellOut
 
-
   let(:stage) { 'unused' }
   let(:patchset_branch) { 'patchset_branch' }
   let(:pipeline) { 'pipe' }
@@ -40,8 +39,10 @@ describe DeliverySugar::Change do
       )
     end
 
-    let(:cookbooks_path) { File.join(SUPPORT_DIR, 'cookbooks')}
-    let(:frodo_cookbook) { DeliverySugar::Cookbook.new(File.join(cookbooks_path, 'frodo/')) }
+    let(:cookbooks_path) { File.join(SUPPORT_DIR, 'cookbooks') }
+    let(:frodo_cookbook) do
+      DeliverySugar::Cookbook.new(File.join(cookbooks_path, 'frodo/'))
+    end
     let(:sam_cookbook) { DeliverySugar::Cookbook.new(File.join(cookbooks_path, 'sam/')) }
 
     it 'only returns one copy of each cookbook' do
