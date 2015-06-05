@@ -49,9 +49,9 @@ module DeliverySugar
     # @return [true, false]
     #
     def ==(other)
-      (@name == other.name) &&
-        (@path == other.path) &&
-        (@version == other.version)
+      (self.name == other.name) &&
+        (self.path == other.path) &&
+        (self.version == other.version)
     end
 
     private

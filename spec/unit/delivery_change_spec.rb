@@ -3,7 +3,7 @@ require 'spec_helper'
 describe DeliverySugar::Change do
   let(:stage) { 'unused' }
   let(:patchset_branch) { 'patchset_branch' }
-  let(:sha) { nil }
+  let(:sha) { '' }
 
   let(:node) do
     {
@@ -37,7 +37,7 @@ describe DeliverySugar::Change do
       expect(subject.stage).to eql('stage_name')
       expect(subject.patchset_branch).to eql('patchset_branch')
       expect(subject.workspace_repo).to eql('workspace_repo')
-      expect(subject.merge_sha).to eql(nil)
+      expect(subject.merge_sha).to eql('')
     end
   end
 
@@ -73,12 +73,12 @@ describe DeliverySugar::Change do
   describe '#changed_files' do
     let(:client) { double('DeliverySugar::SCM') }
     let(:list_of_files) { [] }
-    let(:branch1) { 'pipe' }
-    let(:branch2) { 'patchset_branch' }
+    let(:branch1) { 'origin/pipe' }
+    let(:branch2) { 'origin/patchset_branch' }
     let(:sha2) { 'sha~1' }
     let(:workspace) { 'workspace_repo' }
 
-    context 'before the merge' do
+    context 'when merge_sha is missing' do
       it 'uses the patchset_branch for the compare' do
         expect(subject).to receive(:scm_client).and_return(client)
         expect(client).to receive(:changed_files)
@@ -88,7 +88,7 @@ describe DeliverySugar::Change do
       end
     end
 
-    context 'after the merge' do
+    context 'when merge_sha is present' do
       let(:patchset_branch) { '' }
       let(:sha) { 'sha' }
 

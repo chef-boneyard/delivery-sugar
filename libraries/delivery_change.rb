@@ -66,6 +66,8 @@ module DeliverySugar
     def changed_cookbooks
       cookbooks = Set.new
 
+      puts "\n\n Changed Files: #{changed_files}\n\n"
+
       # Iterate throught the changed files to see if any belong to a cookbook
       changed_files.each do |changed_file|
         cookbooks << cookbook_from_member_file(changed_file)
@@ -84,8 +86,8 @@ module DeliverySugar
     # @return [Array<String>]
     #
     def changed_files
-      second_branch = @merge_sha.nil? ? @patchset_branch : "#{@merge_sha}~1"
-      scm_client.changed_files(@workspace_repo, @pipeline, second_branch)
+      second_branch =  @merge_sha.empty? ? "origin/#{@patchset_branch}" : "#{@merge_sha}~1"
+      scm_client.changed_files(@workspace_repo, "origin/#{@pipeline}", "#{second_branch}")
     end
 
     #

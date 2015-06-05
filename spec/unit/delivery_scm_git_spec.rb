@@ -19,9 +19,9 @@ describe DeliverySugar::SCM::Git do
     end
 
     it 'runs a valid git command to get changed files' do
-      expect(@scm).to receive(:shell_out).with(sha_cmd, options)
+      expect(@scm).to receive(:shell_out!).with(sha_cmd, options)
         .and_return(sha_shellout)
-      expect(@scm).to receive(:shell_out).with(cmd, options)
+      expect(@scm).to receive(:shell_out!).with(cmd, options)
         .and_return(diff_shellout)
 
       expect(@scm.changed_files(workspace, branch1, branch2))

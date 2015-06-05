@@ -39,9 +39,11 @@ module DeliverySugar
       # @return [Array<String>]
       #
       def changed_files(workspace, branch1, branch2)
-        sha1 = shell_out("git merge-base #{branch1} #{branch2}", cwd: workspace)
+        puts "\n\ngit merge-base #{branch1} #{branch2}\n\n"
+        sha1 = shell_out!("git merge-base #{branch1} #{branch2}", cwd: workspace)
                .stdout.chomp
-        shell_out("git diff --name-only #{sha1} #{branch2}", cwd: workspace)
+        puts "\n\nSha1 = #{sha1}\n\n"
+        shell_out!("git diff --name-only #{sha1} #{branch2}", cwd: workspace)
           .stdout.chomp.split("\n")
       end
     end
