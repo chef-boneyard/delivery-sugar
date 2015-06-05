@@ -31,20 +31,32 @@ module DeliverySugar
       #
       # @param [String] workspace
       #   The fully-qualified path to the git repo on disk
-      # @param [String] branch1
-      #   The name of a branch
-      # @param [String] branch2
-      #   The name of a branch
+      # @param [String] ref1
+      #   A git reference (branch, sha, etc)
+      # @param [String] ref2
+      #   A git reference (branch, sha, etc)
       #
       # @return [Array<String>]
       #
-      def changed_files(workspace, branch1, branch2)
-        puts "\n\ngit merge-base #{branch1} #{branch2}\n\n"
-        sha1 = shell_out!("git merge-base #{branch1} #{branch2}", cwd: workspace)
-               .stdout.chomp
-        puts "\n\nSha1 = #{sha1}\n\n"
-        shell_out!("git diff --name-only #{sha1} #{branch2}", cwd: workspace)
+      def changed_files(workspace, ref1, ref2)
+        shell_out!("git diff --name-only #{ref1} #{ref2}", cwd: workspace)
           .stdout.chomp.split("\n")
+      end
+
+      #
+      # Get the merge_base sha for the two references specified.
+      #
+      # @param [String] workspace
+      #   The fully-qualified path to the git repo on disk
+      # @param [String] ref1
+      #   A git reference (branch, sha, etc)
+      # @param [String] ref2
+      #   A git reference (branch, sha, etc)
+      #
+      # @return [Array<String>]
+      #
+      def merge_base(workspace, ref1, ref2)
+        shell_out!("git merge-base #{ref1} #{ref2}", cwd: workspace).stdout.chomp
       end
     end
   end
