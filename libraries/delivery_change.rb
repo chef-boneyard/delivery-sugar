@@ -84,8 +84,14 @@ module DeliverySugar
     # @return [Array<String>]
     #
     def changed_files
-      second_branch = @merge_sha.nil? ? @patchset_branch : "#{@merge_sha}~1"
-      scm_client.changed_files(@workspace_repo, @pipeline, second_branch)
+      if @merge_sha.empty?
+        merge_base = scm_client.merge_base(@workspace_repo, "origin/#{@pipeline}",
+                                           "origin/#{@patchset_branch}")
+        scm_client.changed_files(@workspace_repo, merge_base,
+                                 "origin/#{@patchset_branch}")
+      else
+        scm_client.changed_files(@workspace_repo, "#{@merge_sha}~1", @merge_sha)
+      end
     end
 
     #

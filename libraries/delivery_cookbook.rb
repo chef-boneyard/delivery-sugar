@@ -53,6 +53,16 @@ module DeliverySugar
         (@path == other.path) &&
         (@version == other.version)
     end
+    alias_method :eql?, :==
+
+    #
+    # Return the hash of the object (for equality checking)
+    #
+    # @return [Fixnum]
+    #
+    def hash
+      state.hash
+    end
 
     private
 
@@ -101,6 +111,15 @@ module DeliverySugar
       metadata = Chef::Cookbook::Metadata.new
       metadata.from_file(metadata_rb)
       metadata
+    end
+
+    #
+    # The state of the object (used for hash)
+    #
+    # @return [Array<String>]
+    #
+    def state
+      [@name, @version, @path]
     end
   end
 end
