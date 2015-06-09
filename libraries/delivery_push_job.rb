@@ -43,6 +43,7 @@ module DeliverySugar
     # @return [DeliverySugar::PushJob]
     #
     def initialize(chef_config_file, command, nodes, timeout)
+      fail "[#{self.class}] Expected nodes Array#String" unless array_of(nodes, String)
       @command = command
       @nodes = nodes
       @timeout = timeout
@@ -160,6 +161,18 @@ module DeliverySugar
     #
     def pause
       sleep PAUSE_SECONDS
+    end
+
+    #
+    # Validate that an Array is built of an specific `class` kind
+    #
+    # @param array [Array] The Array to validate
+    # @param klass [Class] Class to compare
+    #
+    # @return [true, false]
+    #
+    def array_of(array, klass)
+      array.any? { |i| i.class == klass }
     end
   end
 end

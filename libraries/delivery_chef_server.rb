@@ -103,7 +103,9 @@ module DeliverySugar
     # @return [Hash]
     #
     def rest(type, path, headers = {}, data = false)
-      rest_client.request(type, path, headers, data)
+      with_server_config do
+        rest_client.request(type, path, headers, data)
+      end
     end
 
     private
