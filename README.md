@@ -34,7 +34,6 @@ automatically make available the custom resources included with Delivery Sugar.
 - Author:: Matt Campbell (<mcampbell@chef.io>)
 - Author:: Salim Afiune (<afiune@chef.io>)
 
-
 ```text
 Copyright:: 2015 Chef Software, Inc
 

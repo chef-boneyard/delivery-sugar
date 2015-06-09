@@ -5,7 +5,6 @@ describe DeliverySugar::PushJob do
     subject.instance_variable_set(:@job_uri, job_uri)
     allow(chef_server).to receive(:rest).with(:get, job_uri).and_return(job)
   end
-
   let(:chef_config_file) { '/var/opt/delivery/workspace/.chef/knife.rb' }
   let(:command) { 'chef-client' }
   let(:nodes) { %w(node1 node2) }
@@ -39,6 +38,19 @@ describe DeliverySugar::PushJob do
       expect(subject.chef_server).to eql(chef_server)
       expect(subject.command).to eql(command)
       expect(subject.nodes).to eql(nodes)
+    end
+
+    context 'when nodes are NOT an array of strings' do
+      let(:nodes) do
+        [
+          double('node1'),
+          double('node2')
+        ]
+      end
+
+      it 'raises an error' do
+        expect { subject }.to raise_error
+      end
     end
   end
 
