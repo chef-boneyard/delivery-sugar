@@ -32,6 +32,7 @@ automatically make available the custom resources included with Delivery Sugar.
 - Author:: Tom Duffield (<tom@chef.io>)
 - Author:: Jon Anderson (<janderson@chef.io>)
 - Author:: Matt Campbell (<mcampbell@chef.io>)
+- Author:: Salim Afiune (<afiune@chef.io>)
 
 ```text
 Copyright:: 2015 Chef Software, Inc
