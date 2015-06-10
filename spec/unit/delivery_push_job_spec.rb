@@ -52,6 +52,13 @@ describe DeliverySugar::PushJob do
         expect { subject }.to raise_error
       end
     end
+
+    context 'when nodes is an empty array' do
+      let(:nodes) { [] }
+      it 'should not raise error' do
+        expect { subject }.not_to raise_error
+      end
+    end
   end
 
   describe '#dispatch' do

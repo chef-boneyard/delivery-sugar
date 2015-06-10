@@ -43,7 +43,7 @@ module DeliverySugar
     # @return [DeliverySugar::PushJob]
     #
     def initialize(chef_config_file, command, nodes, timeout)
-      fail "[#{self.class}] Expected nodes Array#String" unless array_of(nodes, String)
+      fail "[#{self.class}] Expected nodes Array#String" unless valid_node_value?(nodes)
       @command = command
       @nodes = nodes
       @timeout = timeout
@@ -136,6 +136,15 @@ module DeliverySugar
     end
 
     private
+
+    #
+    # Determine if the nodes are valid node objects
+    #
+    # @return [true,false]
+    #
+    def valid_node_value?(nodes)
+      nodes == [] || array_of(nodes, String)
+    end
 
     #
     # Return the current time
