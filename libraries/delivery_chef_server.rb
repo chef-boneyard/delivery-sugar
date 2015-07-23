@@ -15,12 +15,15 @@
 # limitations under the License.
 #
 
+require 'chef/mixin/shell_out'
+
 module DeliverySugar
   #
   # This is class we will use to interface with Chef Servers.
   #
   class ChefServer
-    attr_reader :server_config, :stored_config
+    include Chef::Mixin::ShellOut
+    attr_reader :server_config, :stored_config, :knife_rb
 
     #
     # Initialize a new Chef Server object
@@ -32,7 +35,8 @@ module DeliverySugar
     #
     def initialize(chef_config_rb = delivery_knife_rb)
       before_config = Chef::Config.save
-      Chef::Config.from_file(chef_config_rb)
+      @knife_rb = chef_config_rb
+      Chef::Config.from_file(@knife_rb)
       @server_config = Chef::Config.save
       Chef::Config.reset
       Chef::Config.restore(before_config)
@@ -106,6 +110,19 @@ module DeliverySugar
       with_server_config do
         rest_client.request(type, path, headers, data)
       end
+    end
+
+    #
+    # Execute a knife command against the Chef Server. Returns the Mixlib::ShellOut
+    # object.
+    #
+    # @param cmd [String]
+    #   The knife subcommand that we want to run.
+    #
+    # @return [Mixlib::ShellOut]
+    #
+    def knife_command(cmd)
+      shell_out("knife #{cmd} --config #{knife_rb}")
     end
 
     private

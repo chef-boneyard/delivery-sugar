@@ -34,11 +34,27 @@ describe DeliverySugar::ChefServer do
     it 'loads a valid chef server configuration' do
       Chef::Config.reset
       before_config = Chef::Config.save
-      obj = described_class.new(example_knife_rb)
+      obj = subject
       after_config = Chef::Config.save
 
       expect(after_config).to eql(before_config)
       expect(obj.server_config).to eql(example_config)
+    end
+
+    it 'saves the location of the knife.rb file' do
+      Chef::Config.reset
+      expect(subject.knife_rb).to eql(example_knife_rb)
+    end
+  end
+
+  describe '#knife_command' do
+    let(:shellout_results) { double('Mixlib::ShellOut Object') }
+
+    it 'executes knife and returns the mixlib::shellout results' do
+      expect(subject).to receive(:shell_out)
+        .with("knife node list --config #{example_knife_rb}")
+        .and_return(shellout_results)
+      expect(subject.knife_command('node list')).to eql(shellout_results)
     end
   end
 
