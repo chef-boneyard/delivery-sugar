@@ -54,7 +54,7 @@ class Chef
         set_or_return(
           :chef_server,
           arg,
-          kind_of: DeliverySugar::ChefServer, required: true
+          kind_of: [Array, DeliverySugar::ChefServer], required: true
         )
       end
     end

@@ -33,6 +33,33 @@ module DeliverySugar
     end
 
     #
+    # Raise when we fail to upload a cookbook to a Chef Server
+    #
+    class CookbookUploadFailed < RuntimeError
+      def initialize(name, failures)
+        @name = name
+        @failures = failures
+      end
+
+      def to_s
+        <<-EOM
+Failed to upload #{@name} to the following Chef Servers:
+#{chef_server_list}
+        EOM
+      end
+
+      private
+
+      def chef_server_list
+        output = ''
+        @failures.each do |server|
+          output += "   - #{server}\n"
+        end
+        output
+      end
+    end
+
+    #
     # A parent class to handle various different types of PushJob Exceptions
     #
     class PushJobException < RuntimeError
