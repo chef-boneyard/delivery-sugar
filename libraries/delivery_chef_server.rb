@@ -125,6 +125,31 @@ module DeliverySugar
       shell_out("knife #{cmd} --config #{knife_rb}")
     end
 
+    #
+    # Upload a cookbook to this Chef Server.
+    #
+    # @param name [String]
+    #   The name of the cookbook.
+    #
+    # @param path [String]
+    #   The path to the cookbook on disk.
+    #
+    # @return
+    #
+    def upload_cookbook(name, path)
+      cookbook_path = ::File.expand_path(::File.join(path, '..'))
+      knife_command("cookbook upload #{name} --cookbook-path #{cookbook_path}")
+    end
+
+    #
+    # Return a brief representation of this class as a String
+    #
+    # @return [String]
+    #
+    def to_s
+      "#{@server_config[:node_name]}@#{@server_config[:chef_server_url]}"
+    end
+
     private
 
     #
