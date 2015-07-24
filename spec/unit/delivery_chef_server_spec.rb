@@ -58,6 +58,20 @@ describe DeliverySugar::ChefServer do
     end
   end
 
+  describe '#upload_cookbook' do
+    let(:results) { double }
+    let(:name) { 'cookbook_name' }
+    let(:path) { '/tmp/cookbooks/cookbook_name' }
+    let(:cookbook_path) { '/tmp/cookbooks' }
+
+    it 'executes `knife cookbook upload`' do
+      expect(subject).to receive(:knife_command)
+        .with("cookbook upload #{name} --cookbook-path #{cookbook_path}")
+        .and_return(results)
+      expect(subject.upload_cookbook(name, path)).to eql(results)
+    end
+  end
+
   describe '#encrypted_data_bag_item' do
     let(:bag_name) { 'delivery-secrets' }
     let(:item_id) { 'ent-org-proj' }
@@ -157,6 +171,12 @@ describe DeliverySugar::ChefServer do
 
       expect(subject.server_config).to eql(example_config)
       expect(after_config).to eql(subject.stored_config)
+    end
+  end
+
+  describe '#to_s' do
+    it 'returns a string description' do
+      expect(subject.to_s).to eql('delivery@https://172.31.6.129/organizations/chef_delivery')
     end
   end
 end
