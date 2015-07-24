@@ -3,6 +3,7 @@ require 'spec_helper'
 describe Chef::Resource::DeliveryChefCookbook do
   let(:example_knife_rb) { File.join(SUPPORT_DIR, 'example_knife.rb') }
   let(:chef_server1) { DeliverySugar::ChefServer.new(example_knife_rb) }
+  let(:chef_server2) { DeliverySugar::ChefServer.new(example_knife_rb) }
 
   before(:each) do
     @resource = described_class.new('cookbook_name')
@@ -43,9 +44,13 @@ describe Chef::Resource::DeliveryChefCookbook do
   end
 
   describe '#chef_server' do
-    it 'only accepts a DeliverySugar::ChefServer' do
+    it 'only accepts a(n array of) DeliverySugar::ChefServer(s)' do
       @resource.send(:chef_server, chef_server1)
       expect(@resource.send(:chef_server)).to eql(chef_server1)
+
+      @resource.send(:chef_server, [chef_server1, chef_server2])
+      expect(@resource.send(:chef_server)).to eql([chef_server1, chef_server2])
+
       expect { @resource.send(:chef_server, :not_a_string) }.to raise_error(ArgumentError)
     end
 

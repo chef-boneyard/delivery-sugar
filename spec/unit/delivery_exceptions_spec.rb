@@ -18,6 +18,29 @@ describe DeliverySugar::Exceptions::NotACookbook do
   end
 end
 
+describe DeliverySugar::Exceptions::CookbookUploadFailed do
+  let(:failed_servers) do
+    %w( name@http://chef.example.com/org name@http://chef.example.com/org2 )
+  end
+
+  let(:output) do
+    <<-EOH
+Failed to upload test_cookbook to the following Chef Servers:
+   - name@http://chef.example.com/org
+   - name@http://chef.example.com/org2
+
+    EOH
+  end
+
+  subject { described_class.new('test_cookbook', failed_servers) }
+
+  describe '#to_s' do
+    it 'prints out information about the servers that failed' do
+      expect(subject.to_s).to eql(output)
+    end
+  end
+end
+
 describe DeliverySugar::Exceptions::PushJobFailed do
   let(:job) do
     {

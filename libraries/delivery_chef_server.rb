@@ -137,7 +137,7 @@ module DeliverySugar
     # @return
     #
     def upload_cookbook(name, path)
-      cookbook_path = ::File.expand_path(::File.join(path, '..'))
+      cookbook_path = ::File.dirname(path)
       knife_command("cookbook upload #{name} --cookbook-path #{cookbook_path}")
     end
 
