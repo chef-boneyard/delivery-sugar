@@ -26,17 +26,16 @@ class Chef
         super
 
         @resource_name = :delivery_chef_cookbook
+        @cookbook_to_upload = name
+
         @provider = Chef::Provider::DeliveryChefCookbook
-
-        @cookbook_name = name
-
         @action = :upload
         @allowed_actions.push(:upload)
       end
 
-      def cookbook_name(arg = nil)
+      def cookbook_to_upload(arg = nil)
         set_or_return(
-          :cookbook_name,
+          :cookbook_to_upload,
           arg,
           kind_of: String
         )

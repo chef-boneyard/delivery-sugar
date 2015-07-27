@@ -35,7 +35,7 @@ class Chef
       end
 
       def action_upload
-        converge_by "Upload cookbook #{new_resource.cookbook_name} to " \
+        converge_by "Upload cookbook #{new_resource.cookbook_to_upload} to " \
                     "#{new_resource.chef_server}" do
           upload_cookbook_to_chef_servers
           new_resource.updated_by_last_action(at_least_one_successful_upload?)
@@ -91,7 +91,7 @@ class Chef
       #   If the knife command fails, a ShellCommandFailed will occur
       def upload_cookbook(chef_server)
         result = chef_server.upload_cookbook(
-          new_resource.cookbook_name,
+          new_resource.cookbook_to_upload,
           new_resource.path
         )
         result.error!
@@ -104,7 +104,7 @@ class Chef
       #
       def raise_if_an_upload_failed!
         fail DeliverySugar::Exceptions::CookbookUploadFailed.new(
-          new_resource.cookbook_name,
+          new_resource.cookbook_to_upload,
           @failures
         ) unless @failures.empty?
       end
