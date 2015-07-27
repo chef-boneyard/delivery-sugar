@@ -60,14 +60,14 @@ describe Chef::Resource::DeliveryChefCookbook do
     end
   end
 
-  describe '#cookbook_name' do
+  describe '#cookbook_to_upload' do
     it 'only accepts a String' do
-      assert_enforce_string(:cookbook_name)
+      assert_enforce_string(:cookbook_to_upload)
     end
 
     it 'is the name attribute by default' do
       resource = described_class.new('my_cookbook')
-      expect(resource.cookbook_name).to eql('my_cookbook')
+      expect(resource.cookbook_to_upload).to eql('my_cookbook')
     end
   end
 end
