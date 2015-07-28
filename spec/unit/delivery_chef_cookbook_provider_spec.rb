@@ -117,4 +117,15 @@ describe Chef::Provider::DeliveryChefCookbook do
       end
     end
   end
+
+  describe '#chef_server_list' do
+    let(:provider1) { described_class.new(single_server_resource, run_context) }
+    let(:provider2) { described_class.new(multi_server_resource, run_context) }
+    let(:server_out) { 'delivery@https://172.31.6.129/organizations/chef_delivery' }
+
+    it 'returns a comma-delimited list of chef servers' do
+      expect(provider1.send(:chef_server_list)).to eql(server_out)
+      expect(provider2.send(:chef_server_list)).to eql("#{server_out}, #{server_out}")
+    end
+  end
 end
