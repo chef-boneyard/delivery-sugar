@@ -36,7 +36,7 @@ class Chef
 
       def action_upload
         converge_by "Upload cookbook #{new_resource.cookbook_to_upload} to " \
-                    "#{new_resource.chef_server}" do
+                    "#{chef_server_list}" do
           upload_cookbook_to_chef_servers
           new_resource.updated_by_last_action(at_least_one_successful_upload?)
           raise_if_an_upload_failed!
@@ -107,6 +107,16 @@ class Chef
           new_resource.cookbook_to_upload,
           @failures
         ) unless @failures.empty?
+      end
+
+      #
+      # Print out the list of chef server's we're uploading to in a pretty,
+      # comma-delimited list.
+      #
+      # @return [String]
+      #
+      def chef_server_list
+        chef_servers.map(&:to_s).join(', ')
       end
     end
   end
