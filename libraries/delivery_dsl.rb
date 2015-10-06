@@ -88,6 +88,17 @@ module DeliverySugar
       chef_server.cheffish_details
     end
 
+    #
+    # Expose the server config block to do certain tasks like:
+    #
+    # with_server_config do
+    #   load_secret_item = encrypted_data_bag_item_for_environment('creds', 'secret')
+    # end
+    #
+    def with_server_config
+      chef_server.with_server_config
+    end
+
     private
 
     #
