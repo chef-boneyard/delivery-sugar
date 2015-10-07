@@ -1,8 +1,35 @@
 require 'spec_helper'
 
 describe DeliverySugar::DSL do
+  let(:example_knife_rb) { File.join(SUPPORT_DIR, 'example_knife.rb') }
+
+  let(:example_config) do
+    Chef::Config.from_file(example_knife_rb)
+    config = Chef::Config.save
+    Chef::Config.reset
+    config
+  end
+
   subject do
     Object.new.extend(described_class)
+  end
+
+  describe '#with_server_config' do
+    before do
+      allow_any_instance_of(DeliverySugar::ChefServer).to receive(:delivery_knife_rb)
+        .and_return(example_knife_rb)
+    end
+
+    it 'runs code block with the chef server\'s Chef::Config' do
+      block = lambda do
+        subject.with_server_config do
+          Chef::Config[:chef_server_url]
+        end
+      end
+      expect(Chef::Config[:chef_server_url])
+        .not_to eql(example_config[:chef_server_url])
+      expect(block.call).to match(example_config[:chef_server_url])
+    end
   end
 
   describe '.changed_cookbooks' do
