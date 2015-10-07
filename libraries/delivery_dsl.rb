@@ -95,8 +95,8 @@ module DeliverySugar
     #   load_secret_item = encrypted_data_bag_item_for_environment('creds', 'secret')
     # end
     #
-    def with_server_config
-      chef_server.with_server_config
+    def with_server_config(&block)
+      chef_server.with_server_config(&block)
     end
 
     private
