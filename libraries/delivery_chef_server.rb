@@ -16,6 +16,7 @@
 #
 
 require 'chef/mixin/shell_out'
+require_relative './delivery_dsl'
 
 module DeliverySugar
   #
@@ -23,6 +24,7 @@ module DeliverySugar
   #
   class ChefServer
     include Chef::Mixin::ShellOut
+    include DeliverySugar::DSL
     attr_reader :server_config, :stored_config, :knife_rb
 
     #
@@ -182,16 +184,6 @@ module DeliverySugar
     def unload_server_config
       Chef::Config.reset
       Chef::Config.restore(@stored_config)
-    end
-
-    #
-    # The default path for the Chef Config file to use with the Delivery Chef
-    # Server.
-    #
-    # @return [String]
-    #
-    def delivery_knife_rb
-      '/var/opt/delivery/workspace/.chef/knife.rb'
     end
 
     #

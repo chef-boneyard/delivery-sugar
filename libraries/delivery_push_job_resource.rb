@@ -16,10 +16,12 @@
 #
 
 require 'chef/resource'
+require_relative './delivery_dsl'
 
 class Chef
   class Resource
     class DeliveryPushJob < Chef::Resource
+      include DeliverySugar::DSL
       provides :delivery_push_job
 
       def initialize(name, run_context = nil)
@@ -29,7 +31,7 @@ class Chef
         @command = name
         @timeout = 30 * 60 # 30 minutes
         @nodes = []
-        @chef_config_file = '/var/opt/delivery/workspace/.chef/knife.rb'
+        @chef_config_file = delivery_knife_rb
 
         @provider = Chef::Provider::DeliveryPushJob
         @action = :dispatch

@@ -18,6 +18,26 @@
 module DeliverySugar
   module DSL
     #
+    # The path for the Chef Config file to use with the Delivery Chef Server.
+    #
+    # @return [String]
+    #
+    def delivery_knife_rb
+      File.join(delivery_workspace, '.chef/knife.rb')
+    end
+
+    #
+    # The workspace path on the build nodes
+    #
+    # @return [String]
+    #
+    def delivery_workspace
+      node['delivery']['workspace_path']
+    rescue
+      '/var/opt/delivery/workspace'
+    end
+
+    #
     # Return a list of cookbooks that have files that have changed in the current
     # changeset.
     #
