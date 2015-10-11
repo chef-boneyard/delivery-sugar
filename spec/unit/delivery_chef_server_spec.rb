@@ -22,6 +22,19 @@ describe DeliverySugar::ChefServer do
         expect(Chef::Config).to receive(:from_file).with(deliv_knife_rb)
         described_class.new
       end
+
+      context 'and there is a custom workspace coming from the delivery-cli' do
+        let(:custom_workspace) { '/awesome/workspace' }
+        let(:custom_deliv_knife_rb) { "#{custom_workspace}/.chef/knife.rb" }
+        before do
+          allow_any_instance_of(DeliverySugar::DSL).to receive(:delivery_workspace)
+            .and_return(custom_workspace)
+        end
+        it 'access the delivery knife.rb' do
+          expect(Chef::Config).to receive(:from_file).with(custom_deliv_knife_rb)
+          described_class.new
+        end
+      end
     end
 
     context 'when a specific chef config is passed in during instantation' do
