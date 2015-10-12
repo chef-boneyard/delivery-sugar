@@ -10,9 +10,14 @@ describe DeliverySugar::DSL do
   end
   let(:custom_workspace) { '/var/my/awesome/workspace' }
   let(:default_workspace) { '/var/opt/delivery/workspace' }
-  let(:mock_node) do
+  let(:mock_new_node) do
     n = Chef::Node.new
     n.set['delivery']['workspace_path'] = custom_workspace
+    n
+  end
+  let(:mock_old_node) do
+    n = Chef::Node.new
+    n.set['delivery']['workspace'] = 'something'
     n
   end
 
@@ -24,7 +29,7 @@ describe DeliverySugar::DSL do
     context 'when node attribute is set from the delivery-cli' do
       before do
         allow_any_instance_of(DeliverySugar::DSL).to receive(:node)
-          .and_return(mock_node)
+          .and_return(mock_new_node)
       end
       it 'returns the custom delivery knife.rb' do
         expect(subject.delivery_knife_rb).to eq("#{custom_workspace}/.chef/knife.rb")
@@ -42,10 +47,20 @@ describe DeliverySugar::DSL do
     context 'when node attribute is set from the delivery-cli' do
       before do
         allow_any_instance_of(DeliverySugar::DSL).to receive(:node)
-          .and_return(mock_node)
+          .and_return(mock_new_node)
       end
       it 'returns the custom workspace' do
         expect(subject.delivery_workspace).to eq(custom_workspace)
+      end
+    end
+
+    context 'when old version of delivery-cli sets partial attribute' do
+      before do
+        allow_any_instance_of(DeliverySugar::DSL).to receive(:node)
+          .and_return(mock_old_node)
+      end
+      it 'returns the default workspace' do
+        expect(subject.delivery_workspace).to eq(default_workspace)
       end
     end
 
