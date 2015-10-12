@@ -2,21 +2,63 @@ require 'spec_helper'
 
 describe DeliverySugar::DSL do
   let(:example_knife_rb) { File.join(SUPPORT_DIR, 'example_knife.rb') }
-
   let(:example_config) do
     Chef::Config.from_file(example_knife_rb)
     config = Chef::Config.save
     Chef::Config.reset
     config
   end
+  let(:custom_workspace) { '/var/my/awesome/workspace' }
+  let(:default_workspace) { '/var/opt/delivery/workspace' }
+  let(:mock_node) do
+    n = Chef::Node.new
+    n.set['delivery']['workspace_path'] = custom_workspace
+    n
+  end
 
   subject do
     Object.new.extend(described_class)
   end
 
+  describe '#delivery_knife_rb' do
+    context 'when node attribute is set from the delivery-cli' do
+      before do
+        allow_any_instance_of(DeliverySugar::DSL).to receive(:node)
+          .and_return(mock_node)
+      end
+      it 'returns the custom delivery knife.rb' do
+        expect(subject.delivery_knife_rb).to eq("#{custom_workspace}/.chef/knife.rb")
+      end
+    end
+
+    context 'when node attribute is not set' do
+      it 'returns the default delivery knife.rb' do
+        expect(subject.delivery_knife_rb).to eq("#{default_workspace}/.chef/knife.rb")
+      end
+    end
+  end
+
+  describe '#delivery_workspace' do
+    context 'when node attribute is set from the delivery-cli' do
+      before do
+        allow_any_instance_of(DeliverySugar::DSL).to receive(:node)
+          .and_return(mock_node)
+      end
+      it 'returns the custom workspace' do
+        expect(subject.delivery_workspace).to eq(custom_workspace)
+      end
+    end
+
+    context 'when node attribute is not set' do
+      it 'returns the default workspace' do
+        expect(subject.delivery_workspace).to eq(default_workspace)
+      end
+    end
+  end
+
   describe '#with_server_config' do
     before do
-      allow_any_instance_of(DeliverySugar::ChefServer).to receive(:delivery_knife_rb)
+      allow_any_instance_of(DeliverySugar::DSL).to receive(:delivery_knife_rb)
         .and_return(example_knife_rb)
     end
 

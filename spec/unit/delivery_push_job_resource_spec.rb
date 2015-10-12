@@ -21,6 +21,20 @@ describe Chef::Resource::DeliveryPushJob do
     it 'has a resource name of :delivery_push_job' do
       expect(@resource.resource_name).to eql(:delivery_push_job)
     end
+
+    context 'when there is a custom workspace coming from the delivery-cli' do
+      let(:custom_workspace) { '/awesome/workspace' }
+      let(:custom_deliv_knife_rb) { "#{custom_workspace}/.chef/knife.rb" }
+      before do
+        allow_any_instance_of(DeliverySugar::DSL).to receive(:delivery_workspace)
+          .and_return(custom_workspace)
+      end
+
+      it 'configures the right delivery knife.rb' do
+        expect(described_class.new('push_job').chef_config_file)
+          .to eql(custom_deliv_knife_rb)
+      end
+    end
   end
 
   describe '#chef_config_file' do
