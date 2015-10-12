@@ -32,7 +32,11 @@ module DeliverySugar
     # @return [String]
     #
     def delivery_workspace
-      node['delivery']['workspace_path']
+      if node['delivery']['workspace_path'].nil?
+        '/var/opt/delivery/workspace'
+      else
+        node['delivery']['workspace_path']
+      end
     rescue
       '/var/opt/delivery/workspace'
     end
