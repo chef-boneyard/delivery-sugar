@@ -32,10 +32,40 @@ module DeliverySugar
     # @return [String]
     #
     def delivery_workspace
-      unless verify_node(node) || node['delivery']['workspace_path'].nil?
+      unless node_defined(node) || node['delivery']['workspace_path'].nil?
         return '/var/opt/delivery/workspace'
       end
       node['delivery']['workspace_path']
+    end
+
+    #
+    # The repository path inside the workspace for the current project
+    #
+    # @return [String]
+    #
+    def delivery_workspace_repo
+      fail '[DeliverySugar] Undefined "node" object' unless node_defined(node)
+      node['delivery']['workspace']['repo']
+    end
+
+    #
+    # The chef path inside the workspace for the current project
+    #
+    # @return [String]
+    #
+    def delivery_workspace_chef
+      fail '[DeliverySugar] Undefined "node" object' unless node_defined(node)
+      node['delivery']['workspace']['chef']
+    end
+
+    #
+    # The cache path inside the workspace for the current project
+    #
+    # @return [String]
+    #
+    def delivery_workspace_cache
+      fail '[DeliverySugar] Undefined "node" object' unless node_defined(node)
+      node['delivery']['workspace']['cache']
     end
 
     #
@@ -150,7 +180,7 @@ module DeliverySugar
     #
     #
     #
-    def verify_node(node)
+    def node_defined(node)
       node.class.eql? Chef::Node
     end
   end
