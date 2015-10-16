@@ -32,13 +32,10 @@ module DeliverySugar
     # @return [String]
     #
     def delivery_workspace
-      if node['delivery']['workspace_path'].nil?
-        '/var/opt/delivery/workspace'
-      else
-        node['delivery']['workspace_path']
+      unless verify_node(node) || node['delivery']['workspace_path'].nil?
+        return '/var/opt/delivery/workspace'
       end
-    rescue
-      '/var/opt/delivery/workspace'
+      node['delivery']['workspace_path']
     end
 
     #
@@ -148,6 +145,13 @@ module DeliverySugar
     #
     def change
       @change ||= DeliverySugar::Change.new(node)
+    end
+
+    #
+    #
+    #
+    def verify_node(node)
+      node.class.eql? Chef::Node
     end
   end
 end
