@@ -32,10 +32,9 @@ module DeliverySugar
     # @return [String]
     #
     def delivery_workspace
-      unless node_defined(node) || node['delivery']['workspace_path'].nil?
-        return '/var/opt/delivery/workspace'
-      end
-      node['delivery']['workspace_path']
+      change.workspace_path
+    rescue
+      '/var/opt/delivery/workspace'
     end
 
     #
@@ -44,8 +43,7 @@ module DeliverySugar
     # @return [String]
     #
     def delivery_workspace_repo
-      fail '[DeliverySugar] Undefined "node" object' unless node_defined(node)
-      node['delivery']['workspace']['repo']
+      change.workspace_repo
     end
 
     #
@@ -54,8 +52,7 @@ module DeliverySugar
     # @return [String]
     #
     def delivery_workspace_chef
-      fail '[DeliverySugar] Undefined "node" object' unless node_defined(node)
-      node['delivery']['workspace']['chef']
+      change.workspace_chef
     end
 
     #
@@ -64,8 +61,25 @@ module DeliverySugar
     # @return [String]
     #
     def delivery_workspace_cache
-      fail '[DeliverySugar] Undefined "node" object' unless node_defined(node)
-      node['delivery']['workspace']['cache']
+      change.workspace_cache
+    end
+
+    #
+    # The change id
+    #
+    # @return [String]
+    #
+    def delivery_change_id
+      change.change_id
+    end
+
+    #
+    # The project
+    #
+    # @return [String]
+    #
+    def delivery_project
+      change.project
     end
 
     #
@@ -175,13 +189,6 @@ module DeliverySugar
     #
     def change
       @change ||= DeliverySugar::Change.new(node)
-    end
-
-    #
-    #
-    #
-    def node_defined(node)
-      node.class.eql? Chef::Node
     end
   end
 end
