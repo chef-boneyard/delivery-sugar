@@ -89,6 +89,18 @@ describe DeliverySugar::DSL do
     end
   end
 
+  describe '#load_delivery_chef_config' do
+    before do
+      allow_any_instance_of(DeliverySugar::DSL).to receive(:delivery_knife_rb)
+        .and_return(example_knife_rb)
+    end
+
+    it 'calls chef_server.load_server_config' do
+      subject.load_delivery_chef_config
+      expect(Chef::Config[:chef_server_url]).to eql(example_config[:chef_server_url])
+    end
+  end
+
   describe '.changed_cookbooks' do
     it 'gets a list of changed cookbook from the change object' do
       expect(subject).to receive_message_chain(:change,

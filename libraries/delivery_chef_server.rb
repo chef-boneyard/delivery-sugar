@@ -152,8 +152,6 @@ module DeliverySugar
       "#{@server_config[:node_name]}@#{@server_config[:chef_server_url]}"
     end
 
-    private
-
     #
     # Save away the current Chef::Config and load the one for the Chef Server.
     #
@@ -162,6 +160,17 @@ module DeliverySugar
       Chef::Config.reset
       Chef::Config.restore(@server_config)
     end
+
+    #
+    # Reload whatever Chef::Config was being used before communication with this
+    # Chef Server was established.
+    #
+    def unload_server_config
+      Chef::Config.reset
+      Chef::Config.restore(@stored_config)
+    end
+
+    private
 
     #
     # Return the path to the configured data bag secret. We don't use @server_config
@@ -175,15 +184,6 @@ module DeliverySugar
       with_server_config do
         Chef::Config[:encrypted_data_bag_secret]
       end
-    end
-
-    #
-    # Reload whatever Chef::Config was being used before communication with this
-    # Chef Server was established.
-    #
-    def unload_server_config
-      Chef::Config.reset
-      Chef::Config.restore(@stored_config)
     end
 
     #
