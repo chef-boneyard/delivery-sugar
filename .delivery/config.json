@@ -12,6 +12,7 @@
         "security",
         "smoke",
         "syntax",
+        "quality",
         "functional"
     ]
 }
