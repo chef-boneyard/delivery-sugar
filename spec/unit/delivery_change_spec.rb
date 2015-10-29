@@ -9,7 +9,9 @@ describe DeliverySugar::Change do
     {
       'delivery' => {
         'workspace' => {
-          'repo' => 'workspace_repo'
+          'repo' => 'workspace_repo',
+          'cache' => 'workspace_cache',
+          'chef' => 'workspace_chef'
         },
         'change' => {
           'stage' => stage,

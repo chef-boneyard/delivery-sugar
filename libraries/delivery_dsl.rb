@@ -32,13 +32,54 @@ module DeliverySugar
     # @return [String]
     #
     def delivery_workspace
-      if node['delivery']['workspace_path'].nil?
-        '/var/opt/delivery/workspace'
-      else
-        node['delivery']['workspace_path']
-      end
+      change.workspace_path
     rescue
       '/var/opt/delivery/workspace'
+    end
+
+    #
+    # The repository path inside the workspace for the current project
+    #
+    # @return [String]
+    #
+    def delivery_workspace_repo
+      change.workspace_repo
+    end
+
+    #
+    # The chef path inside the workspace for the current project
+    #
+    # @return [String]
+    #
+    def delivery_workspace_chef
+      change.workspace_chef
+    end
+
+    #
+    # The cache path inside the workspace for the current project
+    #
+    # @return [String]
+    #
+    def delivery_workspace_cache
+      change.workspace_cache
+    end
+
+    #
+    # The change id
+    #
+    # @return [String]
+    #
+    def delivery_change_id
+      change.change_id
+    end
+
+    #
+    # The project
+    #
+    # @return [String]
+    #
+    def delivery_project
+      change.project
     end
 
     #

@@ -13,15 +13,15 @@ describe Chef::Provider::DeliveryPushJob do
       double('Chef::Node - 2')
     ]
   end
-
-  let(:chef_config_file) { '/var/opt/delivery/workspace/.chef/knife.rb' }
+  let(:chef_config_file) { '/workspace/.chef/knife.rb' }
   let(:command) { 'chef-client' }
   let(:timeout) { 10 }
-
   let(:new_resource) { Chef::Resource::DeliveryPushJob.new(command, run_context) }
   let(:provider) { described_class.new(new_resource, run_context) }
 
-  before do
+  before(:each) do
+    allow_any_instance_of(DeliverySugar::DSL).to receive(:node)
+      .and_return(cli_node)
     new_resource.nodes node_objects
     new_resource.timeout timeout
   end

@@ -1,0 +1,8 @@
+{
+  "ec2": {
+    "keypair_name": "username",
+    "access_key": "ACCESS",
+    "secret_key": "SECRET",
+    "private_key": "KEY"
+  }
+}

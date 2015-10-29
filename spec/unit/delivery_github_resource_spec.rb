@@ -6,6 +6,8 @@ describe Chef::Resource::DeliveryGithub do
     @resource.repo 'octo/dog'
     @resource.deploy_key 'secret'
     @resource.remote_url 'git@github.com:octo/cat.git'
+    allow_any_instance_of(DeliverySugar::DSL).to receive(:node)
+      .and_return(cli_node)
   end
 
   def assert_enforce_string(method)
