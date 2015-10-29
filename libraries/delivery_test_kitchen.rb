@@ -74,7 +74,6 @@ module DeliverySugar
       case @driver
       when 'ec2'
         prepare_kitchen_ec2
-      # when 'docker'
       else
         fail "The test kitchen driver '#{@driver} is not supported"
       end

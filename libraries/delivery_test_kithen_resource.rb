@@ -29,6 +29,7 @@ class Chef
         @resource_name = :delivery_test_kitchen
         @provider = Chef::Provider::DeliveryTestKitchen
 
+        @yaml = '.kitchen.yml'
         @repo_path = delivery_workspace_repo
 
         @action = :test
@@ -67,8 +68,7 @@ class Chef
         set_or_return(
           :repo_path,
           arg,
-          kind_of: String,
-          required: true
+          kind_of: String
         )
       end
     end
