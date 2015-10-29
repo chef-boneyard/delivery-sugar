@@ -88,6 +88,8 @@ module DeliverySugar
 
       # Load secrets from delivery-secrets data bag
       secrets = get_project_secrets
+      fail 'Could not find secrets for kitchen-ec2 driver' \
+           ' in delivery-secrets data bag.' if secrets['ec2'].nil?
 
       # Variables used for configuring and running test kitchen EC2
       cache                 = delivery_workspace_cache
