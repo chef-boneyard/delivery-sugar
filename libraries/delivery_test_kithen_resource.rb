@@ -1,0 +1,80 @@
+#
+# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+require 'chef/resource'
+require_relative './delivery_dsl'
+
+class Chef
+  class Resource
+    class DeliveryTestKitchen < Chef::Resource
+      include DeliverySugar::DSL
+      provides :delivery_test_kitchen
+
+      def initialize(name, run_context = nil)
+        super
+
+        @resource_name = :delivery_test_kitchen
+        @provider = Chef::Provider::DeliveryTestKitchen
+
+        @repo_path = delivery_workspace_repo
+
+        @action = :test
+        @allowed_actions.push(:create)
+        @allowed_actions.push(:converge)
+        @allowed_actions.push(:setup)
+        @allowed_actions.push(:verify)
+        @allowed_actions.push(:destroy)
+        @allowed_actions.push(:test)
+      end
+
+      #
+      # The test kitchen driver
+      #
+      def driver(arg = nil)
+        set_or_return(
+          :driver,
+          arg,
+          kind_of: String,
+          required: true
+        )
+      end
+
+      #
+      # The name of the .kitchen.yml
+      #
+      def yaml(arg = nil)
+        set_or_return(
+          :yaml,
+          arg,
+          kind_of: String
+        )
+      end
+
+      #
+      # The fully-qualified path to the directory where the code is on disk
+      #
+      def repo_path(arg = nil)
+        set_or_return(
+          :repo_path,
+          arg,
+          kind_of: String,
+          required: true
+        )
+      end
+    end
+  end
+end
