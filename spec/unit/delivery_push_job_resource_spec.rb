@@ -2,29 +2,9 @@ require 'spec_helper'
 require 'chef/resource'
 
 describe Chef::Resource::DeliveryPushJob do
-  let(:node) do
-    {
-      'delivery' => {
-        'workspace' => {
-          'repo' => 'workspace_repo',
-          'cache' => 'workspace_cache',
-          'chef' => 'workspace_chef'
-        },
-        'change' => {
-          'stage' => 'stage',
-          'enterprise' => 'ent',
-          'organization' => 'org',
-          'project' => 'proj',
-          'pipeline' => 'pipe',
-          'patchset_branch' => 'branch',
-          'sha' => 'sha'
-        }
-      }
-    }
-  end
   before(:each) do
     allow_any_instance_of(DeliverySugar::DSL).to receive(:node)
-      .and_return(node)
+      .and_return(cli_node)
     @resource = described_class.new('push_job')
   end
 
@@ -34,7 +14,7 @@ describe Chef::Resource::DeliveryPushJob do
       expect(@resource).to be_a(described_class)
       expect(@resource.provider).to be(Chef::Provider::DeliveryPushJob)
       expect(@resource.chef_config_file)
-        .to eql('/var/opt/delivery/workspace/.chef/knife.rb')
+        .to eql('/workspace/.chef/knife.rb')
       expect(@resource.command).to eql('push_job')
       expect(@resource.timeout).to eql(30 * 60)
       expect(@resource.nodes).to eql([])

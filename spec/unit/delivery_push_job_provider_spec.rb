@@ -13,27 +13,7 @@ describe Chef::Provider::DeliveryPushJob do
       double('Chef::Node - 2')
     ]
   end
-  let(:delivery_node) do
-    {
-      'delivery' => {
-        'workspace' => {
-          'repo' => 'workspace_repo',
-          'cache' => 'workspace_cache',
-          'chef' => 'workspace_chef'
-        },
-        'change' => {
-          'stage' => 'stage',
-          'enterprise' => 'ent',
-          'organization' => 'org',
-          'project' => 'proj',
-          'pipeline' => 'pipe',
-          'patchset_branch' => 'branch',
-          'sha' => 'sha'
-        }
-      }
-    }
-  end
-  let(:chef_config_file) { '/var/opt/delivery/workspace/.chef/knife.rb' }
+  let(:chef_config_file) { '/workspace/.chef/knife.rb' }
   let(:command) { 'chef-client' }
   let(:timeout) { 10 }
   let(:new_resource) { Chef::Resource::DeliveryPushJob.new(command, run_context) }
@@ -41,7 +21,7 @@ describe Chef::Provider::DeliveryPushJob do
 
   before(:each) do
     allow_any_instance_of(DeliverySugar::DSL).to receive(:node)
-      .and_return(delivery_node)
+      .and_return(cli_node)
     new_resource.nodes node_objects
     new_resource.timeout timeout
   end

@@ -31,9 +31,9 @@ module SharedLetDeclarations
       'delivery' => {
         'workspace_path' => '/workspace',
         'workspace' => {
-          'repo' => '/workspace/repo',
-          'cache' => '/workspace/cache',
-          'chef' => '/workspace/chef'
+          'repo' => '/workspace/path/to/phase/repo',
+          'cache' => '/workspace/path/to/phase/cache',
+          'chef' => '/workspace/path/to/phase/chef'
         },
         'change' => {
           'stage' => 'stage',

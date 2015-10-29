@@ -28,19 +28,24 @@ describe 'test-build-cookbook::functional' do
       allow(Chef::Config).to receive(:from_file)
         .with('/var/opt/delivery/workspace/.chef/knife.rb')
         .and_return(true)
-      # allow_any_instance_of(DeliverySugar::DSL).to receive(:node)
-      #   .and_return(cli_node)
       allow(Chef::EncryptedDataBagItem).to receive(:load_secret)
         .and_return("SECRET")
       allow(Chef::EncryptedDataBagItem).to receive(:load)
         .and_return(mock_ec2_secrets)
-      # allow_any_instance_of(DeliverySugar::ChefServer).to receive(:encrypted_data_bag_item)
-      #   .and_return(mock_ec2_secrets)
     end
 
     it 'converges successfully' do
       expect { chef_client }.to_not raise_error
     end
+
+    # For some reason that I cant yet understand chefspec is not able to assert
+    # resources that are not in the resource_collection (means they havent run yet)
+    # These resources goes directly to execute and they are listed on the
+    # delayed_resources instead. Lets figure out how to assert those instead.
+
+    # it 'installs kithen-ec2 gem' do
+    #   expect(chef_client).to install_chef_gem('kitchen-ec2')
+    # end
 
     # it 'renders credentials file' do
     #   expect(chef_client).to create_file('/workspace/cache/.aws/credentials')
