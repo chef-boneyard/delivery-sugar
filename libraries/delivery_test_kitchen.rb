@@ -27,20 +27,24 @@ module DeliverySugar
     include Chef::DSL::Recipe
     include DeliverySugar::DSL
     include Chef::Mixin::ShellOut
-    attr_reader :driver, :repo_path, :yaml, :environment
-    attr_accessor :run_context
+    attr_reader :driver, :repo_path, :environment
+    attr_accessor :run_context, :yaml
 
     #
     # Create a new TestKitchen object
     #
     # @param driver [String]
     #   The test kitchen driver
+    # @param repo_path [String]
+    #   The path to the project repository within the workspace
+    # @param run_context [Chef::RunContext]
+    #   The object that loads and tracks the context of the Chef run
     # @param yaml [String]
     #   The name of the Kitchen YAML file
     #
     # @return [DeliverySugar::TestKitchen]
     #
-    def initialize(driver, run_context, repo_path, yaml = '.kitchen.yml')
+    def initialize(driver, repo_path, run_context, yaml = '.kitchen.yml')
       @driver = driver
       @yaml = yaml
       @repo_path = repo_path
@@ -98,9 +102,8 @@ module DeliverySugar
       )
 
       # Installing kitchen-ec2 driver
-      # (this belongs to the default recipe in a build cookbook)
       chef_gem = Chef::Resource::ChefGem.new('kitchen-ec2', run_context)
-      # chef_gem.run_action(:install)
+      chef_gem.run_action(:install)
 
       # Create directories for AWS credentials and SSH key
       %w[ .aws .ssh ].each do |d|
@@ -143,6 +146,7 @@ aws_secret_access_key = #{secrets['ec2']['secret_key']}
       ::File.join(@repo_path, @yaml)
     end
 
+    # Returns the Chef::Node Object coming from the run_context
     def node
       run_context && run_context.node
     end

@@ -36,8 +36,8 @@ class Chef
 
         @test_kichen = DeliverySugar::TestKitchen.new(
           new_resource.driver,
-          run_context,
-          new_resource.repo_path
+          new_resource.repo_path,
+          run_context
         )
 
         # Is there a custom YAML file?

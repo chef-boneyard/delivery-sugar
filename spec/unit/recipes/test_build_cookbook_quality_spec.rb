@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe 'test-build-cookbook::functional' do
-  context 'delivery test kitchen action: test' do
+describe 'test-build-cookbook::quality' do
+  context 'delivery test kitchen action: verify & destroy' do
     let(:chef_client) do
       ChefSpec::SoloRunner.new(step_into: %w(delivery_test_kitchen)) do |node|
         node.set['delivery'] = cli_node['delivery']
@@ -37,31 +37,5 @@ describe 'test-build-cookbook::functional' do
     it 'converges successfully' do
       expect { chef_client }.to_not raise_error
     end
-
-    # For some reason that I cant yet understand chefspec is not able to assert
-    # resources that are not in the resource_collection (means they havent run yet)
-    # These resources goes directly to execute and they are listed on the
-    # delayed_resources instead. Lets figure out how to assert those instead.
-
-    # it 'installs kithen-ec2 gem' do
-    #   expect(chef_client).to install_chef_gem('kitchen-ec2')
-    # end
-
-    # it 'renders credentials file' do
-    #   expect(chef_client).to create_file('/workspace/cache/.aws/credentials')
-    # end
-
-    # it 'renders keypair pem file' do
-    #   expect(chef_client).to create_file('/workspace/cache/.ssh/username.pem')
-    # end
-
-    # it 'creates .aws and .ssh directories' do
-    #   expect(chef_client).to create_directory('/workspace/cache/.aws')
-    #   expect(chef_client).to create_directory('/workspace/cache/.ssh')
-    # end
-
-    # it 'renders credentials file' do
-    #   expect(chef_client).to create_file('/workspace/cache/.aws/credentials')
-    # end
   end
 end
