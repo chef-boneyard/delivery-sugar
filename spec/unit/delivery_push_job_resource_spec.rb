@@ -2,7 +2,29 @@ require 'spec_helper'
 require 'chef/resource'
 
 describe Chef::Resource::DeliveryPushJob do
+  let(:node) do
+    {
+      'delivery' => {
+        'workspace' => {
+          'repo' => 'workspace_repo',
+          'cache' => 'workspace_cache',
+          'chef' => 'workspace_chef'
+        },
+        'change' => {
+          'stage' => 'stage',
+          'enterprise' => 'ent',
+          'organization' => 'org',
+          'project' => 'proj',
+          'pipeline' => 'pipe',
+          'patchset_branch' => 'branch',
+          'sha' => 'sha'
+        }
+      }
+    }
+  end
   before(:each) do
+    allow_any_instance_of(DeliverySugar::DSL).to receive(:node)
+      .and_return(node)
     @resource = described_class.new('push_job')
   end
 

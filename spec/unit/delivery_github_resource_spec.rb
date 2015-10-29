@@ -1,11 +1,34 @@
 require 'spec_helper'
 
 describe Chef::Resource::DeliveryGithub do
+  let(:node) do
+    {
+      'delivery' => {
+        'workspace' => {
+          'repo' => 'workspace_repo',
+          'cache' => 'workspace_cache',
+          'chef' => 'workspace_chef'
+        },
+        'change' => {
+          'stage' => 'stage',
+          'enterprise' => 'ent',
+          'organization' => 'org',
+          'project' => 'proj',
+          'pipeline' => 'pipe',
+          'patchset_branch' => 'branch',
+          'sha' => 'sha'
+        }
+      }
+    }
+  end
+
   before(:each) do
     @resource = described_class.new('octo/cat')
     @resource.repo 'octo/dog'
     @resource.deploy_key 'secret'
     @resource.remote_url 'git@github.com:octo/cat.git'
+    allow_any_instance_of(DeliverySugar::DSL).to receive(:node)
+      .and_return(node)
   end
 
   def assert_enforce_string(method)

@@ -6,6 +6,27 @@ require 'chef/rest'
 describe DeliverySugar::ChefServer do
   let(:example_knife_rb) { File.join(SUPPORT_DIR, 'example_knife.rb') }
 
+  let(:node) do
+    {
+      'delivery' => {
+        'workspace' => {
+          'repo' => 'workspace_repo',
+          'cache' => 'workspace_cache',
+          'chef' => 'workspace_chef'
+        },
+        'change' => {
+          'stage' => 'stage',
+          'enterprise' => 'ent',
+          'organization' => 'org',
+          'project' => 'proj',
+          'pipeline' => 'pipe',
+          'patchset_branch' => 'branch',
+          'sha' => 'sha'
+        }
+      }
+    }
+  end
+
   let(:example_config) do
     Chef::Config.from_file(example_knife_rb)
     config = Chef::Config.save
@@ -16,6 +37,11 @@ describe DeliverySugar::ChefServer do
   subject { described_class.new(example_knife_rb) }
 
   describe '#new' do
+    before do
+      allow_any_instance_of(DeliverySugar::ChefServer).to receive(:node)
+        .and_return(node)
+    end
+
     context 'when no chef config is passed in during instantiation' do
       let(:deliv_knife_rb) { '/var/opt/delivery/workspace/.chef/knife.rb' }
       it 'defaults to the delivery knife.rb' do
@@ -26,10 +52,8 @@ describe DeliverySugar::ChefServer do
       context 'and there is a custom workspace coming from the delivery-cli' do
         let(:custom_workspace) { '/awesome/workspace' }
         let(:custom_deliv_knife_rb) { "#{custom_workspace}/.chef/knife.rb" }
-        before do
-          allow_any_instance_of(DeliverySugar::DSL).to receive(:delivery_workspace)
-            .and_return(custom_workspace)
-        end
+        before { node['delivery']['workspace_path'] = custom_workspace }
+
         it 'access the delivery knife.rb' do
           expect(Chef::Config).to receive(:from_file).with(custom_deliv_knife_rb)
           described_class.new
