@@ -123,6 +123,13 @@ module DeliverySugar
       chef_server.with_server_config(&block)
     end
 
+    #
+    # Expose the server config block for the entire recipe (never leaving)
+    #
+    def load_delivery_chef_config
+      chef_server.load_server_config
+    end
+
     private
 
     #

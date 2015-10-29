@@ -164,7 +164,7 @@ describe DeliverySugar::ChefServer do
     it 'saves current config to the object and loads the server config' do
       Chef::Config.reset
       before_config = Chef::Config.save
-      subject.send(:load_server_config)
+      subject.load_server_config
       after_config = Chef::Config.save
 
       expect(subject.stored_config).to eql(before_config)
@@ -175,11 +175,11 @@ describe DeliverySugar::ChefServer do
   describe '#unload_server_config' do
     before do
       Chef::Config.reset
-      subject.send(:load_server_config)
+      subject.load_server_config
     end
 
     it 'restores the saved config from memory' do
-      subject.send(:unload_server_config)
+      subject.unload_server_config
       after_config = Chef::Config.save
 
       expect(subject.server_config).to eql(example_config)
