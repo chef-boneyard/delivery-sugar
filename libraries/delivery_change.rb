@@ -35,6 +35,7 @@ module DeliverySugar
     # @return [DeliverySugar::Change]
     #
     # rubocop:disable AbcSize
+    # rubocop:disable Metrics/MethodLength
     #
     def initialize(node)
       change = node['delivery']['change']
@@ -42,7 +43,8 @@ module DeliverySugar
       @workspace_repo = workspace['repo']
       @workspace_cache = workspace['cache']
       @workspace_chef = workspace['chef']
-      @workspace_path = node['delivery']['workspace_path'] || '/var/opt/delivery/workspace'
+      @workspace_path = node['delivery']['workspace_path'] ||
+                        '/var/opt/delivery/workspace'
       @enterprise = change['enterprise']
       @organization = change['organization']
       @stage = change['stage']

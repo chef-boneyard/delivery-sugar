@@ -26,19 +26,15 @@ class Chef
 
       def initialize(name, run_context = nil)
         super
-
         @resource_name = :delivery_test_kitchen
         @provider = Chef::Provider::DeliveryTestKitchen
 
         @repo_path = delivery_workspace_repo
 
         @action = :test
-        @allowed_actions.push(:create)
-        @allowed_actions.push(:converge)
-        @allowed_actions.push(:setup)
-        @allowed_actions.push(:verify)
-        @allowed_actions.push(:destroy)
-        @allowed_actions.push(:test)
+        %w( create converge setup verify destroy test ).each do |a|
+          @allowed_actions.push(a.to_sym)
+        end
       end
 
       #

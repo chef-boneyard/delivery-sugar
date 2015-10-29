@@ -71,7 +71,8 @@ class Chef
       private
 
       def kitchen(action)
-        converge_by "[Test Kitchen] Run action '#{action}' with yaml '#{@test_kichen.yaml}'" do
+        converge_by "[Test Kitchen] Run action '#{action}'" \
+          "with yaml '#{@test_kichen.yaml}'" do
           @test_kichen.run(action)
           new_resource.updated_by_last_action(true)
         end

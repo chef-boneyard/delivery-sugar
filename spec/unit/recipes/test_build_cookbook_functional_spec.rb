@@ -18,7 +18,7 @@ describe 'test-build-cookbook::functional' do
       }
     end
     let(:mock_shell_out) do
-      double(:error! => true)
+      double('error!' => true)
     end
 
     before do
@@ -29,7 +29,7 @@ describe 'test-build-cookbook::functional' do
         .with('/var/opt/delivery/workspace/.chef/knife.rb')
         .and_return(true)
       allow(Chef::EncryptedDataBagItem).to receive(:load_secret)
-        .and_return("SECRET")
+        .and_return('SECRET')
       allow(Chef::EncryptedDataBagItem).to receive(:load)
         .and_return(mock_ec2_secrets)
     end

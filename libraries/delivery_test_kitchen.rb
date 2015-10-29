@@ -49,7 +49,7 @@ module DeliverySugar
       @yaml = yaml
       @repo_path = repo_path
       @run_context = run_context
-      @environment = Hash.new
+      @environment = {}
     end
 
     #
@@ -83,8 +83,10 @@ module DeliverySugar
     #
     # Specific requirements for EC2 driver
     #
+    # rubocop:disable AbcSize
+    # rubocop:disable Metrics/MethodLength
     def prepare_kitchen_ec2
-      fail 'Kitchen YAML file not found' unless has_kitchen_yaml?
+      fail 'Kitchen YAML file not found' unless kitchen_yaml?
 
       # Load secrets from delivery-secrets data bag
       secrets = get_project_secrets
@@ -108,14 +110,14 @@ module DeliverySugar
       chef_gem.run_action(:install)
 
       # Create directories for AWS credentials and SSH key
-      %w[ .aws .ssh ].each do |d|
+      %w( .aws .ssh ).each do |d|
         directory = Chef::Resource::Directory.new(File.join(cache, d), run_context)
         directory.recursive true
         directory.run_action(:create)
       end
 
       # Create AWS credentials file
-      creds = Chef::Resource::File.new("#{cache}/.aws/credentials", run_context).tap do |f|
+      file = Chef::Resource::File.new("#{cache}/.aws/credentials", run_context).tap do |f|
         f.sensitive true
         f.content <<-EOF
 [default]
@@ -123,7 +125,7 @@ aws_access_key_id = #{secrets['ec2']['access_key']}
 aws_secret_access_key = #{secrets['ec2']['secret_key']}
         EOF
       end
-      creds.run_action(:create)
+      file.run_action(:create)
 
       # Create private key
       file = Chef::Resource::File.new(ec2_private_key_file, run_context).tap do |f|
@@ -137,7 +139,7 @@ aws_secret_access_key = #{secrets['ec2']['secret_key']}
     # See if the kitchen YAML file exist in the repo
     #
     # @return [TrueClass, FalseClass] Return true if file exists
-    def has_kitchen_yaml?
+    def kitchen_yaml?
       ::File.exist?(kitchen_yaml_file)
     end
 

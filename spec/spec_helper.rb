@@ -52,7 +52,7 @@ end
 
 RSpec.configure do |config|
   config.include SharedLetDeclarations
-  config.filter_run_excluding :ignore => true
+  config.filter_run_excluding 'ignore' => true
 
   # Specify the operating platform to mock Ohai data from (default: nil)
   config.platform = 'ubuntu'
