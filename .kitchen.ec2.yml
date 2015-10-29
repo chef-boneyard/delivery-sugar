@@ -2,7 +2,9 @@
 driver:
   name: ec2
   region: us-west-2
-  size: t2.micro
+  availability_zone: a
+  instance_type: t2.micro
+  image_id: ami-5189a661
   subnet_id: subnet-19ac017c
   tags:
     Name: <%= ENV['KITCHEN_INSTANCE_NAME'] || 'delivery-sugar-kitchen' %>
