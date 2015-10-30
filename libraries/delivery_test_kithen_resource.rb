@@ -71,6 +71,17 @@ class Chef
           kind_of: String
         )
       end
+
+      #
+      # Additional options to pass to test-kitchen
+      #
+      def options(arg = nil)
+        set_or_return(
+          :options,
+          arg,
+          kind_of: String
+        )
+      end
     end
   end
 end

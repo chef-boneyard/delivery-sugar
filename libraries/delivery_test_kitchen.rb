@@ -28,7 +28,7 @@ module DeliverySugar
     include DeliverySugar::DSL
     include Chef::Mixin::ShellOut
     attr_reader :driver, :repo_path, :environment
-    attr_accessor :run_context, :yaml
+    attr_accessor :run_context, :yaml, :options
 
     #
     # Create a new TestKitchen object
@@ -44,9 +44,10 @@ module DeliverySugar
     #
     # @return [DeliverySugar::TestKitchen]
     #
-    def initialize(driver, repo_path, run_context, yaml = '.kitchen.yml')
-      @driver = driver
+    def initialize(driver, repo_path, run_context, yaml = '.kitchen.yml', options = '')
       @yaml = yaml
+      @driver = driver
+      @options = options
       @repo_path = repo_path
       @run_context = run_context
       @environment = {}
@@ -58,7 +59,7 @@ module DeliverySugar
     def run(action)
       prepare_kitchen
       shell_out!(
-        "kitchen #{action}",
+        "kitchen #{action} #{@options}",
         cwd: @repo_path,
         env: @environment.merge!('KITCHEN_YAML' => kitchen_yaml_file),
         live_stream: STDOUT
