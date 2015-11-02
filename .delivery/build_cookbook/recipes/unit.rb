@@ -8,5 +8,6 @@ end
 delivery_test_kitchen 'unit' do
   yaml '.kitchen.ec2.yml'
   driver 'ec2'
+  suite 'default'
   action [:converge, :destroy]
 end

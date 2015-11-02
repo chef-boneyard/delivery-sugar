@@ -29,7 +29,8 @@ class Chef
         @resource_name = :delivery_test_kitchen
         @provider = Chef::Provider::DeliveryTestKitchen
 
-        @yaml = '.kitchen.yml'
+        @yaml      = '.kitchen.yml'
+        @suite     = 'all'
         @repo_path = delivery_workspace_repo
 
         @action = :test
@@ -69,6 +70,17 @@ class Chef
           :repo_path,
           arg,
           kind_of: String
+        )
+      end
+
+      #
+      # The suite name that this resource is going to run
+      #
+      def suite(arg = nil)
+        set_or_return(
+          :suite,
+          arg,
+          kind_of: [String, Array]
         )
       end
 

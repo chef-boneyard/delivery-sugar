@@ -38,8 +38,9 @@ class Chef
           new_resource.driver,
           new_resource.repo_path,
           run_context,
-          new_resource.yaml,
-          new_resource.options
+          yaml: new_resource.yaml,
+          options: new_resource.options,
+          suite: new_resource.suite
         )
       end
 
@@ -70,8 +71,8 @@ class Chef
       private
 
       def kitchen(action)
-        converge_by "[Test Kitchen] Run action '#{action}'" \
-                    "with yaml '#{@test_kichen.yaml}'" do
+        converge_by "[Test Kitchen] Run action :#{action} with yaml " \
+                    "'#{@test_kichen.yaml}' for #{@test_kichen.suite} suite" do
           @test_kichen.run(action)
           new_resource.updated_by_last_action(true)
         end
