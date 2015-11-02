@@ -50,7 +50,7 @@ module DeliverySugar
       @run_context = run_context
       @yaml = parameters[:yaml]
       @suite = parameters[:suite]
-      @options = parameters[:options]
+      @options = parameters[:options] || ''
       @environment = parameters[:environment] || {}
     end
 
@@ -65,6 +65,13 @@ module DeliverySugar
         env: @environment.merge!('KITCHEN_YAML' => kitchen_yaml_file),
         live_stream: STDOUT
       )
+    end
+
+    #
+    # Add extra options
+    #
+    def add_option(n_option)
+      @options << ' ' << n_option
     end
 
     private

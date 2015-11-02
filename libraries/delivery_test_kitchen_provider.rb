@@ -20,7 +20,7 @@ require 'chef/provider'
 class Chef
   class Provider
     class DeliveryTestKitchen < Chef::Provider
-      attr_reader :test_kichen
+      attr_reader :test_kitchen
 
       def whyrun_supported?
         true
@@ -34,7 +34,7 @@ class Chef
       def initialize(new_resource, run_context)
         super
 
-        @test_kichen = DeliverySugar::TestKitchen.new(
+        @test_kitchen = DeliverySugar::TestKitchen.new(
           new_resource.driver,
           new_resource.repo_path,
           run_context,
@@ -65,6 +65,8 @@ class Chef
       end
 
       def action_test
+        # Destroy strategy to use after testing (passing, always, never)
+        @test_kitchen.add_option('--destroy=always')
         kitchen('test')
       end
 
@@ -72,8 +74,8 @@ class Chef
 
       def kitchen(action)
         converge_by "[Test Kitchen] Run action :#{action} with yaml " \
-                    "'#{@test_kichen.yaml}' for #{@test_kichen.suite} suite" do
-          @test_kichen.run(action)
+                    "'#{@test_kitchen.yaml}' for #{@test_kitchen.suite} suite" do
+          @test_kitchen.run(action)
           new_resource.updated_by_last_action(true)
         end
       end
