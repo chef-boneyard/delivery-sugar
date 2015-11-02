@@ -24,6 +24,7 @@ class Chef
       include DeliverySugar::DSL
       provides :delivery_test_kitchen
 
+      # rubocop:disable MethodLength
       def initialize(name, run_context = nil)
         super
         @resource_name = :delivery_test_kitchen
@@ -31,9 +32,10 @@ class Chef
 
         @yaml      = '.kitchen.yml'
         @suite     = 'all'
+        @options   = ''
         @repo_path = delivery_workspace_repo
 
-        @action = :test
+        @action    = :test
         %w( create converge setup verify destroy test ).each do |a|
           @allowed_actions.push(a.to_sym)
         end

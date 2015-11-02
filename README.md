@@ -28,7 +28,8 @@ automatically make available the custom resources included with Delivery Sugar.
 
 ## Test Kitchen
 
-The heavy resource `delivery_test_kitchen` will enable your projects to use [Test Kitchen](http://kitchen.ci) in Delivery. Currently, we only support the [kitchen-ec2 driver](https://github.com/test-kitchen/kitchen-ec2).
+The resource `delivery_test_kitchen` will enable your projects to use [Test Kitchen](http://kitchen.ci)
+in Delivery. Currently, we only support the [kitchen-ec2 driver](https://github.com/test-kitchen/kitchen-ec2).
 
 ### Prerequisites
 
@@ -103,15 +104,15 @@ delivery_test_kitchen 'functional_test' do
 end
 ```
 
-Trigger a kitchen verify & destroy action using Ec2 driver and poiting to `.kitchen.ec2.yml`
+Trigger a kitchen converge & destroy action using Ec2 driver and poiting to `.kitchen.ec2.yml`
 file inside the repository path in Delivery.
 
 ```ruby
-delivery_test_kitchen 'quality_verify_destroy' do
+delivery_test_kitchen 'quality_converge_destroy' do
   yaml '.kitchen.ec2.yml'
   driver 'ec2'
   repo_path delivery_workspace_repo
-  action [:verify, :destroy]
+  action [:converge, :destroy]
 end
 ```
 
@@ -121,6 +122,7 @@ Trigger a kitchen create passing extra options for debugging
 delivery_test_kitchen 'unit_create' do
   driver 'ec2'
   options '--log-level=debug'
+  suite 'default'
   action :create
 end
 ```
@@ -129,11 +131,11 @@ end
 This cookbook implements a rudimentary approach to handling secrets. This process
 is largely out of band from Chef Delivery for the time being.
 
-`delivery-truck` will look for secrets in the `delivery-secrets` data bag on the
+Your build cookbook will look for secrets in the `delivery-secrets` data bag on the
 Delivery Chef Server. It will expect to find an item in that data bag named
-`<ent>-<org>-<project>`. For example, this cookbook is kept in the
-'Delivery-Build-Cookbooks' org of the 'chef' enterprise so it's data bag name is
-`chef-Delivery-Build-Cookbooks-delivery-truck`.
+`<ent>-<org>-<project>`. For example, lets imagine a cookbook called 'delivery-test'
+that is kept in the 'open-source' org of the 'chef' enterprise so it's data bag name
+would be `chef-open-source-delivery-test`.
 
 This cookbook expects this data bag item to be encrypted with the same
 encrypted_data_bag_secret that is on your builders. You will need to ensure that
