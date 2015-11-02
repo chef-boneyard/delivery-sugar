@@ -84,7 +84,7 @@ module DeliverySugar
       when 'ec2'
         prepare_kitchen_ec2
       else
-        fail "The test kitchen driver '#{@driver} is not supported"
+        fail "The test kitchen driver '#{@driver}' is not supported"
       end
     end
 

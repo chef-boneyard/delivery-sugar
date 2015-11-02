@@ -80,7 +80,7 @@ class Chef
         set_or_return(
           :suite,
           arg,
-          kind_of: [String, Array]
+          kind_of: String
         )
       end
 
