@@ -1,4 +1,5 @@
 {
+  "id": "ent-org-proj",
   "ec2": {
     "keypair_name": "username",
     "access_key": "ACCESS",
