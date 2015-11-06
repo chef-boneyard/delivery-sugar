@@ -40,6 +40,7 @@ class Chef
           create_deploy_key
           create_ssh_wrapper_file
           create_git_remote
+          tag_head
           push_to_github
           new_resource.updated_by_last_action(true)
         end
@@ -96,11 +97,21 @@ class Chef
       end
 
       #
+      # Apply a tag to the current HEAD of the branch
+      #
+      def tag_head
+        git_remote_shell_out("git tag #{new_resource.tag} -am " \
+          "\"Tagging #{new_resource.tag}\"") if new_resource.tag
+      end
+
+      #
       # Push the specified branch to the github remote
       #
       def push_to_github
         git_remote_shell_out("git push #{new_resource.remote_name} " \
                              "#{new_resource.branch}")
+        git_remote_shell_out("git push #{new_resource.remote_name} " \
+                             '--tags') if new_resource.tag
       end
 
       #

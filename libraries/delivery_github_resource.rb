@@ -34,6 +34,7 @@ class Chef
         @branch = 'master'
         @repo = name
         @remote_name = 'github'
+        @tag = nil
 
         @action = :push
         @allowed_actions.push(:push)
@@ -123,6 +124,17 @@ class Chef
           :repo_path,
           arg,
           kind_of: String, required: true
+        )
+      end
+
+      #
+      # A tag to apply to HEAD and push along with your code.
+      #
+      def tag(arg = nil)
+        set_or_return(
+          :tag,
+          arg,
+          kind_of: String
         )
       end
     end

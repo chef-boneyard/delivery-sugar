@@ -27,6 +27,7 @@ describe Chef::Resource::DeliveryGithub do
       expect(@resource.branch).to eql('master')
       expect(@resource.repo).to eql('octo/dog')
       expect(@resource.remote_name).to eql('github')
+      expect(@resource.tag).to eql(nil)
 
       expect(@resource.action).to eql(:push)
       expect(@resource.allowed_actions).to include(:push)
@@ -101,6 +102,12 @@ describe Chef::Resource::DeliveryGithub do
       resource = described_class.new('failwhale')
       expect { resource.repo_path }
         .to raise_error(Chef::Exceptions::ValidationFailed)
+    end
+  end
+
+  describe '#tag' do
+    it 'only accepts a String' do
+      assert_enforce_string(:tag)
     end
   end
 end
