@@ -77,6 +77,7 @@ github  #{github_remote_b} (push)
       expect(provider).to receive(:create_deploy_key)
       expect(provider).to receive(:create_ssh_wrapper_file)
       expect(provider).to receive(:create_git_remote)
+      expect(provider).to receive(:tag_head)
       expect(provider).to receive(:push_to_github)
       provider.action_push
     end
@@ -139,18 +140,58 @@ ssh -o CheckHostIP=no \
       before { provider.current_resource.remote_url github_remote_a }
 
       it 'does nothing' do
-        expect(provider).not_to receive(:shell_out!)
+        expect(provider).to_not receive(:shell_out!)
           .with("git remote set-url unit #{github_remote_a}", shellout_options)
         provider.send(:create_git_remote)
       end
     end
   end
 
+  describe '#tag_head' do
+    describe 'when a tag has been provided' do
+      before do
+        new_resource.tag '0.1.0'
+      end
+
+      it 'applies the tag to head' do
+        expect(provider).to receive(:shell_out!)
+          .with('git tag 0.1.0 -am "Tagging 0.1.0"', shellout_options)
+        provider.send(:tag_head)
+      end
+    end
+
+    describe 'when no tag has been provided' do
+      it 'does nothing' do
+        expect(provider).to_not receive(:shell_out!)
+          .with(/git tag/)
+        provider.send(:tag_head)
+      end
+    end
+  end
+
   describe '#push_to_github' do
-    it 'pushes branch to github remote' do
-      expect(provider).to receive(:shell_out!)
-        .with('git push unit master', shellout_options)
-      provider.send(:push_to_github)
+    describe 'when a tag has been provided' do
+      before do
+        new_resource.tag '0.1.0'
+      end
+
+      it 'pushes branch and tags to github remote' do
+        expect(provider).to receive(:shell_out!)
+          .with('git push unit master', shellout_options)
+        expect(provider).to receive(:shell_out!)
+          .with('git push unit --tags', shellout_options)
+        provider.send(:push_to_github)
+      end
+    end
+
+    describe 'when no tag has been provided' do
+      it 'only pushes branch to github remote' do
+        expect(provider).to receive(:shell_out!)
+          .with('git push unit master', shellout_options)
+        expect(provider).not_to receive(:shell_out!)
+          .with('git push unit --tags', shellout_options)
+        provider.send(:push_to_github)
+      end
     end
   end
 end
