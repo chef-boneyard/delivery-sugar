@@ -119,6 +119,15 @@ module DeliverySugar
       "#{@enterprise}-#{@organization}-#{@project}"
     end
 
+    #
+    # Return a unique string to identify a Delivery organization.
+    #
+    # @return [String]
+    #
+    def organization_slug
+      "#{@enterprise}-#{@organization}"
+    end
+
     private
 
     #

@@ -144,7 +144,7 @@ describe DeliverySugar::DSL do
       }
     end
 
-    it 'gets the secrets from the Change object' do
+    it 'gets the secrets from the project level' do
       expect(subject).to receive_message_chain(:change, :project_slug)
         .and_return(project_slug)
       expect(subject)
@@ -152,6 +152,26 @@ describe DeliverySugar::DSL do
         .with('delivery-secrets', project_slug).and_return(data_bag_contents)
 
       expect(subject.get_project_secrets).to eql(data_bag_contents)
+    end
+  end
+
+  describe '.get_organization_secrets' do
+    let(:organization_slug) { 'ent-org' }
+    let(:data_bag_contents) do
+      {
+        'id' => 'ent-org',
+        'secret' => 'password'
+      }
+    end
+
+    it 'gets the secrets from the organization level' do
+      expect(subject).to receive_message_chain(:change, :organization_slug)
+        .and_return(organization_slug)
+      expect(subject)
+        .to receive_message_chain(:chef_server, :encrypted_data_bag_item)
+        .with('delivery-secrets', organization_slug).and_return(data_bag_contents)
+
+      expect(subject.get_organization_secrets).to eql(data_bag_contents)
     end
   end
 end
