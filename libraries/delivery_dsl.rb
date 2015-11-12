@@ -95,7 +95,7 @@ module DeliverySugar
     #
     # Return a list of filenames (relative to the project root) that have been
     # modified in the current changeset.
-    #
+
     # @return [Array<String>]
     #
     def changed_files
@@ -132,6 +132,21 @@ module DeliverySugar
     #
     def get_project_secrets
       chef_server.encrypted_data_bag_item('delivery-secrets', project_slug)
+    rescue Net::HTTPServerException => http_e
+      raise http_e unless http_e.response.code == '404'
+      Chef::Log.warn("Secrets Not Found for project_slug[#{project_slug}]")
+      Chef::Log.info("Loading organization secrets #{organization_slug}")
+      get_organization_secrets
+    end
+
+    #
+    # Return the decrypted contents of an encrypted data bag on the Chef Server
+    # that holds secret data related to the current organization.
+    #
+    # @return [Hash]
+    #
+    def get_organization_secrets
+      chef_server.encrypted_data_bag_item('delivery-secrets', organization_slug)
     end
 
     #
@@ -141,6 +156,15 @@ module DeliverySugar
     #
     def project_slug
       change.project_slug
+    end
+
+    #
+    # Return a unique string that can be used to identify the current organization
+    #
+    # @return [String]
+    #
+    def organization_slug
+      change.organization_slug
     end
 
     #

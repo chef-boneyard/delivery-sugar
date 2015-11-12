@@ -139,4 +139,10 @@ describe DeliverySugar::Change do
       expect(subject.project_slug).to eql('ent-org-proj')
     end
   end
+
+  describe '#organization_slug' do
+    it 'returns a composition of the ent and org names' do
+      expect(subject.organization_slug).to eql('ent-org')
+    end
+  end
 end

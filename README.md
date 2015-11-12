@@ -150,6 +150,11 @@ my_secrets = get_project_secrets
 puts my_secrets['id'] # chef-Delivery-Build-Cookbooks-delivery-truck
 ```
 
+If the project item does not exist, delivery-sugar will try to load the secrets
+of the organization that your project lives in. It will look for an item called
+`<ent>-<org>`. For the same example above it would be `chef-open-source`. This is
+useful if you would like to share secrets across projects within the same organization.
+
 ## License & Authors
 - Author:: Tom Duffield (<tom@chef.io>)
 - Author:: Jon Anderson (<janderson@chef.io>)
