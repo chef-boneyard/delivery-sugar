@@ -35,21 +35,28 @@ describe DeliverySugar::Change do
       %w(
         cookbooks/frodo/README.md
         cookbooks/frodo/metadata.rb
+        cookbooks/frodo/recipes/sting.rb
+        cookbooks/gandalf/recipes/kinesis.rb
         cookbooks/sam/metadata.json
       )
     end
 
     let(:cookbooks_path) { File.join(SUPPORT_DIR, 'cookbooks') }
     let(:frodo_cookbook) do
-      DeliverySugar::Cookbook.new(File.join(cookbooks_path, 'frodo/'))
+      DeliverySugar::Cookbook.new(File.join(cookbooks_path, 'frodo'))
     end
-    let(:sam_cookbook) { DeliverySugar::Cookbook.new(File.join(cookbooks_path, 'sam/')) }
+    let(:sam_cookbook) do
+      DeliverySugar::Cookbook.new(File.join(cookbooks_path, 'sam'))
+    end
+    let(:gandalf_cookbook) do
+      DeliverySugar::Cookbook.new(File.join(cookbooks_path, 'gandalf'))
+    end
 
     it 'only returns one copy of each cookbook' do
       allow(subject).to receive(:changed_files).and_return(files)
       books = subject.changed_cookbooks
-      expect(books.length).to eql(2)
-      expect(books).to eql([frodo_cookbook, sam_cookbook])
+      expect(books.length).to eql(3)
+      expect(books).to eql([frodo_cookbook, gandalf_cookbook, sam_cookbook])
     end
   end
 

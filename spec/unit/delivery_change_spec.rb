@@ -124,9 +124,9 @@ describe DeliverySugar::Change do
     it 'returns a unique list of Cookbooks modified in the changeset' do
       expect(subject).to receive(:changed_files).and_return(changed_files).twice
       expect(DeliverySugar::Cookbook).to receive(:new)
-        .with('workspace_repo/cookbooks/a/').and_return(cookbook_a)
+        .with('workspace_repo/cookbooks/a').and_return(cookbook_a)
       expect(DeliverySugar::Cookbook).to receive(:new)
-        .with('workspace_repo/cookbooks/b/').and_return(cookbook_b)
+        .with('workspace_repo/cookbooks/b').and_return(cookbook_b)
       expect(DeliverySugar::Cookbook).to receive(:new)
         .with('workspace_repo/').and_return(nil)
 
