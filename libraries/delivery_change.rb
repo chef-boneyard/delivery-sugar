@@ -141,7 +141,10 @@ module DeliverySugar
     #
     def cookbook_from_member_file(changed_file)
       result = changed_file.match(%r{^cookbooks/(.+)/})
-      load_cookbook(result[0]) unless result.nil?
+      return if result.nil?
+      dirs = result[0].split('/')
+      cb_root = ::File.join(dirs[0], dirs[1])
+      load_cookbook(cb_root)
     end
 
     #
