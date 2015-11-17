@@ -140,7 +140,7 @@ module DeliverySugar
     # @return [DeliverySugar::Cookbook, nil]
     #
     def cookbook_from_member_file(changed_file)
-      result = changed_file.match(%r{^cookbooks/(.+)/})
+      result = changed_file.match(%r{^cookbooks/([a-zA-Z0-9_-]*)})
       load_cookbook(result[0]) unless result.nil?
     end
 
