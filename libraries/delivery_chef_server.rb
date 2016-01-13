@@ -16,6 +16,7 @@
 #
 
 require 'chef/mixin/shell_out'
+require 'chef/server_api'
 require_relative './delivery_dsl'
 
 module DeliverySugar
@@ -88,7 +89,7 @@ module DeliverySugar
     end
 
     #
-    # Make a JSON REST API call to the Chef Server using Chef::REST. Returns the
+    # Make a JSON ServerAPI call to the Chef Server using Chef::ServerAPI. Returns the
     # the JSON response data as a Ruby Hash.
     #
     # @param type [Symbol]
@@ -187,15 +188,15 @@ module DeliverySugar
     end
 
     #
-    # A REST client we can use to submit API requests to APIs on the Chef Server
+    # A ServerAPI client we can use to submit API requests to APIs on the Chef Server
     #
-    # @return [Chef::Rest]
+    # @return [Chef::ServerAPI]
     #
     def rest_client
-      @rest_client ||= Chef::REST.new(
+      @rest_client ||= Chef::ServerAPI.new(
         @server_config[:chef_server_url],
-        @server_config[:node_name],
-        @server_config[:client_key]
+        client_name: @server_config[:node_name],
+        signing_key_filename: @server_config[:client_key]
       )
     end
   end

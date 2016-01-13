@@ -1,6 +1,7 @@
 require 'spec_helper'
 require 'chef/config'
 require 'chef/encrypted_data_bag_item'
+require 'chef/server_api'
 require 'chef/rest'
 
 describe DeliverySugar::ChefServer do
@@ -136,13 +137,13 @@ describe DeliverySugar::ChefServer do
     let(:headers) { double('Headers - Hash') }
     let(:data) { double('API Body - Hash (or false for :get/:delete)') }
     let(:response) { double('API Response - Hash') }
-    let(:rest_client) { double('Chef::REST Client', request: response) }
+    let(:rest_client) { double('Chef::ServerAPI Client', request: response) }
 
-    it 'makes a request against Chef::REST client' do
-      expect(Chef::REST).to receive(:new).with(
+    it 'makes a request against Chef::ServerAPI client' do
+      expect(Chef::ServerAPI).to receive(:new).with(
         example_config[:chef_server_url],
-        example_config[:node_name],
-        example_config[:client_key]
+        client_name: example_config[:node_name],
+        signing_key_filename: example_config[:client_key]
       ).and_return(rest_client)
       expect(rest_client).to receive(:request).with(type, path, headers, data)
         .and_return(response)
