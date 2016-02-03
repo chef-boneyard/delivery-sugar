@@ -8,6 +8,7 @@ describe DeliverySugar::Change do
   let(:pipeline) { 'pipe' }
   let(:sha) { '' }
   let(:workspace) { SUPPORT_DIR }
+  let(:cookbooks_path) { File.join(SUPPORT_DIR, 'cookbooks') }
 
   let(:node) do
     {
@@ -41,7 +42,6 @@ describe DeliverySugar::Change do
       )
     end
 
-    let(:cookbooks_path) { File.join(SUPPORT_DIR, 'cookbooks') }
     let(:frodo_cookbook) do
       DeliverySugar::Cookbook.new(File.join(cookbooks_path, 'frodo'))
     end
@@ -51,12 +51,16 @@ describe DeliverySugar::Change do
     let(:gandalf_cookbook) do
       DeliverySugar::Cookbook.new(File.join(cookbooks_path, 'gandalf'))
     end
+    let(:top_level_cookbook) do
+      DeliverySugar::Cookbook.new("#{SUPPORT_DIR}/")
+    end
 
     it 'only returns one copy of each cookbook' do
+      expected = [frodo_cookbook, gandalf_cookbook, sam_cookbook, top_level_cookbook]
+
       allow(subject).to receive(:changed_files).and_return(files)
       books = subject.changed_cookbooks
-      expect(books.length).to eql(3)
-      expect(books).to eql([frodo_cookbook, gandalf_cookbook, sam_cookbook])
+      expect(books).to eql(expected)
     end
   end
 
@@ -110,6 +114,19 @@ describe DeliverySugar::Change do
       it 'returns the diff between the current and previous merge commits' do
         expect(subject.changed_files).to eql(non_empty_array)
       end
+    end
+  end
+
+  describe '#get_all_project_cookbooks' do
+    # It should find the cookbook in the root dir, and all cookbooks in the cookbook dir
+    # Cookbooks are identfied by having a metadata.rb or json file.
+    # metadata.rb/json files not in the root dir, or cookbooks dir are ignored
+    it 'returns all valid cookbooks in the cookbooks dir and root' do
+      expected_cookbook_names = %w(top_level_project_cookbook frodo gandalf sam).sort
+
+      cookbooks = subject.get_all_project_cookbooks
+      cookbook_names = cookbooks.map(&:name)
+      expect(cookbook_names.sort).to eql(expected_cookbook_names)
     end
   end
 end

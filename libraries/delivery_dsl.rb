@@ -168,6 +168,17 @@ module DeliverySugar
     end
 
     #
+    # Return an array of paths for valid cookbooks for this change,
+    # based on metadata.rb/json
+    # The root directory, or cookbooks in the /cookbooks directory will be returned
+    #
+    # @return [Array<String>]
+    #
+    def get_all_project_cookbooks
+      change.get_all_project_cookbooks
+    end
+
+    #
     # Return a hash with the details that Cheffish resources require to talk to
     # the delivery Chef Server.
     #

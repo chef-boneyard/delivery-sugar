@@ -36,6 +36,7 @@ module DeliverySugar
     #
     # rubocop:disable AbcSize
     # rubocop:disable Metrics/MethodLength
+    # rubocop:disable AccessorMethodName
     #
     def initialize(node)
       change = node['delivery']['change']
@@ -79,7 +80,7 @@ module DeliverySugar
       end
 
       # Check to see if the default workspace is a cookbook
-      cookbooks << load_cookbook('/') if changed_files.length > 0
+      cookbooks << load_cookbook('/') unless changed_files.empty?
 
       # remove nil
       cookbooks.to_a.compact
@@ -126,6 +127,26 @@ module DeliverySugar
     #
     def organization_slug
       "#{@enterprise}-#{@organization}"
+    end
+
+    #
+    # Return an array of cookbooks for the current change.
+    #
+    # @return [Array<DeliverySugar::Cookbook>]
+    #
+    def get_all_project_cookbooks
+      cookbooks = []
+      cookbooks << load_cookbook('/')
+
+      cookbook_dir_path = workspace_repo + '/cookbooks'
+      if File.directory?(cookbook_dir_path)
+        cookbook_dir = Dir.new(cookbook_dir_path)
+        cookbook_dir.each do |dir|
+          cookbooks << load_cookbook("/cookbooks/#{dir}") unless dir == '.' || dir == '..'
+        end
+      end
+
+      cookbooks.compact
     end
 
     private

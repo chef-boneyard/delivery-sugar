@@ -86,6 +86,14 @@ describe DeliverySugar::DSL do
     end
   end
 
+  describe '#get_all_project_cookbooks' do
+    it 'calls get_all_project_cookbooks on the change object' do
+      expect(subject).to receive_message_chain(:change,
+                                               :get_all_project_cookbooks)
+      subject.get_all_project_cookbooks
+    end
+  end
+
   describe '.changed_cookbooks' do
     it 'gets a list of changed cookbook from the change object' do
       expect(subject).to receive_message_chain(:change,
