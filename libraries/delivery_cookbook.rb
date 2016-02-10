@@ -53,7 +53,7 @@ module DeliverySugar
         (@path == other.path) &&
         (@version == other.version)
     end
-    alias_method :eql?, :==
+    alias eql? ==
 
     #
     # Return the hash of the object (for equality checking)

@@ -1,6 +1,12 @@
 # Don't worry about the number of spaces between param and value.
 # This is used for styling in some Chef files.
-Style/SingleSpaceBeforeFirstArg:
+Style/SpaceBeforeFirstArg:
+  Enabled: false
+
+Style/SignalException:
+  Enabled: false
+
+Lint/DuplicateMethods:
   Enabled: false
 
 # Don't force us to write documentation
