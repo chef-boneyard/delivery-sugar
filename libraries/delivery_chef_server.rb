@@ -83,7 +83,7 @@ module DeliverySugar
     #
     def with_server_config(&block)
       load_server_config
-      block.call
+      yield block
     ensure
       unload_server_config
     end
