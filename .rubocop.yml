@@ -16,3 +16,6 @@ Documentation:
 # Give us some breathing room on line length
 Metrics/LineLength:
   Max: 90
+
+Style/Alias:
+  Enabled: false
