@@ -179,6 +179,24 @@ module DeliverySugar
     end
 
     #
+    # Define a project application, upload it as a data bag item,
+    # and set its version pin for the acceptance env for a change.
+    #
+    # @param [String] app_name
+    #   A string representing your application's name
+    # @param [String] app_version
+    #   A string representing your application's version
+    # @param [Hash] app_attributes
+    #   A hash of attributes that make up your application at app_version.
+    #   Should contain key, strings, and arrays.
+    #
+    # @return [Chef::Environment]
+    #
+    def define_project_application(app_name, app_version, app_attributes)
+      change.define_project_application(app_name, app_version, app_attributes)
+    end
+
+    #
     # Return a hash with the details that Cheffish resources require to talk to
     # the delivery Chef Server.
     #
