@@ -98,7 +98,7 @@ describe DeliverySugar::DSL do
     it 'calls define_project_application on the change object' do
       expect(subject).to receive_message_chain(:change,
                                                :define_project_application)
-      subject.define_project_application("test", "1.2.3", {})
+      subject.define_project_application('test', '1.2.3', {})
     end
   end
 
@@ -106,7 +106,7 @@ describe DeliverySugar::DSL do
     it 'calls get_project_application on the change object' do
       expect(subject).to receive_message_chain(:change,
                                                :get_project_application)
-      subject.get_project_application("test")
+      subject.get_project_application('test')
     end
   end
 

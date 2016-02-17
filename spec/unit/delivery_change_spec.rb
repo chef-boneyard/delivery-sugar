@@ -33,7 +33,7 @@ describe DeliverySugar::Change do
   let(:app_attributes) do
     {
       'attr1' => 'value1',
-      'attr2' => ['arr_value1', 'arr_value2']
+      'attr2' => %w( arr_value1, arr_value2 )
     }
   end
   let(:expected_data_bag_item_content) do
@@ -195,12 +195,12 @@ describe DeliverySugar::Change do
     context 'when the stage is not build' do
       let(:stage) { 'not-build' }
       it 'raises a proper error to the user' do
-        expect {
+        expect do
           subject.define_project_application(app_name,
                                              app_version,
                                              app_attributes)
-        }.to raise_error(RuntimeError,
-                         subject.wrong_stage_for_define_project_application_error)
+        end.to raise_error(RuntimeError,
+                           subject.wrong_stage_for_define_project_application_error)
       end
     end
   end
@@ -215,22 +215,22 @@ describe DeliverySugar::Change do
     context 'when app name is invalid' do
       let(:app_name) { 'invalid name' }
       it 'raises an error' do
-        expect {
+        expect do
           subject.update_data_bag_with_application_attributes(app_name,
                                                               app_version,
                                                               app_attributes)
-        }.to raise_error(RuntimeError)
+        end.to raise_error(RuntimeError)
       end
     end
 
     context 'when app version is invalid' do
       let(:app_version) { 'invalid version' }
       it 'raises an error' do
-        expect {
+        expect do
           subject.update_data_bag_with_application_attributes(app_name,
                                                               app_version,
                                                               app_attributes)
-        }.to raise_error(RuntimeError)
+        end.to raise_error(RuntimeError)
       end
     end
 
@@ -267,7 +267,8 @@ describe DeliverySugar::Change do
       end
 
       it 'properly sets the override attributes' do
-        result = subject.set_application_pin_on_acceptance_environment(app_name, app_version)
+        result = subject.set_application_pin_on_acceptance_environment(app_name,
+                                                                       app_version)
         expect(result.override_attributes['applications'][app_name]).to eq(app_version)
       end
     end
@@ -280,16 +281,16 @@ describe DeliverySugar::Change do
       end
 
       context 'when load_chef_environment rasies not 200 or 404' do
-        let(:code) { "500" }
+        let(:code) { '500' }
         it 'raises the original error' do
-          expect {
+          expect do
             subject.set_application_pin_on_acceptance_environment(app_name, app_version)
-          }.to raise_error(exception)
+          end.to raise_error(exception)
         end
       end
 
       context 'when load_chef_environment raises a 404' do
-        let(:code) { "404" }
+        let(:code) { '404' }
         before do
           expect(subject).to receive(:new_environment).and_return(env)
           expect(env).to receive(:name).with(subject.acceptance_environment)
@@ -317,14 +318,13 @@ describe DeliverySugar::Change do
 
   describe '#get_project_application' do
     context 'when the stage is build or verify' do
-      ['build', 'verify'].each do |current_stage|
+      %w( build, verify ).each do |current_stage|
         let(:stage) { current_stage }
         it 'raises the proper user error' do
           expect { subject.get_project_application(app_name) }
             .to raise_error(RuntimeError,
                             subject.wrong_stage_for_get_project_application_error)
         end
-
       end
     end
 
@@ -333,25 +333,27 @@ describe DeliverySugar::Change do
 
       before do
         allow(env.override_attributes)
-          .to receive(:[]).with('applications').and_return({ app_name => app_version })
+          .to receive(:[]).with('applications').and_return(app_name => app_version)
       end
 
       context 'when load_chef_environment raises a Net::HTTPServerException' do
         before do
-          allow(subject).to receive(:load_chef_environment).with(stage).and_raise(exception)
+          allow(subject).to receive(:load_chef_environment)
+            .with(stage).and_raise(exception)
         end
 
         context 'when load_chef_environment rasies not 200 or 404' do
-          let(:code) { "500" }
+          let(:code) { '500' }
           it 'raises the original error' do
             expect { subject.get_project_application(app_name) }.to raise_error(exception)
           end
         end
 
         context 'when load_chef_environment rasies a 404' do
-          let(:code) { "404" }
+          let(:code) { '404' }
           it 'raises the proper error for the user' do
-            expect { subject.get_project_application(app_name) }.to raise_error(RuntimeError)
+            expect { subject.get_project_application(app_name) }
+              .to raise_error(RuntimeError)
           end
         end
       end
@@ -370,14 +372,15 @@ describe DeliverySugar::Change do
 
         context 'when the version pin cannot be found' do
           before(:each) do
-            allow(env.override_attributes).to receive(:[]).with('applications').and_return({})
+            allow(env.override_attributes)
+              .to receive(:[]).with('applications').and_return({})
           end
 
           it_behaves_like 'when the app cannot be found'
         end
 
         context 'when the data bag item cannot be found' do
-          let(:code) { "404" }
+          let(:code) { '404' }
           before(:each) do
             expect(subject).to receive(:load_data_bag_item)
               .with('proj', subject.app_slug(app_name, app_version)).and_raise(exception)
@@ -389,8 +392,10 @@ describe DeliverySugar::Change do
         context 'when the data bag item exists' do
           before do
             expect(subject).to receive(:load_data_bag_item)
-              .with('proj', subject.app_slug(app_name, app_version)).and_return(data_bag_item)
-            allow(data_bag_item).to receive(:raw_data).and_return(expected_data_bag_item_content)
+              .with('proj', subject.app_slug(app_name, app_version))
+              .and_return(data_bag_item)
+            allow(data_bag_item)
+              .to receive(:raw_data).and_return(expected_data_bag_item_content)
           end
 
           it 'calls load_data_bag_item with the proper input' do

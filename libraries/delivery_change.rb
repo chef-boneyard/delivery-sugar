@@ -20,6 +20,8 @@ module DeliverySugar
   # This class will represent a Delivery change object and provide information
   # and helpers for use inside Delivery phase run recipes.
   #
+  # rubocop:disable ClassLength
+  #
   class Change
     attr_reader :enterprise, :organization, :project, :pipeline,
                 :stage, :patchset_branch, :scm_client, :workspace_path,
@@ -37,7 +39,6 @@ module DeliverySugar
     # rubocop:disable AbcSize
     # rubocop:disable Metrics/MethodLength
     # rubocop:disable AccessorMethodName
-    # rubocop:disable ClassLength
     # rubocop:disable CyclomaticComplexity
     # rubocop:disable PerceivedComplexity
     #
