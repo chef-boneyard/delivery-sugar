@@ -181,6 +181,7 @@ module DeliverySugar
     #
     # Define a project application, upload it as a data bag item,
     # and set its version pin for the acceptance env for a change.
+    # Must be run in the build phase.
     #
     # @param [String] app_name
     #   A string representing your application's name
@@ -194,6 +195,21 @@ module DeliverySugar
     #
     def define_project_application(app_name, app_version, app_attributes)
       change.define_project_application(app_name, app_version, app_attributes)
+    end
+
+    #
+    # Load a project application's attributes previously
+    # defined by define_project_application(). Will be
+    # loaded at the current version pin for environment (must be
+    # in acceptance, union, rehearsal, or delivered stage).
+    #
+    # @param [String] app_name
+    #   A string representing your application's name
+    #
+    # @return [Chef::Environment]
+    #
+    def get_project_application(app_name)
+      change.get_project_application(app_name)
     end
 
     #
