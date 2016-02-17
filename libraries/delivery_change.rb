@@ -20,6 +20,8 @@ module DeliverySugar
   # This class will represent a Delivery change object and provide information
   # and helpers for use inside Delivery phase run recipes.
   #
+  # rubocop:disable ClassLength
+  #
   class Change
     attr_reader :enterprise, :organization, :project, :pipeline,
                 :stage, :patchset_branch, :scm_client, :workspace_path,
@@ -37,6 +39,8 @@ module DeliverySugar
     # rubocop:disable AbcSize
     # rubocop:disable Metrics/MethodLength
     # rubocop:disable AccessorMethodName
+    # rubocop:disable CyclomaticComplexity
+    # rubocop:disable PerceivedComplexity
     #
     def initialize(node)
       change = node['delivery']['change']
@@ -170,6 +174,45 @@ module DeliverySugar
     end
 
     #
+    # Load a project application's attributes previously defined by
+    # define_project_application(). Will be loaded at the current
+    # version pin for environment (must be in acceptance, union,
+    # rehearsal, or delivered stage).
+    #
+    # @param [String] app_name
+    #   A string representing your application's name
+    #
+    # @return [Chef::Environment]
+    #
+    def get_project_application(app_name)
+      if @stage == 'build' || @stage == 'verify'
+        raise wrong_stage_for_get_project_application_error
+      end
+
+      env = begin
+              load_chef_environment(environment_for_current_stage)
+            rescue Net::HTTPServerException => http_e
+              raise http_e unless http_e.response.code == '404'
+              raise "Could not load the environment for #{@stage} "\
+                    'from helper get_project_application.\n' \
+                    'Make sure you are running include_recipe '\
+                    '"delivery-truck::provision" before you call this helper.'
+            end
+
+      app_version = env.override_attributes['applications'][app_name]
+
+      raise app_not_found_error(app_name) if app_version.nil?
+
+      # Load the data bag for this version of the application into a hash.
+      begin
+        load_data_bag_item(@project, app_slug(app_name, app_version)).raw_data
+      rescue Net::HTTPServerException => http_e
+        raise http_e unless http_e.response.code == '404'
+        raise app_not_found_error(app_name)
+      end
+    end
+
+    #
     # Return an array of cookbooks for the current change.
     # Not in Delivery DSL. Used by define_project_application().
     #
@@ -190,7 +233,8 @@ module DeliverySugar
       begin
         Chef::DataBag.validate_name!(data_bag_item_id)
       rescue Chef::Exceptions::InvalidDataBagName
-        raise "Your application's name and version can only contain lowercase letters, numbers, hyphens, and underscores." \
+        raise 'Your application\'s name and version can only contain '\
+              'lowercase letters, numbers, hyphens, and underscores.' \
               "\nYou passed name:    #{app_name}" \
               "\nYou passed version: #{app_version}"
       end
@@ -238,7 +282,7 @@ module DeliverySugar
       env = begin
               load_chef_environment(acceptance_environment)
             rescue Net::HTTPServerException => http_e
-              raise http_e unless http_e.response.code == "404"
+              raise http_e unless http_e.response.code == '404'
               env = new_environment
               env.name(acceptance_environment)
               create_chef_environment(env)
@@ -253,21 +297,6 @@ module DeliverySugar
     end
 
     #
-    # Returns an error string used in the case that the wrong
-    # stage was called for define_project_application.
-    # Not in Delivery DSL. Used by define_project_application().
-    #
-    # @return [String]
-    #
-    def wrong_stage_for_define_project_application_error
-      "The helper define_project_application should be called at the " \
-      "end of the build phase (usually in the publish stage).\n" \
-      "You called it from the #{@stage} stage."
-    end
-
-    private
-
-    #
     # Generates a unique slug given an app_name and version
     #
     # @param [String] app_name
@@ -279,6 +308,28 @@ module DeliverySugar
     def app_slug(app_name, app_version)
       "#{project_slug}-#{app_name}-#{app_version}"
     end
+
+    # Not in Delivery DSL. Used by define_project_application().
+    def wrong_stage_for_define_project_application_error
+      'The helper define_project_application should be called at the ' \
+      'end of the build phase (usually in the publish stage).\n' \
+      "You called it from the #{@stage} stage."
+    end
+
+    # Not in Delivery DSL. Used by get_project_application().
+    def wrong_stage_for_get_project_application_error
+      'The helper get_project_application must be called from the ' \
+      'acceptance, union, rehearsal, or delivered stage.\n' \
+      "You called it from the #{@stage} stage."
+    end
+
+    # Not in Delivery DSL. Used by get_project_application().
+    def app_not_found_error(app_name)
+      "Could not find app #{app_name} for stage #{@stage}. " \
+      'Have you defined it with define_project_application?'
+    end
+
+    private
 
     #
     # Determine if the provided filename is part of a cookbook in the
@@ -332,6 +383,12 @@ module DeliverySugar
 
     def new_data_bag_item
       Chef::DataBagItem.new
+    end
+
+    def load_data_bag_item(data_bag_name, data_bag_item_name)
+      chef_server.with_server_config do
+        Chef::DataBagItem.load(data_bag_name, data_bag_item_name)
+      end
     end
 
     def set_data_bag_item_content(data_bag_item, content)

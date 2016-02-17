@@ -197,6 +197,21 @@ module DeliverySugar
     end
 
     #
+    # Load a project application's attributes previously
+    # defined by define_project_application(). Will be
+    # loaded at the current version pin for environment (must be
+    # in acceptance, union, rehearsal, or delivered stage).
+    #
+    # @param [String] app_name
+    #   A string representing your application's name
+    #
+    # @return [Chef::Environment]
+    #
+    def get_project_application(app_name)
+      change.get_project_application(app_name)
+    end
+
+    #
     # Return a hash with the details that Cheffish resources require to talk to
     # the delivery Chef Server.
     #
