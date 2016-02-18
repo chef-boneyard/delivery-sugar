@@ -94,6 +94,22 @@ describe DeliverySugar::DSL do
     end
   end
 
+  describe '#define_project_application' do
+    it 'calls define_project_application on the change object' do
+      expect(subject).to receive_message_chain(:change,
+                                               :define_project_application)
+      subject.define_project_application('test', '1.2.3', {})
+    end
+  end
+
+  describe '#get_project_application' do
+    it 'calls get_project_application on the change object' do
+      expect(subject).to receive_message_chain(:change,
+                                               :get_project_application)
+      subject.get_project_application('test')
+    end
+  end
+
   describe '.changed_cookbooks' do
     it 'gets a list of changed cookbook from the change object' do
       expect(subject).to receive_message_chain(:change,

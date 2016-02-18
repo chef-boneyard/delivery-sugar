@@ -20,6 +20,8 @@ module DeliverySugar
   # This class will represent a Delivery change object and provide information
   # and helpers for use inside Delivery phase run recipes.
   #
+  # rubocop:disable ClassLength
+  #
   class Change
     attr_reader :enterprise, :organization, :project, :pipeline,
                 :stage, :patchset_branch, :scm_client, :workspace_path,
@@ -37,6 +39,8 @@ module DeliverySugar
     # rubocop:disable AbcSize
     # rubocop:disable Metrics/MethodLength
     # rubocop:disable AccessorMethodName
+    # rubocop:disable CyclomaticComplexity
+    # rubocop:disable PerceivedComplexity
     #
     def initialize(node)
       change = node['delivery']['change']
@@ -149,6 +153,187 @@ module DeliverySugar
       cookbooks.compact
     end
 
+    #
+    # Define a project application, upload it as a data bag item,
+    # and set its version pin for the acceptance env.
+    #
+    # @param [String] app_name
+    #   A string representing your application's name
+    # @param [String] app_version
+    #   A string representing your application's version
+    # @param [Hash] app_attributes
+    #   A hash of attributes that make up your application at app_version.
+    #   Should contain key, strings, and arrays.
+    #
+    # @return [Chef::Environment]
+    #
+    def define_project_application(app_name, app_version, app_attributes)
+      raise wrong_stage_for_define_project_application_error if @stage != 'build'
+      update_data_bag_with_application_attributes(app_name, app_version, app_attributes)
+      set_application_pin_on_acceptance_environment(app_name, app_version)
+    end
+
+    #
+    # Load a project application's attributes previously defined by
+    # define_project_application(). Will be loaded at the current
+    # version pin for environment (must be in acceptance, union,
+    # rehearsal, or delivered stage).
+    #
+    # @param [String] app_name
+    #   A string representing your application's name
+    #
+    # @return [Chef::Environment]
+    #
+    def get_project_application(app_name)
+      if @stage == 'build' || @stage == 'verify'
+        raise wrong_stage_for_get_project_application_error
+      end
+
+      env = begin
+              load_chef_environment(environment_for_current_stage)
+            rescue Net::HTTPServerException => http_e
+              raise http_e unless http_e.response.code == '404'
+              raise "Could not load the environment for #{@stage} "\
+                    'from helper get_project_application.\n' \
+                    'Make sure you are running include_recipe '\
+                    '"delivery-truck::provision" before you call this helper.'
+            end
+
+      raise app_not_found_error(app_name) if env.override_attributes['applications'].nil?
+
+      app_version = env.override_attributes['applications'][app_name]
+
+      raise app_not_found_error(app_name) if app_version.nil?
+
+      # Load the data bag for this version of the application into a hash.
+      begin
+        load_data_bag_item(@project, app_slug(app_name, app_version)).raw_data
+      rescue Net::HTTPServerException => http_e
+        raise http_e unless http_e.response.code == '404'
+        raise app_not_found_error(app_name)
+      end
+    end
+
+    #
+    # Return an array of cookbooks for the current change.
+    # Not in Delivery DSL. Used by define_project_application().
+    #
+    # @param [String] app_name
+    #   A string representing your application's name
+    # @param [String] app_version
+    #   A string representing your application's version
+    # @param [Hash] app_attributes
+    #   A hash of attributes that make up your application at app_version.
+    #   Should contain key, strings, and arrays.
+    #
+    # @return [Chef::DataBagItem]
+    #
+    def update_data_bag_with_application_attributes(app_name, app_version, app_attributes)
+      data_bag_item_id = app_slug(app_name, app_version)
+
+      # Check if the name is valid.
+      begin
+        Chef::DataBag.validate_name!(data_bag_item_id)
+      rescue Chef::Exceptions::InvalidDataBagName
+        raise 'Your application\'s name and version can only contain '\
+              'lowercase letters, numbers, hyphens, and underscores.' \
+              "\nYou passed name:    #{app_name}" \
+              "\nYou passed version: #{app_version}"
+      end
+
+      data_bag = new_data_bag
+      data_bag.name(@project)
+
+      chef_server.with_server_config do
+        # Due to strange Chef::DataBag code, this will either create an empty
+        # project data bag, or do nothing.
+        data_bag.save
+      end
+
+      data_bag_item_data = {
+        'id' => data_bag_item_id,
+        'version' => app_version,
+        'name' => app_name
+      }
+      data_bag_item_data.merge!(app_attributes)
+      data_bag_item = new_data_bag_item
+      data_bag_item.data_bag(@project)
+      set_data_bag_item_content(data_bag_item, data_bag_item_data)
+
+      chef_server.with_server_config do
+        data_bag_item.save
+      end
+      data_bag_item
+    end
+
+    #
+    # Return an array of cookbooks for the current change.
+    # Not in Delivery DSL. Used by define_project_application().
+    #
+    # @param [String] app_name
+    #   A string representing your application's name
+    # @param [String] app_version
+    #   A string representing your application's version
+    # @param [Hash] app_attributes
+    #   A hash of attributes that make up your application at app_version.
+    #   Should contain key, strings, and arrays.
+    #
+    # @return [Chef::Environment]
+    #
+    def set_application_pin_on_acceptance_environment(app_name, app_version)
+      env = begin
+              load_chef_environment(acceptance_environment)
+            rescue Net::HTTPServerException => http_e
+              raise http_e unless http_e.response.code == '404'
+              env = new_environment
+              env.name(acceptance_environment)
+              create_chef_environment(env)
+              env
+            end
+
+      env.override_attributes['applications'] ||= {}
+      env.override_attributes['applications'][app_name] = app_version
+
+      save_chef_environment(env)
+      env
+    end
+
+    #
+    # Generates a unique slug given an app_name and version
+    #
+    # @param [String] app_name
+    #   A string representing your application's name
+    # @param [String] app_version
+    #   A string representing your application's version
+    #
+    # @return [String]
+    def app_slug(app_name, app_version)
+      "#{project_slug}-#{app_name}-#{app_version}"
+    end
+
+    # Not in Delivery DSL. Used by define_project_application().
+    def wrong_stage_for_define_project_application_error
+      'The helper define_project_application should be called at the ' \
+      'end of the build phase (usually in the publish stage).\n' \
+      "You called it from the #{@stage} stage."
+    end
+
+    # Not in Delivery DSL. Used by get_project_application().
+    def wrong_stage_for_get_project_application_error
+      'The helper get_project_application must be called from the ' \
+      'acceptance, union, rehearsal, or delivered stage.\n' \
+      "You called it from the #{@stage} stage."
+    end
+
+    # Not in Delivery DSL. Used by get_project_application().
+    def app_not_found_error(app_name)
+      "Could not find app #{app_name} for stage #{@stage}. " \
+      'Have you defined it with define_project_application\n' \
+      'If so, it means delivery-truck::provision has not run.\n' \
+      'Either call get_project_application() from a ruby_block, ' \
+      'a seperate include_recipe or in the deploy recipe instead of provision'
+    end
+
     private
 
     #
@@ -187,6 +372,54 @@ module DeliverySugar
     #
     def scm_client
       @scm_client ||= DeliverySugar::SCM.new
+    end
+
+    ####################################################
+    # Helper methods abstracted to make testing easier #
+    ####################################################
+
+    def new_environment
+      Chef::Environment.new
+    end
+
+    def new_data_bag
+      Chef::DataBag.new
+    end
+
+    def new_data_bag_item
+      Chef::DataBagItem.new
+    end
+
+    def load_data_bag_item(data_bag_name, data_bag_item_name)
+      chef_server.with_server_config do
+        Chef::DataBagItem.load(data_bag_name, data_bag_item_name)
+      end
+    end
+
+    def set_data_bag_item_content(data_bag_item, content)
+      data_bag_item.raw_data = content
+    end
+
+    def load_chef_environment(env_name)
+      chef_server.with_server_config do
+        Chef::Environment.load(env_name)
+      end
+    end
+
+    def create_chef_environment(env)
+      chef_server.with_server_config do
+        env.create
+      end
+    end
+
+    def save_chef_environment(env)
+      chef_server.with_server_config do
+        env.save
+      end
+    end
+
+    def chef_server
+      @chef_server ||= DeliverySugar::ChefServer.new
     end
   end
 end
