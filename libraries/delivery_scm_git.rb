@@ -58,6 +58,34 @@ module DeliverySugar
       def merge_base(workspace, ref1, ref2)
         shell_out!("git merge-base #{ref1} #{ref2}", cwd: workspace).stdout.chomp
       end
+
+      #
+      # Takes a block and executes it while the repo is checked out to the given
+      # ref. Restores the repo back to the original ref/HEAD state after the
+      # block finishes executing.
+      #
+      # @param [String] workspace
+      #   The fully-qualified path to the git repo on disk
+      # @param [String] ref
+      #   A valid refname
+      #
+      # @return what the block returns
+      #
+      def checkout(workspace, ref)
+        # We assume that the repos are clean and that checking out a different
+        # can be done with forcing/losing state.
+        current_ref = shell_out!('git rev-parse --abbrev-ref HEAD', cwd: workspace).stdout.chomp
+        if current_ref == 'HEAD'
+          current_ref = shell_out!('git rev-parse HEAD', cwd: workspace).stdout.chomp
+        end
+
+        begin
+          shell_out!("git checkout #{ref}", cwd: workspace)
+          yield
+        ensure
+          shell_out!("git checkout #{current_ref}", cwd: workspace)
+        end
+      end
     end
   end
 end

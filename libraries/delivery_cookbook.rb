@@ -81,7 +81,7 @@ module DeliverySugar
       metadata = File.join(cookbook_path, 'metadata')
       return load_metadata_rb("#{metadata}.rb") if File.exist?("#{metadata}.rb")
       return load_metadata_json("#{metadata}.json") if File.exist?("#{metadata}.json")
-      fail DeliverySugar::Exceptions::NotACookbook, path
+      fail DeliverySugar::Exceptions::NotACookbook, cookbook_path
     end
 
     #

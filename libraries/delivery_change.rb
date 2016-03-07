@@ -96,13 +96,57 @@ module DeliverySugar
     # @return [Array<String>]
     #
     def changed_files
+      scm_client.changed_files(@workspace_repo, merge_base, change_ref)
+    end
+
+    #
+    # Returns the base against which we are comparing this change.
+    #
+    # This is the "common ancestory" between the pipeline branch and the
+    # change branch.
+    #
+    # @return [String] a ref name or sha that corresponds to the merge base.
+    #
+    def merge_base
       if @merge_sha.empty?
-        merge_base = scm_client.merge_base(@workspace_repo, "origin/#{@pipeline}",
-                                           "origin/#{@patchset_branch}")
-        scm_client.changed_files(@workspace_repo, merge_base,
-                                 "origin/#{@patchset_branch}")
+        scm_client.merge_base(@workspace_repo, "origin/#{@pipeline}",
+                              "origin/#{@patchset_branch}")
       else
-        scm_client.changed_files(@workspace_repo, "#{@merge_sha}~1", @merge_sha)
+        "#{@merge_sha}~1"
+      end
+    end
+
+    #
+    # Returns the ref name that corresponds to change branch.
+    # If the change has already been merged, this refers to the merge commit.
+    #
+    # @return [String] a ref name or sha that corresponds to the change branch.
+    #
+    def change_ref
+      @merge_sha.empty? ? "origin/#{@patchset_branch}" : @merge_sha
+    end
+
+    #
+    # Gets the version of a cookbook for the current change.
+    #
+    # @param [String] the path to the cookbook.
+    #
+    # @return the version string from Chef::Cookbook::Metadata
+    #
+    def cookbook_version(path)
+      Cookbook.new(path).version
+    end
+
+    #
+    # Gets the version of a cookbook from before this change
+    #
+    # @param [String] the path to the cookbook.
+    #
+    # @return the version string from Chef::Cookbook::Metadata
+    #
+    def base_cookbook_version(path)
+      scm_client.checkout(@workspace_repo, merge_base) do
+        Cookbook.new(path).version
       end
     end
 

@@ -167,6 +167,80 @@ describe DeliverySugar::Change do
     end
   end
 
+  describe "#cookbook_version" do
+    let(:cookbook_a) { double 'cookbook a' }
+    let(:cookbook_path) { 'workspace_repo/cookbooks/a' }
+
+    it "throws an exception when the cookbook is not found" do
+      expect(DeliverySugar::Cookbook).to receive(:new)
+        .with(cookbook_path).and_raise(DeliverySugar::Exceptions::NotACookbook, cookbook_path)
+      expect { subject.cookbook_version(cookbook_path) }.to raise_error(DeliverySugar::Exceptions::NotACookbook)
+    end
+
+    it "returns the version from the metadata file in the given dir" do
+      version = '0.0.1'
+      expect(DeliverySugar::Cookbook).to receive(:new)
+        .with(cookbook_path).and_return(cookbook_a)
+      expect(cookbook_a).to receive(:version).and_return(version)
+      expect(subject.cookbook_version(cookbook_path)).to eql(version)
+    end
+  end
+
+  describe "#base_cookbook_version" do
+    let(:cookbook_a) { double 'cookbook a' }
+    let(:cookbook_path) { 'workspace_repo/cookbooks/a' }
+    let(:scm) { double 'git' }
+
+    before(:each) do
+      allow(subject).to receive(:scm_client).and_return(scm)
+    end
+
+    describe "when there is no merge sha" do
+      let(:merge_base) { 'fakefakefake' }
+
+      before(:each) do
+        expect(scm).to receive(:merge_base).and_return(merge_base)
+        expect(scm).to receive(:checkout).with('workspace_repo', merge_base).and_yield
+      end
+
+      it "throws an exception when the cookbook is not found" do
+        allow(DeliverySugar::Cookbook).to receive(:new)
+          .with(cookbook_path).and_raise(DeliverySugar::Exceptions::NotACookbook, cookbook_path)
+        expect { subject.base_cookbook_version(cookbook_path) }.to raise_error(DeliverySugar::Exceptions::NotACookbook)
+      end
+
+      it "returns the version from the metadata file in the given dir" do
+        version = '0.0.1'
+        expect(DeliverySugar::Cookbook).to receive(:new)
+          .with(cookbook_path).and_return(cookbook_a)
+        expect(cookbook_a).to receive(:version).and_return(version)
+        expect(subject.base_cookbook_version(cookbook_path)).to eql(version)
+      end
+    end
+
+    describe "when there is a merge sha" do
+      let(:sha) { 'fakefakefake' }
+
+      before(:each) do
+        expect(scm).to receive(:checkout).with('workspace_repo', "#{sha}~1").and_yield
+      end
+
+      it "throws an exception when the cookbook is not found" do
+        allow(DeliverySugar::Cookbook).to receive(:new)
+          .with(cookbook_path).and_raise(DeliverySugar::Exceptions::NotACookbook, cookbook_path)
+        expect { subject.base_cookbook_version(cookbook_path) }.to raise_error(DeliverySugar::Exceptions::NotACookbook)
+      end
+
+      it "returns the version from the metadata file in the given dir" do
+        version = '0.0.1'
+        expect(DeliverySugar::Cookbook).to receive(:new)
+          .with(cookbook_path).and_return(cookbook_a)
+        expect(cookbook_a).to receive(:version).and_return(version)
+        expect(subject.base_cookbook_version(cookbook_path)).to eql(version)
+      end
+    end
+  end
+
   describe '#project_slug' do
     it 'returns a composition of the ent, org and project names' do
       expect(subject.project_slug).to eql('ent-org-proj')
