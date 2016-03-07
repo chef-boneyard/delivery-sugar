@@ -53,10 +53,29 @@ module DeliverySugar
       # @param [String] ref2
       #   A git reference (branch, sha, etc)
       #
-      # @return [Array<String>]
+      # @return [String]
       #
       def merge_base(workspace, ref1, ref2)
         shell_out!("git merge-base #{ref1} #{ref2}", cwd: workspace).stdout.chomp
+      end
+
+      #
+      # Get the contents of an object at a given revision.
+      #
+      # @param [String] workspace
+      #   The fully-qualified path to the git repo on disk.
+      # @param [String] path
+      #   Path to an file relative to the repo root.
+      # @param [String] ref
+      #   A git reference or commit-ish string.
+      #   If this is nil, reads from the current HEAD.
+      #
+      # @return [String] contents or nil if no such file is available.
+      #
+      def read_at_revision(workspace, path, ref = nil)
+        ref ||= 'HEAD'
+        cmd = shell_out("git show #{ref}:#{path}", cwd: workspace)
+        cmd.stdout unless cmd.error?
       end
     end
   end

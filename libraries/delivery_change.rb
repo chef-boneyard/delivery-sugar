@@ -107,6 +107,31 @@ module DeliverySugar
     end
 
     #
+    # Gets the metadata for a given cookbook at a specified revision.
+    #
+    # @param [String] the path to the cookbook.
+    # @param [String] a revision string that can identify the version
+    #   of the source repo to look in. For git, this is a "commit-ish"
+    #   refspec.
+    #
+    # @return Cookbook that corresponds to the parsed metadata  or nil
+    #   if the cookbook doesn't exist at that path at the revision
+    #   requested.
+    #
+    def cookbook_metadata(path, revision = nil)
+      if revision
+        read_file = lambda do |fpath|
+          scm_client.read_at_revision(@workspace_repo, fpath, revision)
+        end
+      end
+      # Don't pass in any read_file callback if we don't need to access
+      # a specific revision.  Just let Cookbook read from the file system.
+      Cookbook.new(path, read_file)
+    rescue Exceptions::NotACookbook
+      nil
+    end
+
+    #
     # Return the environment name for the current stage
     #
     # @return [String]

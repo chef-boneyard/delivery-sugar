@@ -6,12 +6,13 @@ describe DeliverySugar::SCM::Git do
     @scm.extend(described_class)
   end
 
+  let(:workspace) { 'workspace' }
+  let(:options) { { cwd: workspace } }
+
   describe '#changed_files' do
-    let(:workspace) { 'workspace' }
     let(:ref1) { 'ref1' }
     let(:ref2) { 'ref2' }
     let(:cmd) { 'git diff --name-only ref1 ref2' }
-    let(:options) { { cwd: workspace } }
     let(:diff_shellout) do
       double('shellout', stdout: "src/file1.txt\ntest/file2.txt\n")
     end
@@ -26,11 +27,9 @@ describe DeliverySugar::SCM::Git do
   end
 
   describe '#merge_base' do
-    let(:workspace) { 'workspace' }
     let(:ref1) { 'ref1' }
     let(:ref2) { 'ref2' }
     let(:cmd) { 'git merge-base ref1 ref2' }
-    let(:options) { { cwd: workspace } }
     let(:sha_shellout) { double('shellout', stdout: 'abcdef') }
 
     it 'runs a valid git command to get the merge_base' do
@@ -38,6 +37,43 @@ describe DeliverySugar::SCM::Git do
         .and_return(sha_shellout)
 
       expect(@scm.merge_base(workspace, ref1, ref2)).to eql('abcdef')
+    end
+  end
+
+  describe '#read_at_revision' do
+    let(:ref) { 'ref' }
+    let(:path) { 'some/path' }
+    let(:cmd) { 'git show ref:some/path' }
+    let(:output) { 'abcdef' }
+    let(:error) { false }
+    let(:show_shellout) { double('shellout', stdout: output, error?: error) }
+
+    before do
+      expect(@scm).to receive(:shell_out).with(cmd, options)
+        .and_return(show_shellout)
+    end
+
+    context 'with a valid ref' do
+      it 'read content at that ref' do
+        expect(@scm.read_at_revision(workspace, path, ref)).to eql(output)
+      end
+    end
+
+    context 'when path is missing' do
+      let(:error) { true }
+
+      it 'returns nil' do
+        expect(@scm.read_at_revision(workspace, path, ref)).to eql(nil)
+      end
+    end
+
+    context 'ref is nil' do
+      let(:ref) { nil }
+      let(:cmd) { 'git show HEAD:some/path' }
+
+      it 'returns content from HEAD' do
+        expect(@scm.read_at_revision(workspace, path, ref)).to eql(output)
+      end
     end
   end
 end
