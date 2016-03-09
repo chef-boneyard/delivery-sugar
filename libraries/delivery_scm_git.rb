@@ -74,7 +74,8 @@ module DeliverySugar
       def checkout(workspace, ref)
         # We assume that the repos are clean and that checking out a different
         # can be done with forcing/losing state.
-        current_ref = shell_out!('git rev-parse --abbrev-ref HEAD', cwd: workspace).stdout.chomp
+        current_ref =
+          shell_out!('git rev-parse --abbrev-ref HEAD', cwd: workspace).stdout.chomp
         if current_ref == 'HEAD'
           current_ref = shell_out!('git rev-parse HEAD', cwd: workspace).stdout.chomp
         end

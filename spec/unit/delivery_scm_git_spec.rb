@@ -40,28 +40,34 @@ describe DeliverySugar::SCM::Git do
     end
   end
 
-  describe "#checkout" do
+  describe '#checkout' do
     let(:original_ref_out) { double('shellout', stdout: original_ref) }
 
     context 'when repo is checked out to a named ref' do
       let(:original_ref) { 'original/branch/name' }
 
       before(:each) do
-        expect(@scm).to receive(:shell_out!).with("git rev-parse --abbrev-ref HEAD", options).and_return(original_ref_out)
-        expect(@scm).to receive(:shell_out!).with("git checkout #{original_ref}", options)
+        expect(@scm).to receive(:shell_out!)
+          .with('git rev-parse --abbrev-ref HEAD', options)
+          .and_return(original_ref_out)
+        expect(@scm).to receive(:shell_out!)
+          .with("git checkout #{original_ref}", options)
       end
 
       it 'will run the provided block when the given sha is checked out' do
-        other_sha = "somerandomsha"
-        expect(@scm).to receive(:shell_out!).with("git checkout #{other_sha}", options)
-        result = @scm.checkout(workspace, other_sha) { "foo" }
-        expect(result).to eql("foo")
+        other_sha = 'somerandomsha'
+        expect(@scm).to receive(:shell_out!)
+          .with("git checkout #{other_sha}", options)
+        result = @scm.checkout(workspace, other_sha) { 'foo' }
+        expect(result).to eql('foo')
       end
 
-      it 'will restore the git repo back to the original checkout even when exception are thrown' do
-        other_sha = "somerandomsha"
-        expect(@scm).to receive(:shell_out!).with("git checkout #{other_sha}", options)
-        expect { @scm.checkout(workspace, other_sha) { raise "DummyException" } }.to raise_error(RuntimeError)
+      it 'will restore the git repo even when exception are thrown' do
+        other_sha = 'somerandomsha'
+        expect(@scm).to receive(:shell_out!)
+          .with("git checkout #{other_sha}", options)
+        expect { @scm.checkout(workspace, other_sha) { raise 'Error' } }
+          .to raise_error(RuntimeError)
       end
     end
 
@@ -69,24 +75,30 @@ describe DeliverySugar::SCM::Git do
       let(:original_ref) { 'fakefakebasesha' }
 
       before(:each) do
-        expect(@scm).to receive(:shell_out!).with("git rev-parse --abbrev-ref HEAD", options)
-          .and_return(double('shellout', stdout: "HEAD"))
-        expect(@scm).to receive(:shell_out!).with("git rev-parse HEAD", options)
+        expect(@scm).to receive(:shell_out!)
+          .with('git rev-parse --abbrev-ref HEAD', options)
+          .and_return(double('shellout', stdout: 'HEAD'))
+        expect(@scm).to receive(:shell_out!)
+          .with('git rev-parse HEAD', options)
           .and_return(original_ref_out)
-        expect(@scm).to receive(:shell_out!).with("git checkout #{original_ref}", options)
+        expect(@scm).to receive(:shell_out!)
+          .with("git checkout #{original_ref}", options)
       end
 
       it 'will run the provided block when the given sha is checked out' do
-        other_sha = "somerandomsha"
-        expect(@scm).to receive(:shell_out!).with("git checkout #{other_sha}", options)
-        result = @scm.checkout(workspace, other_sha) { "foo" }
-        expect(result).to eql("foo")
+        other_sha = 'somerandomsha'
+        expect(@scm).to receive(:shell_out!)
+          .with("git checkout #{other_sha}", options)
+        result = @scm.checkout(workspace, other_sha) { 'foo' }
+        expect(result).to eql('foo')
       end
 
-      it 'will restore the git repo back to the original checkout even when exception are thrown' do
-        other_sha = "somerandomsha"
-        expect(@scm).to receive(:shell_out!).with("git checkout #{other_sha}", options)
-        expect { @scm.checkout(workspace, other_sha) { raise "DummyException" } }.to raise_error(RuntimeError)
+      it 'will restore the git repo even when exception are thrown' do
+        other_sha = 'somerandomsha'
+        expect(@scm).to receive(:shell_out!)
+          .with("git checkout #{other_sha}", options)
+        expect { @scm.checkout(workspace, other_sha) { raise 'Error' } }
+          .to raise_error(RuntimeError)
       end
     end
   end

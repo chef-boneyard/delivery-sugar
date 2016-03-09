@@ -167,17 +167,19 @@ describe DeliverySugar::Change do
     end
   end
 
-  describe "#cookbook_version" do
+  describe '#cookbook_version' do
     let(:cookbook_a) { double 'cookbook a' }
     let(:cookbook_path) { 'workspace_repo/cookbooks/a' }
 
-    it "throws an exception when the cookbook is not found" do
+    it 'throws an exception when the cookbook is not found' do
       expect(DeliverySugar::Cookbook).to receive(:new)
-        .with(cookbook_path).and_raise(DeliverySugar::Exceptions::NotACookbook, cookbook_path)
-      expect { subject.cookbook_version(cookbook_path) }.to raise_error(DeliverySugar::Exceptions::NotACookbook)
+        .with(cookbook_path)
+        .and_raise(DeliverySugar::Exceptions::NotACookbook, cookbook_path)
+      expect { subject.cookbook_version(cookbook_path) }
+        .to raise_error(DeliverySugar::Exceptions::NotACookbook)
     end
 
-    it "returns the version from the metadata file in the given dir" do
+    it 'returns the version from the metadata file in the given dir' do
       version = '0.0.1'
       expect(DeliverySugar::Cookbook).to receive(:new)
         .with(cookbook_path).and_return(cookbook_a)
@@ -186,7 +188,7 @@ describe DeliverySugar::Change do
     end
   end
 
-  describe "#base_cookbook_version" do
+  describe '#base_cookbook_version' do
     let(:cookbook_a) { double 'cookbook a' }
     let(:cookbook_path) { 'workspace_repo/cookbooks/a' }
     let(:scm) { double 'git' }
@@ -195,7 +197,7 @@ describe DeliverySugar::Change do
       allow(subject).to receive(:scm_client).and_return(scm)
     end
 
-    describe "when there is no merge sha" do
+    describe 'when there is no merge sha' do
       let(:merge_base) { 'fakefakefake' }
 
       before(:each) do
@@ -203,13 +205,15 @@ describe DeliverySugar::Change do
         expect(scm).to receive(:checkout).with('workspace_repo', merge_base).and_yield
       end
 
-      it "throws an exception when the cookbook is not found" do
+      it 'throws an exception when the cookbook is not found' do
         allow(DeliverySugar::Cookbook).to receive(:new)
-          .with(cookbook_path).and_raise(DeliverySugar::Exceptions::NotACookbook, cookbook_path)
-        expect { subject.base_cookbook_version(cookbook_path) }.to raise_error(DeliverySugar::Exceptions::NotACookbook)
+          .with(cookbook_path)
+          .and_raise(DeliverySugar::Exceptions::NotACookbook, cookbook_path)
+        expect { subject.base_cookbook_version(cookbook_path) }
+          .to raise_error(DeliverySugar::Exceptions::NotACookbook)
       end
 
-      it "returns the version from the metadata file in the given dir" do
+      it 'returns the version from the metadata file in the given dir' do
         version = '0.0.1'
         expect(DeliverySugar::Cookbook).to receive(:new)
           .with(cookbook_path).and_return(cookbook_a)
@@ -218,20 +222,22 @@ describe DeliverySugar::Change do
       end
     end
 
-    describe "when there is a merge sha" do
+    describe 'when there is a merge sha' do
       let(:sha) { 'fakefakefake' }
 
       before(:each) do
-        expect(scm).to receive(:checkout).with('workspace_repo', "#{sha}~1").and_yield
+        expect(scm).to receive(:checkout).with('workspace_repo', '#{sha}~1').and_yield
       end
 
-      it "throws an exception when the cookbook is not found" do
+      it 'throws an exception when the cookbook is not found' do
         allow(DeliverySugar::Cookbook).to receive(:new)
-          .with(cookbook_path).and_raise(DeliverySugar::Exceptions::NotACookbook, cookbook_path)
-        expect { subject.base_cookbook_version(cookbook_path) }.to raise_error(DeliverySugar::Exceptions::NotACookbook)
+          .with(cookbook_path)
+          .and_raise(DeliverySugar::Exceptions::NotACookbook, cookbook_path)
+        expect { subject.base_cookbook_version(cookbook_path) }
+          .to raise_error(DeliverySugar::Exceptions::NotACookbook)
       end
 
-      it "returns the version from the metadata file in the given dir" do
+      it 'returns the version from the metadata file in the given dir' do
         version = '0.0.1'
         expect(DeliverySugar::Cookbook).to receive(:new)
           .with(cookbook_path).and_return(cookbook_a)
