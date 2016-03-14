@@ -30,11 +30,16 @@ module DeliverySugar
     #
     # @param cookbook_path [String]
     #   The fully-qualified path to the cookbook on disk
+    # @param read_file [lambda]
+    #   A function that can take a file path and return file contents
+    #   if it exists or nil otherwise. If this is not provided,
+    #   default file system calls are made.
     #
     # @return [DeliverySugar::Cookbook]
     #
-    def initialize(cookbook_path)
+    def initialize(cookbook_path, read_file = nil)
       @path = cookbook_path
+      @read_file = read_file
       metadata = load_metadata(cookbook_path)
       @version = metadata.version
       @name = metadata.name
@@ -67,6 +72,19 @@ module DeliverySugar
     private
 
     #
+    # Returns the contents of a file at the given path
+    #
+    # @return [String] file contents or nil if path is unreadable.
+    #
+    def file_contents(path)
+      if @read_file
+        @read_file[path]
+      elsif File.exist?(path)
+        File.read(path)
+      end
+    end
+
+    #
     # Load the metadata for a given cookbook path
     #
     # @param cookbook_path [String]
@@ -78,39 +96,27 @@ module DeliverySugar
     # @return [Chef::Cookbook::Metadata]
     #
     def load_metadata(cookbook_path)
-      metadata = File.join(cookbook_path, 'metadata')
-      return load_metadata_rb("#{metadata}.rb") if File.exist?("#{metadata}.rb")
-      return load_metadata_json("#{metadata}.json") if File.exist?("#{metadata}.json")
-      fail DeliverySugar::Exceptions::NotACookbook, path
-    end
-
-    #
-    # Load a metadata.json file
-    #
-    # @param metadata_json [String]
-    #   The fully-qualified path to a metadata.json
-    #
-    # @return [Chef::Cookbook::Metadata]
-    #
-    def load_metadata_json(metadata_json)
+      metadata_path = File.join(cookbook_path, 'metadata')
       metadata = Chef::Cookbook::Metadata.new
-      metadata.from_json(File.read(metadata_json))
-      metadata
-    end
 
-    #
-    # For a given metadata.rb file, load the Metadata object from the Chef
-    # library.
-    #
-    # @param metadata_rb [String]
-    #   The fully-qualified path to a metadata.rb
-    #
-    # @return [Chef::Cookbook::Metadata]
-    #
-    def load_metadata_rb(metadata_rb)
-      metadata = Chef::Cookbook::Metadata.new
-      metadata.from_file(metadata_rb)
-      metadata
+      contents = file_contents("#{metadata_path}.rb")
+      unless contents.nil?
+        # Currently, Metadata does not have a way to load ".rb" files
+        # directly from a string containing the code to be evaluated.
+        # So we follow the general strategy used in:
+        # https://github.com/chef/chef/blob/master/lib/chef/mixin/from_file.rb
+        #
+        # We provide the contents directly and give the file name and 1
+        # (for the line number) to evaluate the .rb file in the context of the
+        # metadata object.
+        metadata.instance_eval(contents, "#{metadata_path}.rb", 1)
+        return metadata
+      end
+
+      contents = file_contents("#{metadata_path}.json")
+      return metadata.from_json(contents) unless contents.nil?
+
+      fail DeliverySugar::Exceptions::NotACookbook, cookbook_path
     end
 
     #

@@ -167,6 +167,58 @@ describe DeliverySugar::Change do
     end
   end
 
+  describe '#cookbook_metadata' do
+    let(:cookbook_a) { double 'cookbook a' }
+    let(:workspace_repo) { 'workspace_repo' }
+    let(:cookbook_path) { "#{workspace_repo}/cookbooks/a" }
+
+    context 'with no revision' do
+      it 'returns nil when the cookbook is not found' do
+        expect(DeliverySugar::Cookbook).to receive(:new)
+          .with(cookbook_path, nil)
+          .and_raise(DeliverySugar::Exceptions::NotACookbook, cookbook_path)
+        expect(subject.cookbook_metadata(cookbook_path)).to be_nil
+      end
+
+      it 'returns the version from the metadata file in the given dir' do
+        expect(DeliverySugar::Cookbook).to receive(:new)
+          .with(cookbook_path, nil).and_return(cookbook_a)
+        expect(subject.cookbook_metadata(cookbook_path)).to eq(cookbook_a)
+      end
+    end
+
+    context 'with a revision' do
+      let(:scm) { double 'git' }
+      let(:revision) { 'fakefake' }
+
+      before do
+        allow(subject).to receive(:scm_client).and_return(scm)
+      end
+
+      it 'returns nil when the cookbook is not found' do
+        allow(scm).to receive(:read_at_revision)
+          .with(workspace_repo, cookbook_path, revision).and_return(nil)
+        expect(DeliverySugar::Cookbook).to receive(:new)
+          .with(cookbook_path, kind_of(Proc)) do |path, lam|
+            expect(lam[path]).to be_nil
+            raise DeliverySugar::Exceptions::NotACookbook, cookbook_path
+          end
+        expect(subject.cookbook_metadata(cookbook_path, revision)).to be_nil
+      end
+
+      it 'returns the version from the metadata file in the given dir' do
+        allow(scm).to receive(:read_at_revision)
+          .with(workspace_repo, cookbook_path, revision).and_return('something')
+        expect(DeliverySugar::Cookbook).to receive(:new)
+          .with(cookbook_path, kind_of(Proc)) do |path, lam|
+            expect(lam[path]).to eql('something')
+            cookbook_a
+          end
+        expect(subject.cookbook_metadata(cookbook_path, revision)).to eq(cookbook_a)
+      end
+    end
+  end
+
   describe '#project_slug' do
     it 'returns a composition of the ent, org and project names' do
       expect(subject.project_slug).to eql('ent-org-proj')
