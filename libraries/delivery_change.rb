@@ -121,7 +121,10 @@ module DeliverySugar
     def cookbook_metadata(path, revision = nil)
       if revision
         read_file = lambda do |fpath|
-          scm_client.read_at_revision(@workspace_repo, fpath, revision)
+          fpath_p = Pathname.new(fpath)
+          workspace_repo_p = Pathname.new(@workspace_repo)
+          relative_path = fpath_p.relative_path_from(workspace_repo_p).to_s
+          scm_client.read_at_revision(@workspace_repo, relative_path, revision)
         end
       end
       # Don't pass in any read_file callback if we don't need to access
