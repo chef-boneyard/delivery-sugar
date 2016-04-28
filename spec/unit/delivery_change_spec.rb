@@ -170,7 +170,8 @@ describe DeliverySugar::Change do
   describe '#cookbook_metadata' do
     let(:cookbook_a) { double 'cookbook a' }
     let(:workspace_repo) { 'workspace_repo' }
-    let(:cookbook_path) { "#{workspace_repo}/cookbooks/a" }
+    let(:cookbook_relative_path) { 'cookbooks/a' }
+    let(:cookbook_path) { "#{workspace_repo}/#{cookbook_relative_path}" }
 
     context 'with no revision' do
       it 'returns nil when the cookbook is not found' do
@@ -197,7 +198,7 @@ describe DeliverySugar::Change do
 
       it 'returns nil when the cookbook is not found' do
         allow(scm).to receive(:read_at_revision)
-          .with(workspace_repo, cookbook_path, revision).and_return(nil)
+          .with(workspace_repo, cookbook_relative_path, revision).and_return(nil)
         expect(DeliverySugar::Cookbook).to receive(:new)
           .with(cookbook_path, kind_of(Proc)) do |path, lam|
             expect(lam[path]).to be_nil
@@ -208,7 +209,7 @@ describe DeliverySugar::Change do
 
       it 'returns the version from the metadata file in the given dir' do
         allow(scm).to receive(:read_at_revision)
-          .with(workspace_repo, cookbook_path, revision).and_return('something')
+          .with(workspace_repo, cookbook_relative_path, revision).and_return('something')
         expect(DeliverySugar::Cookbook).to receive(:new)
           .with(cookbook_path, kind_of(Proc)) do |path, lam|
             expect(lam[path]).to eql('something')
