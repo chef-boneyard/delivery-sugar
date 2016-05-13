@@ -26,7 +26,7 @@ describe 'test-build-cookbook::functional' do
       allow_any_instance_of(DeliverySugar::TestKitchen).to receive(:shell_out)
         .and_return(mock_shell_out)
       allow(Chef::Config).to receive(:from_file)
-        .with('/var/opt/delivery/workspace/.chef/knife.rb')
+        .with('/workspace/.chef/knife.rb')
         .and_return(true)
       allow(Chef::EncryptedDataBagItem).to receive(:load_secret)
         .and_return('SECRET')

@@ -57,7 +57,8 @@ describe Chef::Provider::DeliveryPushJob do
       it 'raises an exception' do
         expect { provider.run_action(:dispatch) }.to raise_error(
           RuntimeError,
-          "The config file \"#{chef_config_file}\" does not exist.")
+          "The config file \"#{chef_config_file}\" does not exist."
+        )
       end
     end
 
