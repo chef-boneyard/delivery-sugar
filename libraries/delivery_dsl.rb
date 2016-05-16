@@ -248,7 +248,7 @@ module DeliverySugar
     # @return [DeliverySugar::ChefServer]
     #
     def chef_server
-      @delivery_chef_server ||= DeliverySugar::ChefServer.new
+      @delivery_chef_server ||= DeliverySugar::ChefServer.new(delivery_knife_rb)
     end
 
     #
