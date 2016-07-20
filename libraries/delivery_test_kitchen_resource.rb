@@ -36,7 +36,7 @@ class Chef
         @repo_path = delivery_workspace_repo
 
         @action    = :test
-        %w( create converge setup verify destroy test ).each do |a|
+        %w(create converge setup verify destroy test).each do |a|
           @allowed_actions.push(a.to_sym)
         end
       end

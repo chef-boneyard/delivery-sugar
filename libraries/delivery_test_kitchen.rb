@@ -118,7 +118,7 @@ module DeliverySugar
       chef_gem.run_action(:install)
 
       # Create directories for AWS credentials and SSH key
-      %w( .aws .ssh ).each do |d|
+      %w(.aws .ssh).each do |d|
         directory = Chef::Resource::Directory.new(File.join(cache, d), run_context)
         directory.recursive true
         directory.run_action(:create)

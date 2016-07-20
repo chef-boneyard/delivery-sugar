@@ -20,7 +20,7 @@ end
 
 describe DeliverySugar::Exceptions::CookbookUploadFailed do
   let(:failed_servers) do
-    %w( name@http://chef.example.com/org name@http://chef.example.com/org2 )
+    %w(name@http://chef.example.com/org name@http://chef.example.com/org2)
   end
 
   let(:output) do
