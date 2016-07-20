@@ -33,7 +33,7 @@ describe DeliverySugar::Change do
   let(:app_attributes) do
     {
       'attr1' => 'value1',
-      'attr2' => %w( arr_value1, arr_value2 )
+      'attr2' => %w(arr_value1 arr_value2)
     }
   end
   let(:expected_data_bag_item_content) do
@@ -371,7 +371,7 @@ describe DeliverySugar::Change do
 
   describe '#get_project_application' do
     context 'when the stage is build or verify' do
-      %w( build, verify ).each do |current_stage|
+      %w(build verify).each do |current_stage|
         let(:stage) { current_stage }
         it 'raises the proper user error' do
           expect { subject.get_project_application(app_name) }
