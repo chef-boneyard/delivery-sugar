@@ -31,12 +31,13 @@ class Chef
         @provider = Chef::Provider::DeliverySupermarket
         cookbook = DeliverySugar::Cookbook.new(delivery_workspace_repo)
 
-        @site           = 'https://supermarket.chef.io'
-        @cookbook_name  = cookbook.name
-        @cookbook_path  = cookbook.path
-        @config         = delivery_knife_rb
-        @user           = 'delivery'
-        @action         = :share
+        @site     = 'https://supermarket.chef.io'
+        @cookbook = cookbook.name
+        @path     = cookbook.path
+        @version  = cookbook.version
+        @config   = delivery_knife_rb
+        @user     = 'delivery'
+        @action   = :share
         @allowed_actions.push(:share)
       end
 
@@ -52,11 +53,22 @@ class Chef
       end
 
       #
-      # The cokbook name 
+      # The cokbook name
       #
-      def cookbook_name(arg = nil)
+      def cookbook(arg = nil)
         set_or_return(
-          :cookbook_name,
+          :cookbook,
+          arg,
+          kind_of: String
+        )
+      end
+
+      #
+      # The cookbook version
+      #
+      def version(arg = nil)
+        set_or_return(
+          :version,
           arg,
           kind_of: String
         )
@@ -65,9 +77,9 @@ class Chef
       #
       # The fully-qualified path to the directory where the cookbook is on disk
       #
-      def cookbook_path(arg = nil)
+      def path(arg = nil)
         set_or_return(
-          :repo_path,
+          :path,
           arg,
           kind_of: String
         )
