@@ -34,7 +34,7 @@ class Chef
         @site           = 'https://supermarket.chef.io'
         @cookbook_name  = cookbook.name
         @cookbook_path  = cookbook.path
-        @config         = delivery_config_rb
+        @config         = delivery_knife_rb
         @user           = 'delivery'
         @action         = :share
         @allowed_actions.push(:share)
