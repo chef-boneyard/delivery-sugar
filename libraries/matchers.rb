@@ -20,6 +20,10 @@ if defined?(ChefSpec)
     ChefSpec::Matchers::ResourceMatcher.new(:delivery_push_job, :dispatch, resource_name)
   end
 
+  def share_delivery_supermarket(resource_name)
+    ChefSpec::Matchers::ResourceMatcher.new(:delivery_supermarket, :share, resource_name)
+  end
+
   def push_delivery_github(resource_name)
     ChefSpec::Matchers::ResourceMatcher.new(:delivery_github, :push, resource_name)
   end
