@@ -80,7 +80,7 @@ class DeliverySupermarket < Chef::Resource
 
     def cookbook_version_in_supermarket
       command = "knife supermarket show #{new_resource.cookbook} " \
-                "#{new_resource.cookbook_version} " \
+                "#{new_resource.version} " \
                 "--config #{new_resource.config} " \
                 "--supermarket-site #{new_resource.site}"
       output = shell_out(command)

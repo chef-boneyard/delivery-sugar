@@ -24,6 +24,36 @@ automatically make available the custom resources included with Delivery Sugar.
 
 **There is no need to include Delivery Sugar in any of your recipes**
 
+## Resource `delivery_supermarket`
+
+With this new resource you can easily share your cookbook to Supermarket
+by just calling:
+```ruby
+delivery_supermarket 'share_cookbook' do
+  site 'https://my-private-supermarket.example.com'
+end
+```
+
+That will take all the defaults from Delivery. It means that if you are
+sharing a cookbook to your Private Supermarket it will use the `delivery`
+credentials that the cluster is linked to.
+
+If you want to customize your resource you can use more attributes:
+```ruby
+secrets = get_project_secrets
+delivery_supermarket 'share_custom_cookbook' do
+  config '/path/to/my/knife.rb'
+  cookbook 'my_cookbook'
+  path '/path/to/my/cookbook/on/disk/my_cookbook'
+  user secrets['supermarket_user']
+  key secrets['supermarket_key']
+  action :share
+end
+```
+
+Note that by not specifying the `site` you will be publishing to the Public
+Supermarket.
+
 ## API
 
 ## Test Kitchen
