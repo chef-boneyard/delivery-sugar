@@ -108,8 +108,8 @@ module DeliverySugar
     #
     # @return [String]
     #
-    def delivery_environment
-      change.environment_for_current_stage
+    def delivery_environment(stage=nil)
+      change.environment_for_current_stage(stage)
     end
 
     #

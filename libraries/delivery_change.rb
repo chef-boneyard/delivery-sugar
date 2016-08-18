@@ -69,6 +69,22 @@ module DeliverySugar
       "acceptance-#{project_slug}-#{@pipeline}"
     end
 
+    def urd_environment(stage=@stage)
+      case node.default['delivery-sugar']['namespace_urd_by']
+      when :enterprise
+        "#{stage}-#{@enterprise}"
+      when :organization
+        "#{stage}-#{@organization_slug}"
+      when :project
+        "#{stage}-#{@project_slug}"
+      when :pipeline
+        "#{stage}-#{@project_slug}-#{pipeline}"
+      else
+        stage
+      end
+    end
+
+
     #
     # Return a list of Cookbook objects representing the cookbooks that have
     # been modified in the current changeset.
@@ -139,8 +155,8 @@ module DeliverySugar
     #
     # @return [String]
     #
-    def environment_for_current_stage
-      @stage == 'acceptance' ? acceptance_environment : @stage
+    def environment_for_current_stage(stage=@stage)
+      stage == 'acceptance' ? acceptance_environment : urd_environment
     end
 
     #
