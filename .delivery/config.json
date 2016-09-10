@@ -4,9 +4,7 @@
         "name": "delivery-sugar-build-cookbook",
         "path": ".delivery/build_cookbook"
     },
-    "build_nodes": {
-        "default": ["name:builder-*.delivery.chef.co"]
-    },
+    "build_nodes": {},
     "skip_phases": [
         "publish",
         "security",
