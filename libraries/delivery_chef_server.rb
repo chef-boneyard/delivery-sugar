@@ -64,6 +64,26 @@ module DeliverySugar
     end
 
     #
+    # A more general purpose data bag collector. Can handle both encrypted
+    # and non-encrypted data bags.
+    #
+    # @param bag_name [String]
+    #   The name of the data bag
+    # @param item_id [String]
+    #   The name of the data bag item
+    # @param secret_file [String]
+    #   The path to the non-standard encryption secret file
+    #
+    # @return [Hash]
+    #
+    def data_bag_item(bag_name, item_id, file = nil)
+      with_server_config do
+        secret = file.nil? ? nil : Chef::EncryptedDataBagItem.load_secret(file)
+        data_query.data_bag_item(bag_name, item_id, secret)
+      end
+    end
+
+    #
     # Return a hash that can be fed into Cheffish resources.
     #
     # @return [Hash]
@@ -198,6 +218,15 @@ module DeliverySugar
         client_name: @server_config[:node_name],
         signing_key_filename: @server_config[:client_key]
       )
+    end
+
+    #
+    # A wrapper for the DataQuery functionality of core Chef. This allows us
+    # to do some cool things like have the helper handle either encrypted or
+    # normal data bag items.
+    #
+    def data_query
+      @data_query ||= Object.new.extend(Chef::DSL::DataQuery)
     end
   end
 end

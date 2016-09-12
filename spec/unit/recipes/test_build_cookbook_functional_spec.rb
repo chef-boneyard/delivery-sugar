@@ -28,10 +28,7 @@ describe 'test-build-cookbook::functional' do
       allow(Chef::Config).to receive(:from_file)
         .with('/workspace/.chef/knife.rb')
         .and_return(true)
-      allow(Chef::EncryptedDataBagItem).to receive(:load_secret)
-        .and_return('SECRET')
-      allow(Chef::EncryptedDataBagItem).to receive(:load)
-        .and_return(mock_ec2_secrets)
+      stub_data_bag_item('delivery-secrets', 'ent-org-proj').and_return(mock_ec2_secrets)
     end
 
     it 'converges successfully' do

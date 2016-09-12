@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'chef', '~> 12.0.0'
+gem 'json', '~> 1.8.3' # 2.0.2 screws with Berkshelf
 
 group :development do
   gem 'guard-rspec'

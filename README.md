@@ -24,6 +24,132 @@ automatically make available the custom resources included with Delivery Sugar.
 
 **There is no need to include Delivery Sugar in any of your recipes**
 
+## DSL
+
+The following are DSL helper methods available to you when you include
+Delivery Sugar in your build cookbook.
+
+### Automate Helpers
+Helpers that can assist you in detecting and communicating with the larger
+Automate environment.
+
+#### `automate_knife_rb`
+The path to the knife config that can communicate with the Automate Chef Server.
+**Default Value:** `/var/opt/delivery/workspace/.chef/knife.rb`
+
+#### `automate_chef_server_details`
+Cheffish details you can pass into Provisioning or Cheffish resources (i.e
+`chef_environment`).
+
+### Workspace Details
+Helpers that provide the paths to the relevant workspace directories on the
+build node.
+
+#### `workflow_workspace`
+The path to the shared workspace on the Build Nodes. This workspace is shared
+across all organizations and projects. In this directory are things like
+builder keys, ssh wrappers, etc. **Default Value:** `/var/opt/delivery/workspace`
+
+#### `workflow_workspace_repo`
+The path to the root of your project's code repository on the the build node.
+
+#### `workflow_workspace_chef`
+The path to the directory where the chef-client run associated with the phase
+job is executed from.
+
+#### `workflow_workspace_cache`
+The path to a cache directory associated with this phase run.
+
+### Pipeline Details
+
+#### `workflow_stage`
+The name of the stage currently being executed (i.e. verify, build, etc).
+
+#### `workflow_phase`
+The name of the phase currently being executed (i.e. unit, lint, etc)
+
+#### `workflow_chef_environment_for_stage`
+The name of the Chef Environment associated with the current stage.
+
+#### `workflow_project_acceptance_environment`
+The name of the Chef Environment associated with the Acceptance stage for this
+project.
+
+### Change Details
+Details that are specific to the current change.
+
+#### `workflow_change_enterprise`
+The name of the Automate enterprise associated with the change.
+
+#### `workflow_change_organization`
+The name of the Automate organization associated with the change.
+
+#### `workflow_change_project`
+The name of the Automate project associated with the change.
+
+#### `workflow_change_pipeline`
+The name of the Automate pipeline associated with the change.
+
+#### `workflow_change_id`
+The Change ID associated with the current phase run.
+
+#### `workflow_change_merge_sha`
+The merge SHA associated with the current change. Will be `null` for phases in
+the Verify stage.
+
+#### `workflow_change_patchset_branch`
+The name of the branch originally given to the change when it was submitted
+for review.
+
+#### `changed_cookbooks`
+Returns an array of `DeliverySugar::Cookbook` objects for each cookbook that
+was modified in the current change.
+
+#### `changed_files`
+Returns a list of all the files modified in the current change. File names are
+scoped to the project root.
+
+#### `workflow_project_slug`
+Returns a unique string that can be used to identify the current project.
+**Format:** <ENTERPRISE>-<ORGANIZATION>-<PROJECT>
+
+#### `workflow_organization_slug`
+Returns a unique string that can be used to identify the organization associated
+with the current project. **Format:** <ENTERPRISE>-<ORGANIZATION>
+
+## Running against the Automate Chef Server
+Sometimes you need to perform actions in your build cookbook as though it was
+running against a Chef Server. To do this, you can use the `with_server_config`
+DSL. Behind the scenes, during the compile phase of the chef client run, we
+temporarily modify the `Chef::Config` object to point towards Automate's Chef
+Server. Here's an example of us running a node search against the Automate
+Chef Server to find a specific node.
+
+```ruby
+with_server_config do
+  search(:node, 'role:web',
+    :filter_result => { 'name' => [ 'name' ],
+                        'ip' => [ 'ipaddress' ],
+                        'kernel_version' => [ 'kernel', 'version' ]
+                      }
+        ).each do |result|
+    puts result['name']
+    puts result['ip']
+    puts result['kernel_version']
+  end
+end
+```
+
+We have noticed that in some use cases, the `with_server_config` DSL does not
+work for some users because `with_server_config` only modifies the `Chef::Config`
+object during the initial compilation of the resource collection, not
+during the execution phase. If you run into issues with things like `automate_chef_server_details`
+not working for you, you may need to use the DSL `run_recipe_against_automate_server`
+instead. Rather than restoring the initial `Chef::Config` after compilation,
+`run_recipe_against_automate_server` leaves the `Chef::Config` object configured
+with the Automate Chef Server details for the entire chef run. We strongly
+encourage that you use `run_recipe_against_automate_server` _only_ as a last resort.
+
 ## Resource `delivery_supermarket`
 
 With this new resource you can easily share your cookbook to Supermarket
@@ -53,8 +179,6 @@ end
 
 Note that by not specifying the `site` you will be publishing to the Public
 Supermarket.
-
-## API
 
 ## Test Kitchen
 

@@ -26,7 +26,7 @@ module DeliverySugar
     attr_reader :id, :status, :created_at, :updated_at, :results
 
     # How long to wait between each refresh during #wait
-    PAUSE_SECONDS = 5
+    PAUSE_SECONDS = 5 unless const_defined?(:PAUSE_SECONDS)
 
     #
     # Create a new PushJob object

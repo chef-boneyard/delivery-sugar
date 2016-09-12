@@ -16,15 +16,17 @@
 #
 
 module DeliverySugar
+  # rubocop:disable Metrics/ModuleLength
   module DSL
     #
-    # The path for the Chef Config file to use with the Delivery Chef Server.
+    # The path for the Chef Config file to use with the Automate Chef Server.
     #
     # @return [String]
     #
     def delivery_knife_rb
       File.join(delivery_workspace, '.chef/knife.rb')
     end
+    alias_method :automate_knife_rb, :delivery_knife_rb
 
     #
     # The workspace path on the build nodes
@@ -36,6 +38,7 @@ module DeliverySugar
     rescue
       '/var/opt/delivery/workspace'
     end
+    alias_method :workflow_workspace, :delivery_workspace
 
     #
     # The repository path inside the workspace for the current project
@@ -45,6 +48,7 @@ module DeliverySugar
     def delivery_workspace_repo
       change.workspace_repo
     end
+    alias_method :workflow_workspace_repo, :delivery_workspace_repo
 
     #
     # The chef path inside the workspace for the current project
@@ -54,6 +58,7 @@ module DeliverySugar
     def delivery_workspace_chef
       change.workspace_chef
     end
+    alias_method :workflow_workspace_chef, :delivery_workspace_chef
 
     #
     # The cache path inside the workspace for the current project
@@ -63,6 +68,7 @@ module DeliverySugar
     def delivery_workspace_cache
       change.workspace_cache
     end
+    alias_method :workflow_workspace_cache, :delivery_workspace_cache
 
     #
     # The change id
@@ -72,21 +78,68 @@ module DeliverySugar
     def delivery_change_id
       change.change_id
     end
+    alias_method :workflow_change_id, :delivery_change_id
 
     #
-    # The project
+    # The merge sha associated with the change
+    #
+    # @return [String]
+    #
+    def workflow_change_merge_sha
+      change.merge_sha
+    end
+
+    #
+    # Return the name of the enterprise associated with the change
+    #
+    # @return [String]
+    #
+    def workflow_change_enterprise
+      change.enterprise
+    end
+
+    #
+    # Return the name of the organization associated with the change
+    #
+    # @return [String]
+    #
+    def workflow_change_organization
+      change.organization
+    end
+
+    #
+    # Return the name of the project associated with the change
     #
     # @return [String]
     #
     def delivery_project
       change.project
     end
+    alias_method :workflow_change_project, :delivery_project
+
+    #
+    # Return the name of the pipeline associated with the change
+    #
+    # @return [String]
+    #
+    def workflow_change_pipeline
+      change.pipeline
+    end
+
+    #
+    # Return the name of the patchset branch associated with the change
+    #
+    # @return [String]
+    #
+    def workflow_change_patchset_branch
+      change.patchset_branch
+    end
 
     #
     # Return a list of cookbooks that have files that have changed in the current
     # changeset.
     #
-    # @return [Array<String>]
+    # @return [Array<DeliverySugar::Cookbook>]
     #
     def changed_cookbooks
       change.changed_cookbooks
@@ -111,6 +164,34 @@ module DeliverySugar
     def delivery_environment
       change.environment_for_current_stage
     end
+    alias_method :workflow_chef_environment_for_stage, :delivery_environment
+
+    #
+    # Return the name of the Stage for the current job
+    #
+    # @return [String]
+    #
+    def workflow_stage
+      change.stage
+    end
+
+    #
+    # Return whether or not the current stage matches the given stage
+    #
+    # @return [TrueClass, FalseClass]
+    #
+    def workflow_stage?(stage)
+      change.stage == stage
+    end
+
+    #
+    # Return the name of the Phase for the current job
+    #
+    # @return [String]
+    #
+    def workflow_phase
+      change.phase
+    end
 
     #
     # Return the name of the acceptance environment associated with the current
@@ -123,6 +204,16 @@ module DeliverySugar
     def get_acceptance_environment
       change.acceptance_environment
     end
+    alias_method :workflow_project_acceptance_environment, :get_acceptance_environment
+
+    #
+    # Return the (decrypted) contents of the specified data bag item
+    #
+    # @return [Hash]
+    #
+    def get_secrets(bag, item, secret_file = nil)
+      automate_chef_server.data_bag_item(bag, item, secret_file)
+    end
 
     #
     # Return the decrypted contents of an encrypted data bag on the Chef Server
@@ -131,7 +222,7 @@ module DeliverySugar
     # @return [Hash]
     #
     def get_project_secrets
-      chef_server.encrypted_data_bag_item('delivery-secrets', project_slug)
+      get_secrets('delivery-secrets', project_slug)
     rescue Net::HTTPServerException => http_e
       raise http_e unless http_e.response.code == '404'
       Chef::Log.warn("Secrets Not Found for project_slug[#{project_slug}]")
@@ -146,7 +237,7 @@ module DeliverySugar
     # @return [Hash]
     #
     def get_organization_secrets
-      chef_server.encrypted_data_bag_item('delivery-secrets', organization_slug)
+      get_secrets('delivery-secrets', organization_slug)
     end
 
     #
@@ -157,6 +248,7 @@ module DeliverySugar
     def project_slug
       change.project_slug
     end
+    alias_method :workflow_project_slug, :project_slug
 
     #
     # Return a unique string that can be used to identify the current organization
@@ -166,6 +258,7 @@ module DeliverySugar
     def organization_slug
       change.organization_slug
     end
+    alias_method :workflow_organization_slug, :organization_slug
 
     #
     # Return an array of paths for valid cookbooks for this change,
@@ -193,9 +286,10 @@ module DeliverySugar
     #
     # @return [Chef::Environment]
     #
-    def define_project_application(app_name, app_version, app_attributes)
+    def define_project_application(app_name, app_version, app_attributes = {})
       change.define_project_application(app_name, app_version, app_attributes)
     end
+    alias_method :create_workflow_application_release, :define_project_application
 
     #
     # Load a project application's attributes previously
@@ -211,6 +305,7 @@ module DeliverySugar
     def get_project_application(app_name)
       change.get_project_application(app_name)
     end
+    alias_method :get_workflow_application_release, :get_project_application
 
     #
     # Return a hash with the details that Cheffish resources require to talk to
@@ -219,8 +314,9 @@ module DeliverySugar
     # @return [Hash]
     #
     def delivery_chef_server
-      chef_server.cheffish_details
+      automate_chef_server.cheffish_details
     end
+    alias_method :automate_chef_server_details, :delivery_chef_server
 
     #
     # Expose the server config block to do certain tasks like:
@@ -230,15 +326,16 @@ module DeliverySugar
     # end
     #
     def with_server_config(&block)
-      chef_server.with_server_config(&block)
+      automate_chef_server.with_server_config(&block)
     end
 
     #
     # Expose the server config block for the entire recipe (never leaving)
     #
     def load_delivery_chef_config
-      chef_server.load_server_config
+      automate_chef_server.load_server_config
     end
+    alias_method :run_recipe_against_automate_server, :load_delivery_chef_config
 
     private
 
@@ -247,8 +344,8 @@ module DeliverySugar
     #
     # @return [DeliverySugar::ChefServer]
     #
-    def chef_server
-      @delivery_chef_server ||= DeliverySugar::ChefServer.new(delivery_knife_rb)
+    def automate_chef_server
+      @automate_chef_server ||= DeliverySugar::ChefServer.new(delivery_knife_rb)
     end
 
     #

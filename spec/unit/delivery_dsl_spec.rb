@@ -20,38 +20,38 @@ describe DeliverySugar::DSL do
       .and_return(cli_node)
   end
 
-  describe '#delivery_knife_rb' do
+  describe '#automate_knife_rb' do
     context 'when node attribute is set from the delivery-cli' do
       before { cli_node['delivery']['workspace_path'] = custom_workspace }
       it 'returns the custom delivery knife.rb' do
-        expect(subject.delivery_knife_rb).to eq("#{custom_workspace}/.chef/knife.rb")
+        expect(subject.automate_knife_rb).to eq("#{custom_workspace}/.chef/knife.rb")
       end
     end
 
     context 'when node attribute is not set' do
       it 'returns the default delivery knife.rb' do
-        expect(subject.delivery_knife_rb).to eq("#{default_workspace}/.chef/knife.rb")
+        expect(subject.automate_knife_rb).to eq("#{default_workspace}/.chef/knife.rb")
       end
     end
   end
 
-  describe '#delivery_workspace' do
+  describe '#workflow_workspace' do
     context 'when node attribute is set from the delivery-cli' do
       before { cli_node['delivery']['workspace_path'] = custom_workspace }
       it 'returns the custom workspace' do
-        expect(subject.delivery_workspace).to eq(custom_workspace)
+        expect(subject.workflow_workspace).to eq(custom_workspace)
       end
     end
 
     context 'when old version of delivery-cli sets partial attribute' do
       it 'returns the default workspace' do
-        expect(subject.delivery_workspace).to eq(default_workspace)
+        expect(subject.workflow_workspace).to eq(default_workspace)
       end
     end
 
     context 'when node attribute is not set' do
       it 'returns the default workspace' do
-        expect(subject.delivery_workspace).to eq(default_workspace)
+        expect(subject.workflow_workspace).to eq(default_workspace)
       end
     end
   end
@@ -74,14 +74,14 @@ describe DeliverySugar::DSL do
     end
   end
 
-  describe '#load_delivery_chef_config' do
+  describe '#run_recipe_against_automate_server' do
     before do
       allow_any_instance_of(DeliverySugar::DSL).to receive(:delivery_knife_rb)
         .and_return(example_knife_rb)
     end
 
     it 'calls chef_server.load_server_config' do
-      subject.load_delivery_chef_config
+      subject.run_recipe_against_automate_server
       expect(Chef::Config[:chef_server_url]).to eql(example_config[:chef_server_url])
     end
   end
@@ -125,37 +125,37 @@ describe DeliverySugar::DSL do
     end
   end
 
-  describe '.delivery_chef_server' do
+  describe '.automate_chef_server_details' do
     let(:chef_server_configuration) { double 'a configuration hash' }
 
     it 'returns a cheffish configuration for interacting with the chef server' do
-      expect(subject).to receive_message_chain(:chef_server, :cheffish_details)
+      expect(subject).to receive_message_chain(:automate_chef_server, :cheffish_details)
         .and_return(chef_server_configuration)
 
-      expect(subject.delivery_chef_server).to eql(chef_server_configuration)
+      expect(subject.automate_chef_server_details).to eql(chef_server_configuration)
     end
   end
 
-  describe '.delivery_environment' do
+  describe '.workflow_chef_environment_for_stage' do
     it 'get the current environment from the Change object' do
       expect(subject).to receive_message_chain(:change,
                                                :environment_for_current_stage)
-      subject.delivery_environment
+      subject.workflow_chef_environment_for_stage
     end
   end
 
-  describe '.get_acceptance_environment' do
+  describe '.workflow_project_acceptance_environment' do
     it 'gets the acceptance environment for the pipeline from the change object' do
       expect(subject).to receive_message_chain(:change,
                                                :acceptance_environment)
-      subject.get_acceptance_environment
+      subject.workflow_project_acceptance_environment
     end
   end
 
-  describe '.project_slug' do
+  describe '.workflow_project_slug' do
     it 'gets slug from Change object' do
       expect(subject).to receive_message_chain(:change, :project_slug)
-      subject.project_slug
+      subject.workflow_project_slug
     end
   end
 
@@ -172,8 +172,8 @@ describe DeliverySugar::DSL do
       expect(subject).to receive_message_chain(:change, :project_slug)
         .and_return(project_slug)
       expect(subject)
-        .to receive_message_chain(:chef_server, :encrypted_data_bag_item)
-        .with('delivery-secrets', project_slug).and_return(data_bag_contents)
+        .to receive_message_chain(:automate_chef_server, :data_bag_item)
+        .with('delivery-secrets', project_slug, nil).and_return(data_bag_contents)
 
       expect(subject.get_project_secrets).to eql(data_bag_contents)
     end
@@ -192,8 +192,8 @@ describe DeliverySugar::DSL do
       expect(subject).to receive_message_chain(:change, :organization_slug)
         .and_return(organization_slug)
       expect(subject)
-        .to receive_message_chain(:chef_server, :encrypted_data_bag_item)
-        .with('delivery-secrets', organization_slug).and_return(data_bag_contents)
+        .to receive_message_chain(:automate_chef_server, :data_bag_item)
+        .with('delivery-secrets', organization_slug, nil).and_return(data_bag_contents)
 
       expect(subject.get_organization_secrets).to eql(data_bag_contents)
     end
