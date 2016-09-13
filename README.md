@@ -144,11 +144,11 @@ We have noticed that in some use cases, the `with_server_config` DSL does not
 work for some users because `with_server_config` only modifies the `Chef::Config`
 object during the initial compilation of the resource collection, not
 during the execution phase. If you run into issues with things like `automate_chef_server_details`
-not working for you, you may need to use the DSL `run_recipe_against_automate_server`
+not working for you, you may need to use the DSL `run_recipe_against_automate_chef_server`
 instead. Rather than restoring the initial `Chef::Config` after compilation,
-`run_recipe_against_automate_server` leaves the `Chef::Config` object configured
+`run_recipe_against_automate_chef_server` leaves the `Chef::Config` object configured
 with the Automate Chef Server details for the entire chef run. We strongly
-encourage that you use `run_recipe_against_automate_server` _only_ as a last resort.
+encourage that you use `run_recipe_against_automate_chef_server` _only_ as a last resort.
 
 ## Resource `delivery_supermarket`
 

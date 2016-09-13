@@ -74,14 +74,14 @@ describe DeliverySugar::DSL do
     end
   end
 
-  describe '#run_recipe_against_automate_server' do
+  describe '#run_recipe_against_automate_chef_server' do
     before do
       allow_any_instance_of(DeliverySugar::DSL).to receive(:delivery_knife_rb)
         .and_return(example_knife_rb)
     end
 
     it 'calls chef_server.load_server_config' do
-      subject.run_recipe_against_automate_server
+      subject.run_recipe_against_automate_chef_server
       expect(Chef::Config[:chef_server_url]).to eql(example_config[:chef_server_url])
     end
   end

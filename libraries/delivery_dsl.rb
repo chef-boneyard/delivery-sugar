@@ -335,7 +335,7 @@ module DeliverySugar
     def load_delivery_chef_config
       automate_chef_server.load_server_config
     end
-    alias_method :run_recipe_against_automate_server, :load_delivery_chef_config
+    alias_method :run_recipe_against_automate_chef_server, :load_delivery_chef_config
 
     private
 
