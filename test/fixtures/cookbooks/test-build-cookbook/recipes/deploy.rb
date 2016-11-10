@@ -9,5 +9,6 @@ delivery_supermarket 'share_cookbook_to_custom_supermarket' do
   config '/path/to/knife.rb'
   user 'dummy'
   key 'SECRET'
+  category 'Applications'
   action :share
 end
