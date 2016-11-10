@@ -170,6 +170,7 @@ secrets = get_project_secrets
 delivery_supermarket 'share_custom_cookbook' do
   config '/path/to/my/knife.rb'
   cookbook 'my_cookbook'
+  category 'Applications'
   path '/path/to/my/cookbook/on/disk/my_cookbook'
   user secrets['supermarket_user']
   key secrets['supermarket_key']
@@ -179,6 +180,8 @@ end
 
 Note that by not specifying the `site` you will be publishing to the Public
 Supermarket.
+
+Find a list of available categories [here](https://docs.chef.io/plugin_knife_supermarket.html#share).
 
 ## Test Kitchen
 
