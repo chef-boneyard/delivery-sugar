@@ -36,6 +36,7 @@ describe 'test-build-cookbook::deploy' do
       .with_site('https://private-supermarket.example.com')
       .with_path('/path/to/cookbook/awesome')
       .with_cookbook('awesome')
+      .with_category('Applications')
       .with_config('/path/to/knife.rb')
   end
 end
