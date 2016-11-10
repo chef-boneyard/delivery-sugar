@@ -70,7 +70,8 @@ class DeliverySupermarket < Chef::Resource
 
     # Share the cookbook to the Supermarket Site
     def share_cookbook_to_supermarket(options)
-      command = "knife supermarket share #{new_resource.cookbook} \"#{new_resource.category}\" " \
+      command = "knife supermarket share #{new_resource.cookbook} " \
+                "\"#{new_resource.category}\" " \
                 "--cookbook-path #{cookbook_root} " \
                 "--config #{new_resource.config} " \
                 "--supermarket-site #{new_resource.site} " \
