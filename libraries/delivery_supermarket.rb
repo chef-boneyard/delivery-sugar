@@ -34,9 +34,10 @@ class DeliverySupermarket < Chef::Resource
   # The knife.rb config file on disk
   property :config, String, default: lazy { delivery_knife_rb }
 
-  # The Supermarket site / user / key
+  # The Supermarket site / user / category / key
   property :site, String, default: 'https://supermarket.chef.io'
   property :user, String, default: 'delivery'
+  property :category, String, default: 'Other'
   property :key, String
 
   action :share do
@@ -70,6 +71,7 @@ class DeliverySupermarket < Chef::Resource
     # Share the cookbook to the Supermarket Site
     def share_cookbook_to_supermarket(options)
       command = "knife supermarket share #{new_resource.cookbook} " \
+                "\"#{new_resource.category}\" " \
                 "--cookbook-path #{cookbook_root} " \
                 "--config #{new_resource.config} " \
                 "--supermarket-site #{new_resource.site} " \
