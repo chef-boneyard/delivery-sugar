@@ -171,7 +171,7 @@ aws_secret_access_key = #{secrets['ec2']['secret_key']}
     @environment.merge!(
       'AZURE_CLIENT_ID'            => azure_client_id,
       'AZURE_CLIENT_SECRET'        => azure_client_secret,
-      'AZURE_TENANT_ID'            => kazure_tenant_id,
+      'AZURE_TENANT_ID'            => azure_tenant_id,
       'KITCHEN_INSTANCE_NAME'      => kitchen_instance_name
     )
 
@@ -198,6 +198,8 @@ tenant_id = #{secrets['azurerm']['tenant_id']}
       EOF
     end
     file.run_action(:create)
+
+  end
 
     # See if the kitchen YAML file exist in the repo
     #
