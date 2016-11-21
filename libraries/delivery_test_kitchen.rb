@@ -214,6 +214,7 @@ aws_secret_access_key = #{secrets['ec2']['secret_key']}
     file = Chef::Resource::File.new("#{cache}/.azure/credentials", run_context).tap do |f|
       f.sensitive true
       f.content <<-EOF
+
 [#{secrets['azurerm']['subscription_id']}]
 client_id = #{secrets['azurerm']['client_id']}
 client_secret = #{secrets['azurerm']['client_secret']}
