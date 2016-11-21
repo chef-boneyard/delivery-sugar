@@ -83,6 +83,7 @@ module DeliverySugar
       case @driver
       when 'ec2'
         prepare_kitchen_ec2
+
       when 'azurerm'
         prepare_kitchen_azurerm
       else
@@ -145,31 +146,6 @@ aws_secret_access_key = #{secrets['ec2']['secret_key']}
       end
       file.run_action(:create)
     end
-
-    # See if the kitchen YAML file exist in the repo
-    #
-    # @return [TrueClass, FalseClass] Return true if file exists
-    def kitchen_yaml?
-      ::File.exist?(kitchen_yaml_file)
-    end
-
-    # Return file system path to the kitchen YAML file
-    #
-    # @return [String] String representing full path to kitchen YAML file in the repo
-    def kitchen_yaml_file
-      ::File.join(@repo_path, @yaml)
-    end
-
-    # Returns the Chef::Node Object coming from the run_context
-    def node
-      run_context && run_context.node
-    end
-
-    # Used by providers supporting embedded recipes
-    def resource_collection
-      run_context && run_context.resource_collection
-    end
-  end
 
   #
   # Specific requirements for azurerm driver
