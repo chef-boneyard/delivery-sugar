@@ -186,11 +186,13 @@ Find a list of available categories [here](https://docs.chef.io/plugin_knife_sup
 ## Test Kitchen
 
 The resource `delivery_test_kitchen` will enable your projects to use [Test Kitchen](http://kitchen.ci)
-in Delivery. Currently, we only support the [kitchen-ec2 driver](https://github.com/test-kitchen/kitchen-ec2).
+in Delivery. Currently, we only support the [kitchen-ec2 driver](https://github.com/test-kitchen/kitchen-ec2) and  [kitchen-azurerm](https://github.com/pendrica/kitchen-azurerm) drivers.
 
 ### Prerequisites
 
 In order to enable this functionality, perform the following prerequisite steps:
+
+#### EC2
 
 * Add the following items to the appropriate data bag as specified in the [Handling Secrets](#handling-secrets-alpha) section
 
@@ -246,6 +248,69 @@ In order to enable this functionality, perform the following prerequisite steps:
 
     ```
 
+#### Azure
+
+Ensure you have set up a Service Principal in Azure according to the [kitchen-azurerm README](https://github.com/pendrica/kitchen-azurerm/blob/master/README.md)
+
+Additionally at this point, installing the `kitchen-azurerm` requires build tools on the build nodes. You will need to customize your build cookbook as follows:
+
+  1. Add `depends 'build-essential', '~> 7.0.2'` to the `metadata.rb` of the build cookbook.
+  2. Add `include_recipe 'build-essential::default'` to the `default.rb` of the build cookbook.
+
+* Add the following items to the appropriate data bag as specified in the [Handling Secrets](#handling-secrets-alpha) section
+
+    **delivery-secrets <ent>-<org>-<project> encrypted data bag item**
+    ```json
+    {
+      "id": "<ent>-<org>-<project>",
+      "azure": {
+        "subscription_id": "<YOUR-SUBSCRIPTION-ID-HERE>",
+        "client_id": "<48b9bba3-YOUR-GUID-HERE-90f0b68ce8ba>",
+        "client_secret": "<your-client-secret-here>",
+        "tenant_id": "<9c117323-YOUR-GUID-HERE-9ee430723ba3>"
+       }
+     }
+    ```
+
+  * Customize your kitchen YAML file with all the required information needed by the [kitchen-azurerm driver](https://github.com/pendrica/kitchen-azurerm) driver. For example:
+
+        ```yaml
+        ---
+        driver:
+          name: azurerm
+
+        driver_config:
+          subscription_id: 'YOUR-SUBSCRIPTION-ID-HERE'
+          location: 'West Europe'
+          machine_size: 'Standard_D1'
+
+        transport:
+          ssh_key: ~/.ssh/id_kitchen-azurerm
+
+        provisioner:
+          name: chef_zero
+
+        verifier:
+          name: inspec
+
+        platforms:
+          - name: ubuntu-14.04
+            driver_config:
+              image_urn: Canonical:UbuntuServer:14.04.4-LTS:latest
+              vm_name: trusty-vm
+
+        suites:
+          - name: default
+            run_list:
+              - recipe[azure_test::default]
+            verifier:
+              inspec_tests:
+                - test/recipes
+            attributes:
+
+        ```
+
+
 ### Usage
 
 Once you have the prerequisites you can use `delivery_test_kitchen` anywhere in your project pipeline, you
@@ -261,7 +326,7 @@ delivery_test_kitchen 'functional_test' do
 end
 ```
 
-Trigger a kitchen converge & destroy action using Ec2 driver and poiting to `.kitchen.ec2.yml`
+Trigger a kitchen converge & destroy action using Ec2 driver and pointing to `.kitchen.ec2.yml`
 file inside the repository path in Delivery.
 
 ```ruby

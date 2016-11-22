@@ -23,6 +23,10 @@ module DeliverySugar
   #
   # This class is our interface to execute test kitchen in Delivery
   #
+  # We are disabling the ClassLength cop for now, but we will want to refactor
+  # this to be cleaner in the future.
+  #
+  # rubocop:disable ClassLength
   class TestKitchen
     include Chef::DSL::Recipe
     include DeliverySugar::DSL
@@ -85,6 +89,8 @@ module DeliverySugar
         prepare_kitchen_ec2
       when 'dokken'
         prepare_kitchen_dokken
+      when 'azurerm'
+        prepare_kitchen_azurerm
       else
         fail "The test kitchen driver '#{@driver}' is not supported"
       end
@@ -157,6 +163,66 @@ aws_secret_access_key = #{secrets['ec2']['secret_key']}
       # Installing kitchen-dokken driver
       chef_gem = Chef::Resource::ChefGem.new('kitchen-dokken', run_context)
       chef_gem.run_action(:install)
+    end
+
+    #
+    # Specific requirements for azurerm driver
+    #
+    def prepare_kitchen_azurerm
+      fail 'Kitchen YAML file not found' unless kitchen_yaml?
+
+      # Load secrets from delivery-secrets data bag
+      secrets = get_project_secrets
+      fail 'Could not find secrets for kitchen-azurerm driver' \
+           ' in delivery-secrets data bag.' if secrets['azurerm'].nil?
+
+      # Variables used for configuring and running test kitchen Azure
+      cache                 = delivery_workspace_cache
+      azure_subscription_id = secrets['azurerm']['subscription_id']
+      azure_client_id       = secrets['azurerm']['client_id']
+      azure_client_secret   = secrets['azurerm']['client_secret']
+      azure_tenant_id       = secrets['azurerm']['tenant_id']
+      kitchen_instance_name = "test-kitchen-#{delivery_project}-#{delivery_change_id}"
+
+      @environment.merge!(
+        'AZURE_CLIENT_ID'            => azure_client_id,
+        'AZURE_CLIENT_SECRET'        => azure_client_secret,
+        'AZURE_TENANT_ID'            => azure_tenant_id,
+        'KITCHEN_INSTANCE_NAME'      => kitchen_instance_name
+      )
+
+      # Installing kitchen-azurerm driver
+      begin
+        chef_gem = Chef::Resource::ChefGem.new('kitchen-azurerm', run_context)
+        chef_gem.run_action(:install)
+      rescue => e
+        Chef::Log.error('Azure gem installation failed. \
+        You might need to ensure that dev tools are installed.')
+        Chef::Log.error("Add depends 'build-essential' to \
+        the metadata.rb of your build cookbook and add include_recipe \
+        'build-essential' to the default.rb of your build cookbook")
+        raise e.message
+      end
+
+      # Create directories for Azure credentials and SSH key
+      %w(.azure .ssh).each do |d|
+        directory = Chef::Resource::Directory.new(File.join(cache, d), run_context)
+        directory.recursive true
+        directory.run_action(:create)
+      end
+
+      # Create Azure credentials file
+      azure_creds_path = "#{cache}/.azure/credentials"
+      file = Chef::Resource::File.new(azure_creds_path, run_context).tap do |f|
+        f.sensitive true
+        f.content <<-EOF
+  [#{azure_subscription_id}]
+  client_id = #{secrets['azurerm']['client_id']}
+  client_secret = #{secrets['azurerm']['client_secret']}
+  tenant_id = #{secrets['azurerm']['tenant_id']}
+      EOF
+      end
+      file.run_action(:create)
     end
 
     # See if the kitchen YAML file exist in the repo
