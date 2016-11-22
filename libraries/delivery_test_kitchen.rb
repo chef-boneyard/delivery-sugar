@@ -83,6 +83,9 @@ module DeliverySugar
       case @driver
       when 'ec2'
         prepare_kitchen_ec2
+
+      when 'azurerm'
+        prepare_kitchen_azurerm
       else
         fail "The test kitchen driver '#{@driver}' is not supported"
       end
@@ -144,6 +147,60 @@ aws_secret_access_key = #{secrets['ec2']['secret_key']}
       file.run_action(:create)
     end
 
+  #
+  # Specific requirements for azurerm driver
+  #
+  # rubocop:disable AbcSize
+  # rubocop:disable Metrics/MethodLength
+  def prepare_kitchen_azurerm
+    fail 'Kitchen YAML file not found' unless kitchen_yaml?
+
+    # Load secrets from delivery-secrets data bag
+    secrets = get_project_secrets
+    fail 'Could not find secrets for kitchen-azurerm driver' \
+         ' in delivery-secrets data bag.' if secrets['azurerm'].nil?
+
+    # Variables used for configuring and running test kitchen EC2
+    cache                 = delivery_workspace_cache
+    azure_subscription_id = secrets['azurerm']['subscription_id']
+    azure_client_id      = secrets['azurerm']['client_id']
+    azure_client_secret  = secrets['azurerm']['client_secret']
+    azure_tenant_id       = secrets['azurerm']['tenant_id']
+    kitchen_instance_name = "test-kitchen-#{delivery_project}-#{delivery_change_id}"
+
+    @environment.merge!(
+      'AZURE_CLIENT_ID'            => azure_client_id,
+      'AZURE_CLIENT_SECRET'        => azure_client_secret,
+      'AZURE_TENANT_ID'            => azure_tenant_id,
+      'KITCHEN_INSTANCE_NAME'      => kitchen_instance_name
+    )
+
+    # Installing kitchen-azurerm driver
+    chef_gem = Chef::Resource::ChefGem.new('kitchen-azurerm', run_context)
+    chef_gem.run_action(:install)
+
+    # Create directories for Azure credentials and SSH key
+    %w(.azure .ssh).each do |d|
+      directory = Chef::Resource::Directory.new(File.join(cache, d), run_context)
+      directory.recursive true
+      directory.run_action(:create)
+    end
+
+    # Create Azure credentials file
+    file = Chef::Resource::File.new("#{cache}/.azure/credentials", run_context).tap do |f|
+      f.sensitive true
+      f.content <<-EOF
+
+[#{secrets['azurerm']['subscription_id']}]
+client_id = #{secrets['azurerm']['client_id']}
+client_secret = #{secrets['azurerm']['client_secret']}
+tenant_id = #{secrets['azurerm']['tenant_id']}
+      EOF
+    end
+    file.run_action(:create)
+
+  end
+
     # See if the kitchen YAML file exist in the repo
     #
     # @return [TrueClass, FalseClass] Return true if file exists
@@ -167,5 +224,7 @@ aws_secret_access_key = #{secrets['ec2']['secret_key']}
     def resource_collection
       run_context && run_context.resource_collection
     end
+
   end
+
 end
