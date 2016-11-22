@@ -83,7 +83,6 @@ module DeliverySugar
       case @driver
       when 'ec2'
         prepare_kitchen_ec2
-
       when 'azurerm'
         prepare_kitchen_azurerm
       else
@@ -163,8 +162,8 @@ aws_secret_access_key = #{secrets['ec2']['secret_key']}
     # Variables used for configuring and running test kitchen EC2
     cache                 = delivery_workspace_cache
     azure_subscription_id = secrets['azurerm']['subscription_id']
-    azure_client_id      = secrets['azurerm']['client_id']
-    azure_client_secret  = secrets['azurerm']['client_secret']
+    azure_client_id       = secrets['azurerm']['client_id']
+    azure_client_secret   = secrets['azurerm']['client_secret']
     azure_tenant_id       = secrets['azurerm']['tenant_id']
     kitchen_instance_name = "test-kitchen-#{delivery_project}-#{delivery_change_id}"
 
@@ -190,7 +189,6 @@ aws_secret_access_key = #{secrets['ec2']['secret_key']}
     file = Chef::Resource::File.new("#{cache}/.azure/credentials", run_context).tap do |f|
       f.sensitive true
       f.content <<-EOF
-
 [#{secrets['azurerm']['subscription_id']}]
 client_id = #{secrets['azurerm']['client_id']}
 client_secret = #{secrets['azurerm']['client_secret']}
