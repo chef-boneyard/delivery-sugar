@@ -175,8 +175,14 @@ aws_secret_access_key = #{secrets['ec2']['secret_key']}
     )
 
     # Installing kitchen-azurerm driver
-    chef_gem = Chef::Resource::ChefGem.new('kitchen-azurerm', run_context)
-    chef_gem.run_action(:install)
+    begin
+      chef_gem = Chef::Resource::ChefGem.new('kitchen-azurerm', run_context)
+      chef_gem.run_action(:install)
+    rescue => e
+      Chef::Log.error('Azure gem installation failed. You might need to ensure that dev tools are installed.')
+      Chef::Log.error("Add depends 'build-essential', '~> 7.0.2' to the metadata.rb of your build cookbook and add include_recipe 'build-essential::default' to the default.rb of your build cookbook")
+      raise e.message
+    end
 
     # Create directories for Azure credentials and SSH key
     %w(.azure .ssh).each do |d|
