@@ -179,8 +179,11 @@ aws_secret_access_key = #{secrets['ec2']['secret_key']}
       chef_gem = Chef::Resource::ChefGem.new('kitchen-azurerm', run_context)
       chef_gem.run_action(:install)
     rescue => e
-      Chef::Log.error('Azure gem installation failed. You might need to ensure that dev tools are installed.')
-      Chef::Log.error("Add depends 'build-essential', '~> 7.0.2' to the metadata.rb of your build cookbook and add include_recipe 'build-essential::default' to the default.rb of your build cookbook")
+      Chef::Log.error('Azure gem installation failed. \
+      You might need to ensure that dev tools are installed.')
+      Chef::Log.error("Add depends 'build-essential' to \
+      the metadata.rb of your build cookbook and add include_recipe \
+      'build-essential' to the default.rb of your build cookbook")
       raise e.message
     end
 
@@ -195,14 +198,13 @@ aws_secret_access_key = #{secrets['ec2']['secret_key']}
     file = Chef::Resource::File.new("#{cache}/.azure/credentials", run_context).tap do |f|
       f.sensitive true
       f.content <<-EOF
-[#{secrets['azurerm']['subscription_id']}]
-client_id = #{secrets['azurerm']['client_id']}
-client_secret = #{secrets['azurerm']['client_secret']}
-tenant_id = #{secrets['azurerm']['tenant_id']}
+  [#{secrets['azurerm']['subscription_id']}]
+  client_id = #{secrets['azurerm']['client_id']}
+  client_secret = #{secrets['azurerm']['client_secret']}
+  tenant_id = #{secrets['azurerm']['tenant_id']}
       EOF
     end
     file.run_action(:create)
-
   end
 
     # See if the kitchen YAML file exist in the repo
@@ -228,7 +230,5 @@ tenant_id = #{secrets['azurerm']['tenant_id']}
     def resource_collection
       run_context && run_context.resource_collection
     end
-
   end
-
 end
