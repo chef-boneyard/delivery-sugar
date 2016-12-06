@@ -284,6 +284,37 @@ delivery_test_kitchen 'unit_create' do
 end
 ```
 
+## InSpec
+
+The resource `delivery_inspec` will enable your projects to run any [InSpec](https://inspec.io) tests in the cookbook against your nodes in Acceptance, Union, Rehearsal, or Delivered. Currently, we only support running tests against Linux or Windows nodes.
+
+### Prerequisites
+
+In order to enable this functionality, perform the following prerequisite steps:
+
+* Add the following items to the appropriate data bag as specified in the [Handling Secrets](#handling-secrets-alpha) section
+
+    **delivery-secrets <ent>-<org>-<project> encrypted data bag item**
+    ```json
+    {
+      "id": "<ent>-<org>-<project>",
+      "inspec": {
+        "ssh-user": "inspec",
+        "ssh-private-key": "<YOUR-PRIVATE-KEY-HERE",
+        "winrm-user": "inspec",
+        "winrm-password": "<YOUR-PASSWORD-HERE>"
+      }
+     }
+    ```
+    You can convert the private key content to a JSON-compatible string with a command like this:
+    ```
+    ruby -e 'require "json"; puts File.read("<path-to-inspec-private-key>").to_json'
+    ```
+
+* Ensure that the associated user for either `ssh-user` or `winrm-user` exists on the nodes to be tested, with either the public key added to `authorized_keys`(if Linux), or the password set (if Windows). The associated user must either have passwordless sudo, or be in the Administrators group (if Windows).
+
+Note that the `delivery_inspec` resource also supports "organization-level" data bag items, so the above item could also be set at `"id": "<ent>-<org>"`.
+
 ## Handling Secrets (ALPHA)
 This cookbook implements a rudimentary approach to handling secrets. This process
 is largely out of band from Chef Delivery for the time being.
