@@ -390,7 +390,60 @@ group 'docker' do
 end
 ```
 
+## InSpec
 
+The resource `delivery_inspec` will enable your projects to run any [InSpec](https://inspec.io) tests in the cookbook against your nodes in Acceptance, Union, Rehearsal, or Delivered. Currently, we only support running tests against Linux or Windows nodes.
+
+### Prerequisites
+
+In order to enable this functionality, perform the following prerequisite steps:
+
+* Add the following items to the appropriate data bag as specified in the [Handling Secrets](#handling-secrets-alpha) section
+
+    **delivery-secrets <ent>-<org>-<project> encrypted data bag item**
+    ```json
+    {
+      "id": "<ent>-<org>-<project>",
+      "inspec": {
+        "ssh-user": "inspec",
+        "ssh-private-key": "<YOUR-PRIVATE-KEY-HERE",
+        "winrm-user": "inspec",
+        "winrm-password": "<YOUR-PASSWORD-HERE>"
+      }
+     }
+    ```
+    You can convert the private key content to a JSON-compatible string with a command like this:
+    ```
+    ruby -e 'require "json"; puts File.read("<path-to-inspec-private-key>").to_json'
+    ```
+
+* Ensure that the associated user for either `ssh-user` or `winrm-user` exists on the nodes to be tested, with either the public key added to `authorized_keys`(if Linux), or the password set (if Windows). The associated user must either have passwordless sudo, or be in the Administrators group (if Windows).
+
+Note that the `delivery_inspec` resource also supports "organization-level" data bag items, so the above item could also be set at `"id": "<ent>-<org>"`.
+
+Trigger InSpec testing as follows
+
+```ruby
+search_query = "recipes:#{node['delivery']['change']['project']}* AND " \
+"chef_environment:#{delivery_environment}"
+nodes = delivery_chef_server_search(:node, search_query.to_s)
+
+nodes.each do |i_node|
+  delivery_inspec "inspec_#{node['delivery']['change']['project']}" do
+    infra_node i_node['ipaddress']
+    os i_node['os']
+  end
+end
+```
+The default value for tests are in the `test/recipes` directory of your cookbook, but you can over-ride it with the optional `inspec_test_path` parameter. For example:
+
+```ruby
+delivery_inspec "run_inspec" do
+  infra_node '10.0.0.1'
+  os 'windows'
+  inspec_test_path 'test/smoke'
+end
+```
 
 ## Handling Secrets (ALPHA)
 This cookbook implements a rudimentary approach to handling secrets. This process
