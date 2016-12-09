@@ -111,11 +111,14 @@ scoped to the project root.
 
 #### `workflow_project_slug`
 Returns a unique string that can be used to identify the current project.
-**Format:** <ENTERPRISE>-<ORGANIZATION>-<PROJECT>
+
+**Format:** `<ENTERPRISE>-<ORGANIZATION>-<PROJECT>`
 
 #### `workflow_organization_slug`
 Returns a unique string that can be used to identify the organization associated
-with the current project. **Format:** <ENTERPRISE>-<ORGANIZATION>
+with the current project.
+
+**Format:** `<ENTERPRISE>-<ORGANIZATION>`
 
 ## Running against the Automate Chef Server
 Sometimes you need to perform actions in your build cookbook as though it was
