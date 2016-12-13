@@ -284,6 +284,29 @@ delivery_test_kitchen 'unit_create' do
 end
 ```
 
+#### Docker
+
+You can leverage the [kitchen-dokken](https://github.com/someara/kitchen-dokken) driver in your tests
+as well. This does not require the use of `delivery-secrets`. To enable `kitchen-dokken`, do the following to
+install Docker on all of your builders/runners:
+
+Add `depends 'docker', '~> 2.0'` to the `metadata.rb` of the build cookbook.
+Add the following code to the `default.rb` of the build cookbook:
+
+```ruby
+docker_service 'default' do
+  action [:create, :start]
+end
+
+group 'docker' do
+  action :modify
+  members 'dbuild'
+  append true
+end
+```
+
+
+
 ## Handling Secrets (ALPHA)
 This cookbook implements a rudimentary approach to handling secrets. This process
 is largely out of band from Chef Delivery for the time being.

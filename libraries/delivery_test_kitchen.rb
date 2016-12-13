@@ -83,6 +83,8 @@ module DeliverySugar
       case @driver
       when 'ec2'
         prepare_kitchen_ec2
+      when 'dokken'
+        prepare_kitchen_dokken
       else
         fail "The test kitchen driver '#{@driver}' is not supported"
       end
@@ -142,6 +144,19 @@ aws_secret_access_key = #{secrets['ec2']['secret_key']}
         f.mode '0400'
       end
       file.run_action(:create)
+    end
+    #
+    # Specific requirements for dokken driver
+    # At this point, we might not really need to do very much because there
+    # isn't a lot of prep to do for this driver.
+    #
+
+    def prepare_kitchen_dokken
+      fail 'Kitchen YAML file not found' unless kitchen_yaml?
+
+      # Installing kitchen-dokken driver
+      chef_gem = Chef::Resource::ChefGem.new('kitchen-dokken', run_context)
+      chef_gem.run_action(:install)
     end
 
     # See if the kitchen YAML file exist in the repo
