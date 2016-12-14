@@ -241,6 +241,52 @@ module DeliverySugar
     end
 
     #
+    # Return the decrypted contents of a Chef Vault on the Chef Server
+    #
+    # @return [Hash]
+    #
+    def get_chef_vault(vault, item_id)
+      automate_chef_server.chef_vault_item(vault, item_id)
+    end
+
+    #
+    # Return a list of decrypted Chef Vault data from the Chef Server
+    #
+    # @return [List]
+    def get_chef_vault_data_list
+      list = []
+      [enterprise_slug, organization_slug, project_slug].each do |slug|
+        begin
+          list.push(get_chef_vault('workflow-vaults', slug))
+        rescue ChefVault::Exceptions::KeysNotFound
+          list.push({})
+        end
+      end
+      list
+    end
+
+    #
+    # Return the decrypted contents of Chef Vaults under `workflow-vaults`
+    # on the Chef Server that hold data related to Workflow
+    #
+    # @return [Hash]
+    #
+    def get_chef_vault_data
+      get_chef_vault_data_list.inject(&:merge)
+    end
+    alias_method :get_workflow_vault_data, :get_chef_vault_data
+
+    #
+    # Return a unique string that can be used to identify the current enterprise
+    #
+    # @return [String]
+    #
+    def enterprise_slug
+      change.enterprise_slug
+    end
+    alias_method :workflow_enterprise_slug, :enterprise_slug
+
+    #
     # Return a unique string that can be used to identify the current project.
     #
     # @return [String]

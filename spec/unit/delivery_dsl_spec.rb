@@ -198,4 +198,125 @@ describe DeliverySugar::DSL do
       expect(subject.get_organization_secrets).to eql(data_bag_contents)
     end
   end
+
+  describe '.get_chef_vault' do
+    it 'returns a Chef Vault item' do
+      allow(subject)
+        .to receive_message_chain(:automate_chef_server, :chef_vault_item)
+        .with('workflow-vaults', 'ent')
+        .and_return(id: 'ent', data: 'data')
+
+      expect(subject.get_chef_vault('workflow-vaults', 'ent'))
+        .to eql(id: 'ent', data: 'data')
+    end
+  end
+
+  describe '.get_chef_vault_data_list' do
+    context 'when all vaults are present' do
+      let(:enterprise_vault) do
+        { id: 'ent', ent_data: 'data' }
+      end
+
+      let(:organization_vault) do
+        { id: 'ent-org', org_data: 'data' }
+      end
+
+      let(:project_vault) do
+        { id: 'ent-org-project', project_data: 'data' }
+      end
+
+      let(:chef_vault_data_list) do
+        [
+          { id: 'ent', ent_data: 'data' },
+          { id: 'ent-org', org_data: 'data' },
+          { id: 'ent-org-project', project_data: 'data' }
+        ]
+      end
+
+      it 'returns a complete list of Chef Vaults' do
+        allow(subject).to receive(:enterprise_slug).and_return('ent')
+        allow(subject).to receive(:organization_slug).and_return('ent-org')
+        allow(subject).to receive(:project_slug).and_return('ent-org-project')
+
+        allow(subject).to receive(:get_chef_vault)
+          .with('workflow-vaults', 'ent')
+          .and_return(enterprise_vault)
+        allow(subject).to receive(:get_chef_vault)
+          .with('workflow-vaults', 'ent-org')
+          .and_return(organization_vault)
+        allow(subject).to receive(:get_chef_vault)
+          .with('workflow-vaults', 'ent-org-project')
+          .and_return(project_vault)
+
+        expect(subject.get_chef_vault_data_list).to eql(chef_vault_data_list)
+      end
+    end
+
+    context 'when a vault is missing' do
+      let(:enterprise_vault) do
+        { id: 'ent', ent_data: 'data' }
+      end
+
+      let(:organization_vault) do
+        { id: 'ent-org', org_data: 'data' }
+      end
+
+      let(:incomplete_chef_vault_data_list) do
+        [
+          { id: 'ent', ent_data: 'data' },
+          { id: 'ent-org', org_data: 'data' },
+          {}
+        ]
+      end
+
+      it 'returns a list of Chef Vaults containing an empty hash' do
+        allow(subject).to receive(:enterprise_slug).and_return('ent')
+        allow(subject).to receive(:organization_slug).and_return('ent-org')
+        allow(subject).to receive(:project_slug).and_return('ent-org-project')
+
+        allow(subject).to receive(:get_chef_vault)
+          .with('workflow-vaults', 'ent')
+          .and_return(enterprise_vault)
+        allow(subject).to receive(:get_chef_vault)
+          .with('workflow-vaults', 'ent-org')
+          .and_return(organization_vault)
+        allow(subject).to receive(:get_chef_vault)
+          .with('workflow-vaults', 'ent-org-project')
+          .and_raise(ChefVault::Exceptions::KeysNotFound)
+
+        expect(subject.get_chef_vault_data_list).to eql(incomplete_chef_vault_data_list)
+      end
+    end
+  end
+
+  describe '.get_chef_vault_data' do
+    let(:vault_data_list) do
+      [
+        { ent_data: 'from_ent_vault', overwritten: 'no' },
+        { org_data: 'from_org_vault', overwritten: 'no' },
+        { project_data: 'from_project_vault', overwritten: 'yes' }
+      ]
+    end
+
+    let(:merged_vault_data) do
+      {
+        ent_data: 'from_ent_vault',
+        org_data: 'from_org_vault',
+        project_data: 'from_project_vault',
+        overwritten: 'yes'
+      }
+    end
+
+    it 'returns a merged hash of Chef Vault data' do
+      allow(subject).to receive(:get_chef_vault_data_list).and_return(vault_data_list)
+      expect(subject.get_chef_vault_data).to eql(merged_vault_data)
+    end
+  end
+
+  describe '.enterprise_slug' do
+    it 'gets slug from Change object' do
+      expect(subject).to receive_message_chain(:change, :enterprise_slug)
+      subject.enterprise_slug
+    end
+  end
 end

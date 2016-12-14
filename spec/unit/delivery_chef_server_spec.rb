@@ -115,6 +115,21 @@ describe DeliverySugar::ChefServer do
     end
   end
 
+  describe '#chef_vault_item' do
+    let(:vault_name) { 'workflow-vaults' }
+    let(:item_id) { 'ent-org-project' }
+    let(:results) { double('decrypted hash') }
+
+    it 'returns a decrypted Chef Vault' do
+      expect(ChefVault::Item).to receive(:load)
+        .with(vault_name, item_id)
+        .and_return(results)
+
+      expect(subject.chef_vault_item(vault_name, item_id))
+        .to eql(results)
+    end
+  end
+
   describe '#cheffish_details' do
     let(:expected_output) do
       {
