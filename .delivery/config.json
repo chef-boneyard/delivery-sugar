@@ -4,7 +4,9 @@
         "name": "delivery-sugar-build-cookbook",
         "path": ".delivery/build_cookbook"
     },
-    "build_nodes": {},
+    "job_dispatch": {
+        "version": "v2"
+    },
     "skip_phases": [
         "publish",
         "security",
