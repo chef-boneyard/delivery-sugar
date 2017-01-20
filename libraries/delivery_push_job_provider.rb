@@ -53,12 +53,13 @@ class Chef
       end
 
       def action_dispatch
+        return if new_resource.nodes.empty?
         converge_by("Dispatch push jobs for #{new_resource.command} on " \
                     "#{new_resource.nodes.join(',')}") do
           @push_job.dispatch
           @push_job.wait
           new_resource.updated_by_last_action(true)
-        end unless new_resource.nodes.empty?
+        end
       end
     end
   end

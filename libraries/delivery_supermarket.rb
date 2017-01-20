@@ -50,7 +50,7 @@ class DeliverySupermarket < Chef::Resource
     end
   end
 
-  action_class do
+  action_class do # rubocop:disable Metrics/BlockLength
     include Chef::Mixin::ShellOut
 
     # Write the Supermarket key to a file on disk
@@ -88,7 +88,7 @@ class DeliverySupermarket < Chef::Resource
       output = shell_out(command)
 
       # If we can show the cookbook::version, means it already exists
-      output.exitstatus == 0 ? true : false
+      output.exitstatus.zero? ? true : false
     end
 
     def supermarket_tmp_key_path

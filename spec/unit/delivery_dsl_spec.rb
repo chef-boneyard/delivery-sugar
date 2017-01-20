@@ -198,4 +198,132 @@ describe DeliverySugar::DSL do
       expect(subject.get_organization_secrets).to eql(data_bag_contents)
     end
   end
+
+  describe '.get_chef_vault' do
+    it 'returns a Chef Vault item' do
+      allow(subject)
+        .to receive_message_chain(:automate_chef_server, :chef_vault_item)
+        .with('workflow-vaults', 'ent')
+        .and_return(id: 'ent', data: 'data')
+
+      expect(subject.get_chef_vault('workflow-vaults', 'ent'))
+        .to eql(id: 'ent', data: 'data')
+    end
+  end
+
+  describe '.get_chef_vault_data_list' do
+    let(:node) do
+      {
+        'delivery' => {
+          'workspace' => {
+            'repo' => 'workspace_repo',
+            'cache' => 'workspace_cache',
+            'chef' => 'workspace_chef'
+          },
+          'change' => {
+            'stage' => 'stage_name',
+            'enterprise' => 'ent',
+            'organization' => 'org',
+            'project' => 'proj',
+            'pipeline' => 'pipe',
+            'patchset_branch' => 'patchset_branch',
+            'sha' => ''
+          }
+        }
+      }
+    end
+
+    let(:enterprise_vault) do
+      { id: 'ent', ent_data: 'data' }
+    end
+
+    let(:organization_vault) do
+      { id: 'ent-org', org_data: 'data' }
+    end
+
+    let(:project_vault) do
+      { id: 'ent-org-proj', project_data: 'data' }
+    end
+
+    before do
+      allow(subject).to receive(:change).and_return(DeliverySugar::Change.new(node))
+      allow_any_instance_of(DeliverySugar::DSL).to receive(:delivery_knife_rb)
+        .and_return(example_knife_rb)
+    end
+
+    context 'when all vaults are present' do
+      let(:chef_vault_data_list) do
+        [enterprise_vault, organization_vault, project_vault]
+      end
+
+      before do
+        allow(ChefVault::Item).to receive(:load)
+          .with('workflow-vaults', 'ent')
+          .and_return(enterprise_vault)
+        allow(ChefVault::Item).to receive(:load)
+          .with('workflow-vaults', 'ent-org')
+          .and_return(organization_vault)
+        allow(ChefVault::Item).to receive(:load)
+          .with('workflow-vaults', 'ent-org-proj')
+          .and_return(project_vault)
+      end
+
+      it 'returns a complete list of Chef Vaults' do
+        expect(subject.get_chef_vault_data_list).to eql(chef_vault_data_list)
+      end
+    end
+
+    context 'when a vault is missing' do
+      let(:incomplete_chef_vault_data_list) do
+        [enterprise_vault, organization_vault, {}]
+      end
+
+      before do
+        allow(ChefVault::Item).to receive(:load)
+          .with('workflow-vaults', 'ent')
+          .and_return(enterprise_vault)
+        allow(ChefVault::Item).to receive(:load)
+          .with('workflow-vaults', 'ent-org')
+          .and_return(organization_vault)
+        allow(ChefVault::Item).to receive(:load)
+          .with('workflow-vaults', 'ent-org-proj')
+          .and_raise(ChefVault::Exceptions::KeysNotFound)
+      end
+
+      it 'returns a list of Chef Vaults containing an empty hash' do
+        expect(subject.get_chef_vault_data_list).to eql(incomplete_chef_vault_data_list)
+      end
+    end
+  end
+
+  describe '.get_chef_vault_data' do
+    let(:vault_data_list) do
+      [
+        { ent_data: 'from_ent_vault', overwritten: 'no' },
+        { org_data: 'from_org_vault', overwritten: 'no' },
+        { project_data: 'from_project_vault', overwritten: 'yes' }
+      ]
+    end
+
+    let(:merged_vault_data) do
+      {
+        ent_data: 'from_ent_vault',
+        org_data: 'from_org_vault',
+        project_data: 'from_project_vault',
+        overwritten: 'yes'
+      }
+    end
+
+    it 'returns a merged hash of Chef Vault data' do
+      allow(subject).to receive(:get_chef_vault_data_list).and_return(vault_data_list)
+      expect(subject.get_chef_vault_data).to eql(merged_vault_data)
+    end
+  end
+
+  describe '.enterprise_slug' do
+    it 'gets slug from Change object' do
+      expect(subject).to receive_message_chain(:change, :enterprise_slug)
+      subject.enterprise_slug
+    end
+  end
 end

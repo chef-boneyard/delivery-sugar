@@ -100,26 +100,26 @@ class Chef
       # Apply a tag to the current HEAD of the branch
       #
       def tag_head
-        git_remote_shell_out("git tag #{new_resource.tag} -am " \
-          "\"Tagging #{new_resource.tag}\"") if new_resource.tag
+        git_remote_shell_out("git tag #{res.tag} -am \"Tagging #{res.tag}\"") if res.tag
       end
 
       #
       # Push the specified branch to the github remote
       #
       def push_to_github
-        git_remote_shell_out("git push #{new_resource.remote_name} " \
-                             "#{new_resource.branch}")
-        git_remote_shell_out("git push #{new_resource.remote_name} " \
-                             '--tags') if new_resource.tag
+        git_remote_shell_out("git push #{res.remote_name} #{res.branch}")
+        git_remote_shell_out("git push #{res.remote_name} --tags") if res.tag
+      end
+
+      # Method to shorten new_resource name
+      def res
+        new_resource
       end
 
       #
       # Return the contents of the SSH wrapper file. This file will allow
       # git to communicate with Github via SSH cleanly without needing a
       # ssh-agent or ~/.ssh/config
-      #
-      # rubocop:disable Metrics/MethodLength
       #
       # @return [String]
       #

@@ -117,6 +117,10 @@ Returns a unique string that can be used to identify the current project.
 Returns a unique string that can be used to identify the organization associated
 with the current project. **Format:** <ENTERPRISE>-<ORGANIZATION>
 
+#### `workflow_enterprise_slug`
+Returns a unique string that can be used to identify the current enterprise.
+**Format:** `<ENTERPRISE>`
+
 ## Running against the Automate Chef Server
 Sometimes you need to perform actions in your build cookbook as though it was
 running against a Chef Server. To do this, you can use the `with_server_config`
@@ -374,8 +378,9 @@ end
 
 ## Handling Secrets (ALPHA)
 This cookbook implements a rudimentary approach to handling secrets. This process
-is largely out of band from Chef Delivery for the time being.
+is largely out of band from Chef Automate for the time being.
 
+### Using `get_project_secrets`
 Your build cookbook will look for secrets in the `delivery-secrets` data bag on the
 Delivery Chef Server. It will expect to find an item in that data bag named
 `<ent>-<org>-<project>`. For example, lets imagine a cookbook called 'delivery-test'
@@ -399,6 +404,29 @@ If the project item does not exist, delivery-sugar will try to load the secrets
 of the organization that your project lives in. It will look for an item called
 `<ent>-<org>`. For the same example above it would be `chef-open-source`. This is
 useful if you would like to share secrets across projects within the same organization.
+
+### Using `get_chef_vault_data`
+Using the DSL method `get_chef_vault_data` will return a merged Ruby hash from the
+Chef Vaults in `workflow-vaults` on your Automate Chef Server.
+
+In order to use this DSL method you must use the following naming standard for your
+Chef Vaults under `workflow_vaults`:
+
+  - `#{ent_name}`
+  - `#{ent_name}-#{org_name}`
+  - `#{ent_name}-#{org_name}-#{project_name}`
+
+The data in these vaults will be merged into a single Ruby hash. Any duplicate key
+names will be merged as follows:
+  - `#{ent_name}-#{org_name}-#{project_name}` will overwrite `#{ent_name}-#{org_name}` and `#{ent_name}`.
+  - `#{ent_name}-#{org_name}` will overwrite `#{ent_name}`.
+
+You can access the data like so:
+
+```
+vault_data = get_chef_vault_data
+puts vault_data['my_key']
+```
 
 ## License & Authors
 - Author:: Tom Duffield (<tom@chef.io>)

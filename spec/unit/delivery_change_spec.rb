@@ -220,6 +220,12 @@ describe DeliverySugar::Change do
     end
   end
 
+  describe '#enterprise_slug' do
+    it 'returns the enterprise name' do
+      expect(subject.enterprise_slug).to eql('ent')
+    end
+  end
+
   describe '#project_slug' do
     it 'returns a composition of the ent, org and project names' do
       expect(subject.project_slug).to eql('ent-org-proj')

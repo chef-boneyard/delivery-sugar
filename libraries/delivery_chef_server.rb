@@ -17,6 +17,7 @@
 
 require 'chef/mixin/shell_out'
 require 'chef/server_api'
+require 'chef-vault'
 require_relative './delivery_dsl'
 
 module DeliverySugar
@@ -80,6 +81,22 @@ module DeliverySugar
       with_server_config do
         secret = file.nil? ? nil : Chef::EncryptedDataBagItem.load_secret(file)
         data_query.data_bag_item(bag_name, item_id, secret)
+      end
+    end
+
+    #
+    # Return the decrypted contents of a Chef Vault from the Chef Server.
+    #
+    # @param vault_name [String]
+    #   The name of the Chef Vault
+    # @param item_id [String]
+    #   The name of the vault item
+    #
+    # @return [Hash]
+    #
+    def chef_vault_item(vault_name, item_id)
+      with_server_config do
+        ChefVault::Item.load(vault_name, item_id)
       end
     end
 

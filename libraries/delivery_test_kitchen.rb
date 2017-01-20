@@ -106,8 +106,9 @@ module DeliverySugar
 
       # Load secrets from delivery-secrets data bag
       secrets = get_project_secrets
-      fail 'Could not find secrets for kitchen-ec2 driver' \
-           ' in delivery-secrets data bag.' if secrets['ec2'].nil?
+      msg = 'Could not find secrets for kitchen-ec2 driver ' \
+            'in delivery-secrets data bag.'
+      fail msg if secrets['ec2'].nil?
 
       # Variables used for configuring and running test kitchen EC2
       cache                 = delivery_workspace_cache
@@ -173,8 +174,9 @@ aws_secret_access_key = #{secrets['ec2']['secret_key']}
 
       # Load secrets from delivery-secrets data bag
       secrets = get_project_secrets
-      fail 'Could not find secrets for kitchen-azurerm driver' \
-           ' in delivery-secrets data bag.' if secrets['azurerm'].nil?
+      msg = 'Could not find secrets for kitchen-azurerm driver ' \
+            'in delivery-secrets data bag.'
+      fail msg if secrets['azurerm'].nil?
 
       # Variables used for configuring and running test kitchen Azure
       cache                 = delivery_workspace_cache
