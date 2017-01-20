@@ -145,7 +145,7 @@ module DeliverySugar
     end
 
     #
-    # Return a unique string to identify a Automate enterprise
+    # Return a unique string to identify an Automate enterprise
     #
     # @return [String]
     #
@@ -154,7 +154,7 @@ module DeliverySugar
     end
 
     #
-    # Return a unique string to identify a Automate project.
+    # Return a unique string to identify an Automate project.
     #
     # @return [String]
     #
@@ -163,7 +163,7 @@ module DeliverySugar
     end
 
     #
-    # Return a unique string to identify a Automate organization.
+    # Return a unique string to identify an Automate organization.
     #
     # @return [String]
     #
