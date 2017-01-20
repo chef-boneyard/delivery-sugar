@@ -253,7 +253,7 @@ describe DeliverySugar::DSL do
 
     context 'when all vaults are present' do
       let(:chef_vault_data_list) do
-        [ enterprise_vault, organization_vault, project_vault ]
+        [enterprise_vault, organization_vault, project_vault]
       end
 
       before do
@@ -275,7 +275,7 @@ describe DeliverySugar::DSL do
 
     context 'when a vault is missing' do
       let(:incomplete_chef_vault_data_list) do
-        [ enterprise_vault, organization_vault, {} ]
+        [enterprise_vault, organization_vault, {}]
       end
 
       before do
