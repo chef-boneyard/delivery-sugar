@@ -406,15 +406,18 @@ of the organization that your project lives in. It will look for an item called
 useful if you would like to share secrets across projects within the same organization.
 
 ### Using `get_chef_vault_data`
-Using the DSL method `get_chef_vault_data` will return a merged Ruby hash from the Chef Vaults in `workflow-vaults` on your Automate Chef Server.
+Using the DSL method `get_chef_vault_data` will return a merged Ruby hash from the
+Chef Vaults in `workflow-vaults` on your Automate Chef Server.
 
-In order to use this DSL method you must use the following naming standard for your Chef Vaults under `workflow_vaults`:
+In order to use this DSL method you must use the following naming standard for your
+Chef Vaults under `workflow_vaults`:
 
   - `#{ent_name}`
   - `#{ent_name}-#{org_name}`
   - `#{ent_name}-#{org_name}-#{project_name}`
 
-The data in these vaults will be merged into a single Ruby hash. Any duplicate key names will be merged as follows:
+The data in these vaults will be merged into a single Ruby hash. Any duplicate key
+names will be merged as follows:
   - `#{ent_name}-#{org_name}-#{project_name}` will overwrite `#{ent_name}-#{org_name}` and `#{ent_name}`.
   - `#{ent_name}-#{org_name}` will overwrite `#{ent_name}`.
 

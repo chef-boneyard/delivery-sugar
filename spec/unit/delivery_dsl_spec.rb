@@ -212,78 +212,85 @@ describe DeliverySugar::DSL do
   end
 
   describe '.get_chef_vault_data_list' do
+    let(:node) do
+      {
+        'delivery' => {
+          'workspace' => {
+            'repo' => 'workspace_repo',
+            'cache' => 'workspace_cache',
+            'chef' => 'workspace_chef'
+          },
+          'change' => {
+            'stage' => 'stage_name',
+            'enterprise' => 'ent',
+            'organization' => 'org',
+            'project' => 'proj',
+            'pipeline' => 'pipe',
+            'patchset_branch' => 'patchset_branch',
+            'sha' => ''
+          }
+        }
+      }
+    end
+
+    let(:enterprise_vault) do
+      { id: 'ent', ent_data: 'data' }
+    end
+
+    let(:organization_vault) do
+      { id: 'ent-org', org_data: 'data' }
+    end
+
+    let(:project_vault) do
+      { id: 'ent-org-proj', project_data: 'data' }
+    end
+
+    before do
+      allow(subject).to receive(:change).and_return(DeliverySugar::Change.new(node))
+      allow_any_instance_of(DeliverySugar::DSL).to receive(:delivery_knife_rb)
+        .and_return(example_knife_rb)
+    end
+
     context 'when all vaults are present' do
-      let(:enterprise_vault) do
-        { id: 'ent', ent_data: 'data' }
-      end
-
-      let(:organization_vault) do
-        { id: 'ent-org', org_data: 'data' }
-      end
-
-      let(:project_vault) do
-        { id: 'ent-org-project', project_data: 'data' }
-      end
-
       let(:chef_vault_data_list) do
-        [
-          { id: 'ent', ent_data: 'data' },
-          { id: 'ent-org', org_data: 'data' },
-          { id: 'ent-org-project', project_data: 'data' }
-        ]
+        [ enterprise_vault, organization_vault, project_vault ]
+      end
+
+      before do
+        allow(ChefVault::Item).to receive(:load)
+          .with('workflow-vaults', 'ent')
+          .and_return(enterprise_vault)
+        allow(ChefVault::Item).to receive(:load)
+          .with('workflow-vaults', 'ent-org')
+          .and_return(organization_vault)
+        allow(ChefVault::Item).to receive(:load)
+          .with('workflow-vaults', 'ent-org-proj')
+          .and_return(project_vault)
       end
 
       it 'returns a complete list of Chef Vaults' do
-        allow(subject).to receive(:enterprise_slug).and_return('ent')
-        allow(subject).to receive(:organization_slug).and_return('ent-org')
-        allow(subject).to receive(:project_slug).and_return('ent-org-project')
-
-        allow(subject).to receive(:get_chef_vault)
-          .with('workflow-vaults', 'ent')
-          .and_return(enterprise_vault)
-        allow(subject).to receive(:get_chef_vault)
-          .with('workflow-vaults', 'ent-org')
-          .and_return(organization_vault)
-        allow(subject).to receive(:get_chef_vault)
-          .with('workflow-vaults', 'ent-org-project')
-          .and_return(project_vault)
-
         expect(subject.get_chef_vault_data_list).to eql(chef_vault_data_list)
       end
     end
 
     context 'when a vault is missing' do
-      let(:enterprise_vault) do
-        { id: 'ent', ent_data: 'data' }
-      end
-
-      let(:organization_vault) do
-        { id: 'ent-org', org_data: 'data' }
-      end
-
       let(:incomplete_chef_vault_data_list) do
-        [
-          { id: 'ent', ent_data: 'data' },
-          { id: 'ent-org', org_data: 'data' },
-          {}
-        ]
+        [ enterprise_vault, organization_vault, {} ]
+      end
+
+      before do
+        allow(ChefVault::Item).to receive(:load)
+          .with('workflow-vaults', 'ent')
+          .and_return(enterprise_vault)
+        allow(ChefVault::Item).to receive(:load)
+          .with('workflow-vaults', 'ent-org')
+          .and_return(organization_vault)
+        allow(ChefVault::Item).to receive(:load)
+          .with('workflow-vaults', 'ent-org-proj')
+          .and_raise(ChefVault::Exceptions::KeysNotFound)
       end
 
       it 'returns a list of Chef Vaults containing an empty hash' do
-        allow(subject).to receive(:enterprise_slug).and_return('ent')
-        allow(subject).to receive(:organization_slug).and_return('ent-org')
-        allow(subject).to receive(:project_slug).and_return('ent-org-project')
-
-        allow(subject).to receive(:get_chef_vault)
-          .with('workflow-vaults', 'ent')
-          .and_return(enterprise_vault)
-        allow(subject).to receive(:get_chef_vault)
-          .with('workflow-vaults', 'ent-org')
-          .and_return(organization_vault)
-        allow(subject).to receive(:get_chef_vault)
-          .with('workflow-vaults', 'ent-org-project')
-          .and_raise(ChefVault::Exceptions::KeysNotFound)
-
         expect(subject.get_chef_vault_data_list).to eql(incomplete_chef_vault_data_list)
       end
     end
