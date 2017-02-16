@@ -17,5 +17,8 @@ Documentation:
 Metrics/LineLength:
   Max: 90
 
+Metric/BlockLength:
+  Enabled: false
+
 Style/Alias:
   Enabled: false
