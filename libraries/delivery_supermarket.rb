@@ -50,7 +50,7 @@ class DeliverySupermarket < Chef::Resource
     end
   end
 
-  action_class do # rubocop:disable Metrics/BlockLength
+  action_class do
     include Chef::Mixin::ShellOut
 
     # Write the Supermarket key to a file on disk

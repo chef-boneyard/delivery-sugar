@@ -53,7 +53,11 @@ class Chef
       end
 
       def action_dispatch
-        return if new_resource.nodes.empty?
+        if new_resource.nodes.empty?
+          Chef::Log.info("Zero nodes passed to 'delivery_push_job'")
+          return
+        end
+
         converge_by("Dispatch push jobs for #{new_resource.command} on " \
                     "#{new_resource.nodes.join(',')}") do
           @push_job.dispatch
