@@ -16,6 +16,7 @@ describe Chef::Provider::DeliveryPushJob do
   let(:chef_config_file) { '/workspace/.chef/knife.rb' }
   let(:command) { 'chef-client' }
   let(:timeout) { 10 }
+  let(:quorum) { 2 }
   let(:new_resource) { Chef::Resource::DeliveryPushJob.new(command, run_context) }
   let(:provider) { described_class.new(new_resource, run_context) }
 
@@ -32,7 +33,8 @@ describe Chef::Provider::DeliveryPushJob do
         chef_config_file,
         command,
         node_objects,
-        timeout
+        timeout,
+        quorum
       )
       described_class.new(new_resource, nil)
     end
@@ -46,7 +48,8 @@ describe Chef::Provider::DeliveryPushJob do
         new_resource.chef_config_file,
         new_resource.command,
         new_resource.nodes,
-        new_resource.timeout
+        new_resource.timeout,
+        new_resource.quorum
       ).and_return(push_job_client)
       allow(File).to receive(:exist?).with(chef_config_file).and_return(file_exist)
     end
@@ -73,6 +76,7 @@ describe Chef::Provider::DeliveryPushJob do
     end
 
     it 'dispatches push job and waits for completion' do
+      expect(new_resource).to receive(:quorum).and_return(2)
       allow(provider.push_job).to receive(:dispatch)
       allow(provider.push_job).to receive(:wait)
       expect(new_resource).to receive(:updated_by_last_action).with(true)

@@ -48,7 +48,8 @@ class Chef
           new_resource.chef_config_file,
           new_resource.command,
           new_resource.nodes,
-          new_resource.timeout
+          new_resource.timeout,
+          new_resource.quorum
         )
       end
 

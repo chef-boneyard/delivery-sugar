@@ -31,6 +31,7 @@ class Chef
         @command = name
         @timeout = 30 * 60 # 30 minutes
         @nodes = []
+        @quorum = nil
         @chef_config_file = delivery_knife_rb
 
         @provider = Chef::Provider::DeliveryPushJob
@@ -65,6 +66,7 @@ class Chef
       # The list of nodes you wish to execute the push job on.
       #
       def nodes(arg = nil)
+        @quorum ||= arg.length unless arg.nil?
         set_or_return(
           :nodes,
           arg,
@@ -78,6 +80,17 @@ class Chef
       def timeout(arg = nil)
         set_or_return(
           :timeout,
+          arg,
+          kind_of: Integer
+        )
+      end
+
+      #
+      # The number of nodes to reach quorum for the job
+      #
+      def quorum(arg = nil)
+        set_or_return(
+          :quorum,
           arg,
           kind_of: Integer
         )
