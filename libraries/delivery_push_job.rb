@@ -20,7 +20,7 @@ module DeliverySugar
   # This class is our interface to execute push jobs against a push jobs server.
   #
   class PushJob
-    attr_reader :chef_server, :command, :nodes, :job_uri, :job
+    attr_reader :chef_server, :command, :nodes, :job_uri, :job, :quorum
 
     # Variables for the Job itself
     attr_reader :id, :status, :created_at, :updated_at, :results
@@ -39,14 +39,18 @@ module DeliverySugar
     #   An array of node names to run the push job against
     # @param timeout [Integer]
     #   How long to wait before timing out
+    # @param quorum [Integer]
+    #   How many nodes that must acknowledge for the job to run
+    #   (default: length of nodes)
     #
     # @return [DeliverySugar::PushJob]
     #
-    def initialize(chef_config_file, command, nodes, timeout)
+    def initialize(chef_config_file, command, nodes, timeout, quorum = nil)
       fail "[#{self.class}] Expected nodes Array#String" unless valid_node_value?(nodes)
       @command = command
       @nodes = nodes
       @timeout = timeout
+      @quorum = quorum || nodes.length
       @chef_server = DeliverySugar::ChefServer.new(chef_config_file)
     end
 
@@ -57,7 +61,8 @@ module DeliverySugar
       body = {
         'command' => @command,
         'nodes' => @nodes,
-        'run_timeout' => @timeout
+        'run_timeout' => @timeout,
+        'quorum' => @quorum
       }
 
       resp = @chef_server.rest(:post, '/pushy/jobs', {}, body)

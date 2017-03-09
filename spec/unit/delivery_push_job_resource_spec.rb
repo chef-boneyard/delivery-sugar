@@ -18,6 +18,7 @@ describe Chef::Resource::DeliveryPushJob do
       expect(@resource.command).to eql('push_job')
       expect(@resource.timeout).to eql(30 * 60)
       expect(@resource.nodes).to eql([])
+      expect(@resource.quorum).to eql(nil)
     end
 
     it 'has a resource name of :delivery_push_job' do
@@ -68,6 +69,14 @@ describe Chef::Resource::DeliveryPushJob do
       @resource.nodes %w(a b)
       expect(@resource.nodes).to eql(%w(a b))
       expect { @resource.send(:nodes, 'a') }.to raise_error(ArgumentError)
+    end
+  end
+
+  describe '#quorum' do
+    it 'requires an Integer' do
+      @resource.quorum 2
+      expect(@resource.quorum).to eql(2)
+      expect { @resource.send(:quorum, '2') }.to raise_error(ArgumentError)
     end
   end
 end
