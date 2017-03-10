@@ -11,6 +11,7 @@ describe DeliverySugar::PushJob do
   let(:nodes_body) { {} }
   let(:status) { 'voting' }
   let(:timeout) { 10 }
+  let(:quorum) { 1 }
   let(:chef_server) { double('ChefServer Object') }
 
   let(:job_uri) { 'http://localhost/organizations/ORG_NAME/pushy/jobs/ID' }
@@ -26,7 +27,7 @@ describe DeliverySugar::PushJob do
     }
   end
 
-  subject { described_class.new(chef_config_file, command, nodes, timeout) }
+  subject { described_class.new(chef_config_file, command, nodes, timeout, quorum) }
 
   before do
     allow(DeliverySugar::ChefServer).to receive(:new).with(chef_config_file)
@@ -38,6 +39,7 @@ describe DeliverySugar::PushJob do
       expect(subject.chef_server).to eql(chef_server)
       expect(subject.command).to eql(command)
       expect(subject.nodes).to eql(nodes)
+      expect(subject.quorum).to eql(quorum)
     end
 
     context 'when nodes are NOT an array of strings' do
@@ -59,6 +61,13 @@ describe DeliverySugar::PushJob do
         expect { subject }.not_to raise_error
       end
     end
+
+    context 'when quorum is not initialized' do
+      let(:quorum) { nil }
+      it 'should equal number of nodes' do
+        expect(subject.quorum).to eq(nodes.length)
+      end
+    end
   end
 
   describe '#dispatch' do
@@ -67,7 +76,8 @@ describe DeliverySugar::PushJob do
       {
         'command' => command,
         'nodes' => nodes,
-        'run_timeout' => timeout
+        'run_timeout' => timeout,
+        'quorum' => quorum
       }
     end
 
