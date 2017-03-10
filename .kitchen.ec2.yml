@@ -2,9 +2,7 @@
 driver:
   name: ec2
   region: us-west-2
-  availability_zone: a
   instance_type: t2.micro
-  image_id: ami-5189a661
   subnet_id: subnet-19ac017c
   tags:
     Name: <%= ENV['KITCHEN_INSTANCE_NAME'] || 'delivery-sugar-kitchen' %>
@@ -18,6 +16,14 @@ provisioner:
 
 platforms:
   - name: ubuntu-14.04
+    driver:
+      image_search:
+        name: ubuntu/images/*/ubuntu-*-14.04-*-server-*
+        owner-id: "099720109477"
+        architecture: x86_64
+        virtualization-type: hvm
+        block-device-mapping.volume-type: gp2
+        image-type: machine
 
 suites:
   - name: default

@@ -119,7 +119,9 @@ module DeliverySugar
       @environment.merge!(
         'AWS_SSH_KEY_ID'            => ec2_keypair_name,
         'KITCHEN_EC2_SSH_KEY_PATH'  => ec2_private_key_file,
-        'KITCHEN_INSTANCE_NAME'     => kitchen_instance_name
+        'KITCHEN_INSTANCE_NAME'     => kitchen_instance_name,
+        'AWS_ACCESS_KEY_ID'         => secrets['ec2']['access_key'],
+        'AWS_SECRET_ACCESS_KEY'     => secrets['ec2']['secret_key']
       )
 
       # Installing kitchen-ec2 driver
