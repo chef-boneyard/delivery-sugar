@@ -267,18 +267,6 @@ module DeliverySugar
     # @return [Chef::DataBagItem]
     #
     def update_data_bag_with_application_attributes(app_name, app_version, app_attributes)
-      data_bag_item_id = app_slug(app_name, app_version)
-
-      # Check if the name is valid.
-      begin
-        Chef::DataBag.validate_name!(data_bag_item_id)
-      rescue Chef::Exceptions::InvalidDataBagName
-        raise 'Your application\'s name and version can only contain '\
-              'lowercase letters, numbers, hyphens, and underscores.' \
-              "\nYou passed name:    #{app_name}" \
-              "\nYou passed version: #{app_version}"
-      end
-
       data_bag = new_data_bag
       data_bag.name(@project)
 
@@ -289,7 +277,7 @@ module DeliverySugar
       end
 
       data_bag_item_data = {
-        'id' => data_bag_item_id,
+        'id' => app_slug(app_name, app_version),
         'version' => app_version,
         'name' => app_name
       }
@@ -337,7 +325,8 @@ module DeliverySugar
     end
 
     #
-    # Generates a unique slug given an app_name and version
+    # Generates a unique slug given an app_name and version. Any invalid
+    # characters are replaced by an underscore.
     #
     # @param [String] app_name
     #   A string representing your application's name
@@ -346,7 +335,9 @@ module DeliverySugar
     #
     # @return [String]
     def app_slug(app_name, app_version)
-      "#{project_slug}-#{app_name}-#{app_version}"
+      # Regex is a negated version of `Chef::DataBagItem::VALID_ID`.
+      # See https://git.io/vSqLs for more details
+      "#{project_slug}-#{app_name}-#{app_version}".gsub(/[^\.\-[:alnum:]_]/, '_')
     end
 
     # Not in Delivery DSL. Used by define_project_application().
