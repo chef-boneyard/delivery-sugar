@@ -271,28 +271,6 @@ describe DeliverySugar::Change do
       allow(chef_server).to receive(:with_server_config)
     end
 
-    context 'when app name is invalid' do
-      let(:app_name) { 'invalid name' }
-      it 'raises an error' do
-        expect do
-          subject.update_data_bag_with_application_attributes(app_name,
-                                                              app_version,
-                                                              app_attributes)
-        end.to raise_error(RuntimeError)
-      end
-    end
-
-    context 'when app version is invalid' do
-      let(:app_version) { 'invalid version' }
-      it 'raises an error' do
-        expect do
-          subject.update_data_bag_with_application_attributes(app_name,
-                                                              app_version,
-                                                              app_attributes)
-        end.to raise_error(RuntimeError)
-      end
-    end
-
     context 'when app name and version are valid' do
       before do
         # should save data bag and data bag item
@@ -462,6 +440,26 @@ describe DeliverySugar::Change do
               .to eq(expected_data_bag_item_content)
           end
         end
+      end
+    end
+  end
+
+  describe '#app_slug' do
+    context 'app_name contains invalid characters' do
+      let(:app_name) { 'bad name' }
+
+      it 'replaces non-valid characters with an underscore' do
+        expect(subject.app_slug(app_name, app_version))
+          .to eq('ent-org-proj-bad_name-1.1.1')
+      end
+    end
+
+    context 'app_version contains invalid characters' do
+      let(:app_version) { '1.1.1/20170216210314' }
+
+      it 'replaces non-valid characters with an underscore' do
+        expect(subject.app_slug(app_name, app_version))
+          .to eq('ent-org-proj-our_app-1.1.1_20170216210314')
       end
     end
   end
