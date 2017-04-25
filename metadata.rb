@@ -6,7 +6,7 @@ description 'Syntatic sugars for Delivery build cookbooks'
 
 version '1.4.1'
 
-gem 'chef-vault', '~> 3.0.1'
+gem 'chef-vault'
 
 source_url 'https://github.com/chef-cookbooks/delivery-sugar'
 issues_url 'https://github.com/chef-cookbooks/delivery-sugar/issues'
