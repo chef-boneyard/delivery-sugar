@@ -428,6 +428,8 @@ vault_data = get_chef_vault_data
 puts vault_data['my_key']
 ```
 
+_NOTE: We recommend to have always the latest version of ChefDK installed on your Runners._
+
 ## License & Authors
 - Author:: Tom Duffield (<tom@chef.io>)
 - Author:: Jon Anderson (<janderson@chef.io>)

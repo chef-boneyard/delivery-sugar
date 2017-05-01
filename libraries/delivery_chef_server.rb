@@ -17,8 +17,19 @@
 
 require 'chef/mixin/shell_out'
 require 'chef/server_api'
-require 'chef-vault'
 require_relative './delivery_dsl'
+
+# (afiune) TODO: We should be able to put `gem 'chef-vault'` in the `metadata.rb` but
+# that is breaking air-gapped environments because is trying to reach out to rubygems.org
+# the solution is to add an option to the `automate-ctl install-runner` command that sets
+# up the `Chef::Config[:rubygems_url]` to the users rubygem internal mirror.
+begin
+  require 'chef-vault'
+rescue LoadError
+  Chef::Log.debug("could not load chef-vault whilst loading #{__FILE__}, if this is")
+  Chef::Log.debug('an air-gapped environment, make sure you have the latest chefdk ')
+  Chef::Log.debug('version. Otherwise make sure the chef-vault gem is installed')
+end
 
 module DeliverySugar
   #
