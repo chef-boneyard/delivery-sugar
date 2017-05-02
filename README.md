@@ -41,6 +41,9 @@ The path to the knife config that can communicate with the Automate Chef Server.
 Cheffish details you can pass into Provisioning or Cheffish resources (i.e
 `chef_environment`).
 
+#### `build_user`
+The name of the local user executing the job (e.g. `dbuild`).
+
 ### Workspace Details
 Helpers that provide the paths to the relevant workspace directories on the
 build node.
@@ -59,6 +62,9 @@ job is executed from.
 
 #### `workflow_workspace_cache`
 The path to a cache directory associated with this phase run.
+
+#### `workflow_workspace_root`
+The parent directory of repo, chef, and cache.
 
 ### Pipeline Details
 

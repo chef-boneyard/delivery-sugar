@@ -25,8 +25,8 @@ module DeliverySugar
   class Change
     attr_reader :enterprise, :organization, :project, :pipeline,
                 :stage, :phase, :patchset_branch, :scm_client, :workspace_path,
-                :workspace_repo, :workspace_cache, :workspace_chef,
-                :change_id, :merge_sha
+                :workspace_repo, :workspace_cache, :workspace_chef, :workspace_root,
+                :change_id, :merge_sha, :build_user
 
     #
     # Create a new DeliverySugar::Change object
@@ -45,9 +45,11 @@ module DeliverySugar
     def initialize(node)
       change = node['delivery']['change']
       workspace = node['delivery']['workspace']
+      @build_user = node['delivery_builder']['build_user']
       @workspace_repo = workspace['repo']
       @workspace_cache = workspace['cache']
       @workspace_chef = workspace['chef']
+      @workspace_root = workspace['root']
       @workspace_path = node['delivery']['workspace_path'] ||
                         '/var/opt/delivery/workspace'
       @enterprise = change['enterprise']

@@ -4,7 +4,7 @@ maintainer_email 'delivery-team@chef.io'
 license 'Apache 2.0'
 description 'Syntatic sugars for Delivery build cookbooks'
 
-version '1.4.0'
+version '1.4.1'
 
 gem 'chef-vault', '~> 3.0.1'
 
