@@ -3,6 +3,7 @@ require 'spec_helper'
 describe 'test-build-cookbook::deploy' do
   let(:chef_client) do
     ChefSpec::SoloRunner.new do |node|
+      node.set['delivery_builder'] = cli_node['delivery_builder']
       node.set['delivery'] = cli_node['delivery']
       node.set['delivery']['workspace']['repo'] = File.join(SUPPORT_DIR,
                                                             'cookbooks',

@@ -5,13 +5,18 @@ describe DeliverySugar::Change do
   let(:patchset_branch) { 'patchset_branch' }
   let(:sha) { '' }
 
+  # https://github.com/chef/delivery-cli/blob/master/src/delivery/job/dna.rs
   let(:node) do
     {
+      'delivery_builder' => {
+        'build_user' => 'dbuild'
+      },
       'delivery' => {
         'workspace' => {
           'repo' => 'workspace_repo',
           'cache' => 'workspace_cache',
-          'chef' => 'workspace_chef'
+          'chef' => 'workspace_chef',
+          'root' => 'workspace_root'
         },
         'change' => {
           'stage' => stage,
@@ -73,6 +78,8 @@ describe DeliverySugar::Change do
       expect(subject.patchset_branch).to eql('patchset_branch')
       expect(subject.workspace_repo).to eql('workspace_repo')
       expect(subject.merge_sha).to eql('')
+      expect(subject.workspace_root).to eql('workspace_root')
+      expect(subject.build_user).to eql('dbuild')
     end
   end
 

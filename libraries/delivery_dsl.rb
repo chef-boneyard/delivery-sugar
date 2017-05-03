@@ -19,6 +19,15 @@ module DeliverySugar
   # rubocop:disable Metrics/ModuleLength
   module DSL
     #
+    # The name of the build user
+    #
+    # @return [String]
+    #
+    def build_user
+      change.build_user
+    end
+
+    #
     # The path for the Chef Config file to use with the Automate Chef Server.
     #
     # @return [String]
@@ -69,6 +78,15 @@ module DeliverySugar
       change.workspace_cache
     end
     alias_method :workflow_workspace_cache, :delivery_workspace_cache
+
+    #
+    # The root of the workspace path for the change
+    #
+    # @return [String]
+    #
+    def workflow_workspace_root
+      change.workspace_root
+    end
 
     #
     # The change id

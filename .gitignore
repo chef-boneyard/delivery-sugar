@@ -27,6 +27,9 @@ _Store
 .ruby-gemset
 .rvmrc
 
+#delivery stuff
+.delivery/cli.toml
+
 # YARD artifacts
 .yardoc
 _yardoc

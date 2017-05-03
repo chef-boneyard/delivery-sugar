@@ -12,6 +12,9 @@ describe DeliverySugar::Change do
 
   let(:node) do
     {
+      'delivery_builder' => {
+        'build_user' => 'dbuild'
+      },
       'delivery' => {
         'workspace' => {
           'repo' => workspace

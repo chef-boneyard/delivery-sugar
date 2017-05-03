@@ -4,6 +4,7 @@ describe 'test-build-cookbook::functional' do
   context 'delivery test kitchen action: test' do
     let(:chef_client) do
       ChefSpec::SoloRunner.new(step_into: %w(delivery_test_kitchen)) do |node|
+        node.set['delivery_builder'] = cli_node['delivery_builder']
         node.set['delivery'] = cli_node['delivery']
       end.converge(described_recipe)
     end

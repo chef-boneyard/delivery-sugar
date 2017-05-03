@@ -28,6 +28,9 @@ module SharedLetDeclarations
   extend RSpec::SharedContext
   let(:cli_node) do
     {
+      'delivery_builder' => {
+        'build_user' => 'dbuild'
+      },
       'delivery' => {
         'workspace_path' => '/workspace',
         'workspace' => {

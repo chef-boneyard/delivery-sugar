@@ -214,6 +214,9 @@ describe DeliverySugar::DSL do
   describe '.get_chef_vault_data_list' do
     let(:node) do
       {
+        'delivery_builder' => {
+          'build_user' => 'dbuild'
+        },
         'delivery' => {
           'workspace' => {
             'repo' => 'workspace_repo',
