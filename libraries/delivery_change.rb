@@ -110,6 +110,28 @@ module DeliverySugar
     end
 
     #
+    # Return a list of directories that have changed in the current changeset
+    #
+    # @param split [true, false] Whether to include each parent directory
+    # @return [Array<String>]
+    #
+    def changed_dirs(depth = nil)
+      true_depth = depth.nil? ? 9999 : depth
+      modified_dirs = []
+
+      changed_files.each do |changed_file|
+        directory = []
+        segments = Pathname(changed_file).split[0].each_filename.to_a[0..true_depth]
+        segments.each do |segment|
+          directory << segment
+          modified_dirs << File.join(directory)
+        end
+      end
+
+      modified_dirs.flatten.uniq
+    end
+
+    #
     # Gets the metadata for a given cookbook at a specified revision.
     #
     # @param [String] the path to the cookbook.

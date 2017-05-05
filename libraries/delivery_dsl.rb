@@ -174,6 +174,16 @@ module DeliverySugar
     end
 
     #
+    # Return a list of directories (relative to the project root) that have been
+    # modified in the current changeset.
+    #
+    # @return [Array<String>]
+    #
+    def changed_dirs(depth = nil)
+      change.changed_dirs(depth)
+    end
+
+    #
     # Return the name of the Chef environment that corresponds with the stage
     # for the current phase run.
     #

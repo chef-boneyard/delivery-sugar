@@ -112,6 +112,69 @@ describe DeliverySugar::Change do
     end
   end
 
+  describe '#changed_dirs' do
+    let(:changed_files) do
+      [
+        'cookbooks/a/recipe.rb',
+        'cookbooks/b/attribute.rb',
+        'README.md',
+        '.delivery/cookbooks/kilmer/metadata.rb'
+      ]
+    end
+
+    context 'when no depth is specified' do
+      let(:changed_dirs) do
+        [
+          'cookbooks',
+          'cookbooks/a',
+          'cookbooks/b',
+          '.',
+          '.delivery',
+          '.delivery/cookbooks',
+          '.delivery/cookbooks/kilmer'
+        ]
+      end
+
+      it 'returns the nest list of all directories' do
+        allow(subject).to receive(:changed_files).and_return(changed_files)
+        expect(subject.changed_dirs).to eql(changed_dirs)
+      end
+    end
+
+    context 'with depth of 0' do
+      let(:changed_dirs) do
+        [
+          'cookbooks',
+          '.',
+          '.delivery'
+        ]
+      end
+
+      it 'returns a uniqe list of top-level directories based on changed files' do
+        allow(subject).to receive(:changed_files).and_return(changed_files)
+        expect(subject.changed_dirs(0)).to eql(changed_dirs)
+      end
+    end
+
+    context 'when depth is 1' do
+      let(:changed_dirs) do
+        [
+          'cookbooks',
+          'cookbooks/a',
+          'cookbooks/b',
+          '.',
+          '.delivery',
+          '.delivery/cookbooks'
+        ]
+      end
+
+      it 'returns each directory in the path' do
+        allow(subject).to receive(:changed_files).and_return(changed_files)
+        expect(subject.changed_dirs(1)).to eql(changed_dirs)
+      end
+    end
+  end
+
   describe '#changed_files' do
     let(:client) { double('DeliverySugar::SCM') }
     let(:list_of_files) { [] }
