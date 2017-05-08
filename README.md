@@ -115,6 +115,10 @@ was modified in the current change.
 Returns a list of all the files modified in the current change. File names are
 scoped to the project root.
 
+#### `changed_dirs`
+Returns a list of all the directories modified in the current change. Optionally
+provide an integer to specify the desired directory depth. 
+
 #### `workflow_project_slug`
 Returns a unique string that can be used to identify the current project.
 **Format:** <ENTERPRISE>-<ORGANIZATION>-<PROJECT>

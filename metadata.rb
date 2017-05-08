@@ -4,7 +4,7 @@ maintainer_email 'delivery-team@chef.io'
 license 'Apache 2.0'
 description 'Syntatic sugars for Delivery build cookbooks'
 
-version '1.5.0'
+version '1.5.1'
 
 source_url 'https://github.com/chef-cookbooks/delivery-sugar'
 issues_url 'https://github.com/chef-cookbooks/delivery-sugar/issues'

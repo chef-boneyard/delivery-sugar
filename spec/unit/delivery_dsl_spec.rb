@@ -125,6 +125,14 @@ describe DeliverySugar::DSL do
     end
   end
 
+  describe '.changed_dirs' do
+    let(:depth) { 1 }
+    it 'gets a list of changed directories based on the changed files' do
+      expect(subject).to receive_message_chain(:change, :changed_dirs).with(depth)
+      subject.changed_dirs(depth)
+    end
+  end
+
   describe '.automate_chef_server_details' do
     let(:chef_server_configuration) { double 'a configuration hash' }
 
