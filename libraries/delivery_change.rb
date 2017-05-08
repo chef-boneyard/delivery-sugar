@@ -116,19 +116,15 @@ module DeliverySugar
     # @return [Array<String>]
     #
     def changed_dirs(depth = nil)
-      true_depth = depth.nil? ? 9999 : depth
-      modified_dirs = []
+      true_depth = depth.nil? ? 9999 : depth + 1
+      modified_dirs = Set.new
 
       changed_files.each do |changed_file|
-        directory = []
-        segments = Pathname(changed_file).split[0].each_filename.to_a[0..true_depth]
-        segments.each do |segment|
-          directory << segment
-          modified_dirs << File.join(directory)
-        end
+        changed_dir_tree = Pathname(changed_file).dirname.descend.to_a
+        modified_dirs.merge(changed_dir_tree.take(true_depth).map(&:to_s))
       end
 
-      modified_dirs.flatten.uniq
+      modified_dirs.to_a
     end
 
     #
