@@ -189,8 +189,8 @@ module DeliverySugar
     #
     # @return [String]
     #
-    def delivery_environment
-      change.environment_for_current_stage
+    def delivery_environment(stage=nil)
+      change.environment_for_current_stage(stage)
     end
     alias_method :workflow_chef_environment_for_stage, :delivery_environment
 
