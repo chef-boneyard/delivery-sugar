@@ -33,6 +33,7 @@ class Chef
         @yaml      = '.kitchen.yml'
         @suite     = 'all'
         @options   = ''
+        @timeout   = 3600
         @repo_path = delivery_workspace_repo
 
         @action    = :test
@@ -94,6 +95,17 @@ class Chef
           :options,
           arg,
           kind_of: String
+        )
+      end
+
+      #
+      # Adjustable timeout for Test Kitchen
+      #
+      def timeout(arg = nil)
+        set_or_return(
+          :timeout,
+          arg,
+          kind_of: Integer
         )
       end
     end
