@@ -117,7 +117,7 @@ scoped to the project root.
 
 #### `changed_dirs`
 Returns a list of all the directories modified in the current change. Optionally
-provide an integer to specify the desired directory depth. 
+provide an integer to specify the desired directory depth.
 
 #### `workflow_project_slug`
 Returns a unique string that can be used to identify the current project.
@@ -359,6 +359,17 @@ delivery_test_kitchen 'unit_create' do
   driver 'ec2'
   options '--log-level=debug'
   suite 'default'
+  action :create
+end
+```
+
+Trigger a kitchen create extending the timeout to 20 minutes
+
+```ruby
+delivery_test_kitchen 'unit_create' do
+  driver 'ec2'
+  suite 'default'
+  timeout 1200
   action :create
 end
 ```

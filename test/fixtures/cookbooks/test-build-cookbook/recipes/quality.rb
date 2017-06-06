@@ -17,3 +17,13 @@ delivery_test_kitchen 'quality_create' do
   options '--log-level=debug'
   action :create
 end
+
+#
+# Trigger a kitchen create extending the timeout to 20 minutes
+#
+delivery_test_kitchen 'quality_create_with_timeout' do
+  driver 'ec2'
+  suite 'default'
+  timeout 1200
+  action :create
+end

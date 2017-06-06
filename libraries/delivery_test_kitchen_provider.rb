@@ -40,7 +40,8 @@ class Chef
           run_context,
           yaml: new_resource.yaml,
           options: new_resource.options,
-          suite: new_resource.suite
+          suite: new_resource.suite,
+          timeout: new_resource.timeout
         )
       end
 
