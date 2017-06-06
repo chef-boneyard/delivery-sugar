@@ -32,7 +32,7 @@ module DeliverySugar
     include DeliverySugar::DSL
     include Chef::Mixin::ShellOut
     attr_reader :driver, :repo_path, :environment, :options
-    attr_accessor :suite, :yaml, :run_context
+    attr_accessor :suite, :timeout, :yaml, :run_context
 
     #
     # Create a new TestKitchen object
@@ -56,6 +56,7 @@ module DeliverySugar
       @suite = parameters[:suite]
       @options = parameters[:options] || ''
       @environment = parameters[:environment] || {}
+      @timeout = parameters[:timeout]
     end
 
     #
@@ -67,7 +68,8 @@ module DeliverySugar
         "kitchen #{action} #{suite} #{@options}",
         cwd: @repo_path,
         env: @environment.merge!('KITCHEN_YAML' => kitchen_yaml_file),
-        live_stream: STDOUT
+        live_stream: STDOUT,
+        timeout: @timeout
       )
     end
 
