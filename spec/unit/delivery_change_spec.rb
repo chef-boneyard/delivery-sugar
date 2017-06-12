@@ -113,6 +113,16 @@ describe DeliverySugar::Change do
   end
 
   describe '#changed_dirs' do
+    context 'when no root files are changed' do
+      let(:changed_files) { ['habitat/plan.sh'] }
+      let(:changed_dirs) { ['habitat', '.'] }
+
+      it 'still returns that root was modified' do
+        allow(subject).to receive(:changed_files).and_return(changed_files)
+        expect(subject.changed_dirs).to eql(changed_dirs)
+      end
+    end
+
     let(:changed_files) do
       [
         'cookbooks/a/recipe.rb',

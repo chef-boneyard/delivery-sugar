@@ -112,7 +112,7 @@ module DeliverySugar
     #
     # Return a list of directories that have changed in the current changeset
     #
-    # @param split [true, false] Whether to include each parent directory
+    # @param depth [Integer] The directorty depth to keep
     # @return [Array<String>]
     #
     def changed_dirs(depth = nil)
@@ -123,6 +123,9 @@ module DeliverySugar
         changed_dir_tree = Pathname(changed_file).dirname.descend.to_a
         modified_dirs.merge(changed_dir_tree.take(true_depth).map(&:to_s))
       end
+
+      # If there were _any_ changed files, add that root was also changed
+      modified_dirs << '.' unless modified_dirs.empty?
 
       modified_dirs.to_a
     end
