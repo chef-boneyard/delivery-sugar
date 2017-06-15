@@ -1,0 +1,7 @@
+server = "automate-server.test"
+api_protocol = "https"
+user = "admin"
+enterprise = "brewinc"
+organization = "breworg"
+git_port = "8989"
+pipeline = "master"
