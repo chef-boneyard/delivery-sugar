@@ -229,7 +229,7 @@ module DeliverySugar
     # @return [Chef::Environment]
     #
     def define_project_application(app_name, app_version, app_attributes)
-      raise wrong_stage_for_define_project_application_error if @stage != 'build'
+      Chef::Log.warn wrong_stage_for_define_project_application_error if @stage != 'build'
       update_data_bag_with_application_attributes(app_name, app_version, app_attributes)
       set_application_pin_on_acceptance_environment(app_name, app_version)
     end
@@ -247,7 +247,7 @@ module DeliverySugar
     #
     def get_project_application(app_name)
       if @stage == 'build' || @stage == 'verify'
-        raise wrong_stage_for_get_project_application_error
+        Chef::Log.warn wrong_stage_for_get_project_application_error
       end
 
       env = begin

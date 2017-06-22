@@ -333,13 +333,14 @@ describe DeliverySugar::Change do
 
     context 'when the stage is not build' do
       let(:stage) { 'not-build' }
-      it 'raises a proper error to the user' do
-        expect do
-          subject.define_project_application(app_name,
-                                             app_version,
-                                             app_attributes)
-        end.to raise_error(RuntimeError,
-                           subject.wrong_stage_for_define_project_application_error)
+      it 'warns the user' do
+        expect(subject).to receive(:update_data_bag_with_application_attributes)
+          .with(app_name, app_version, app_attributes).and_return(data_bag)
+        expect(subject).to receive(:set_application_pin_on_acceptance_environment)
+          .with(app_name, app_version).and_return(env)
+        expect(Chef::Log).to receive(:warn)
+          .with(subject.wrong_stage_for_define_project_application_error)
+        subject.define_project_application(app_name, app_version, app_attributes)
       end
     end
   end
@@ -434,91 +435,91 @@ describe DeliverySugar::Change do
   end
 
   describe '#get_project_application' do
-    context 'when the stage is build or verify' do
-      %w(build verify).each do |current_stage|
-        let(:stage) { current_stage }
-        it 'raises the proper user error' do
+    let(:stage) { 'union' }
+
+    before do
+      allow(env.override_attributes)
+        .to receive(:[]).with('applications').and_return(app_name => app_version)
+    end
+
+    context 'when load_chef_environment raises a Net::HTTPServerException' do
+      before do
+        allow(subject).to receive(:load_chef_environment)
+          .with(stage).and_raise(exception)
+      end
+
+      context 'when load_chef_environment rasies not 200 or 404' do
+        let(:code) { '500' }
+        it 'raises the original error' do
+          expect { subject.get_project_application(app_name) }.to raise_error(exception)
+        end
+      end
+
+      context 'when load_chef_environment rasies a 404' do
+        let(:code) { '404' }
+        it 'raises the proper error for the user' do
           expect { subject.get_project_application(app_name) }
-            .to raise_error(RuntimeError,
-                            subject.wrong_stage_for_get_project_application_error)
+            .to raise_error(RuntimeError)
         end
       end
     end
 
-    context 'when the stage is not build or verify' do
-      let(:stage) { 'union' }
-
-      before do
-        allow(env.override_attributes)
-          .to receive(:[]).with('applications').and_return(app_name => app_version)
+    context 'when load_chef_environment properly loads the environment' do
+      before(:each) do
+        allow(subject).to receive(:load_chef_environment).with(stage).and_return(env)
       end
 
-      context 'when load_chef_environment raises a Net::HTTPServerException' do
-        before do
-          allow(subject).to receive(:load_chef_environment)
-            .with(stage).and_raise(exception)
-        end
-
-        context 'when load_chef_environment rasies not 200 or 404' do
-          let(:code) { '500' }
-          it 'raises the original error' do
-            expect { subject.get_project_application(app_name) }.to raise_error(exception)
-          end
-        end
-
-        context 'when load_chef_environment rasies a 404' do
-          let(:code) { '404' }
-          it 'raises the proper error for the user' do
-            expect { subject.get_project_application(app_name) }
-              .to raise_error(RuntimeError)
-          end
+      shared_examples_for 'when the app cannot be found' do
+        it 'informs the user to use the proper setup' do
+          expect { subject.get_project_application(app_name) }
+            .to raise_error(RuntimeError, subject.app_not_found_error(app_name))
         end
       end
 
-      context 'when load_chef_environment properly loads the environment' do
+      context 'when the version pin cannot be found' do
         before(:each) do
-          allow(subject).to receive(:load_chef_environment).with(stage).and_return(env)
+          allow(env.override_attributes)
+            .to receive(:[]).with('applications').and_return({})
         end
 
-        shared_examples_for 'when the app cannot be found' do
-          it 'informs the user to use the proper setup' do
-            expect { subject.get_project_application(app_name) }
-              .to raise_error(RuntimeError, subject.app_not_found_error(app_name))
+        it_behaves_like 'when the app cannot be found'
+      end
+
+      context 'when the data bag item cannot be found' do
+        let(:code) { '404' }
+        before(:each) do
+          expect(subject).to receive(:load_data_bag_item)
+            .with('proj', subject.app_slug(app_name, app_version)).and_raise(exception)
+        end
+
+        it_behaves_like 'when the app cannot be found'
+      end
+
+      context 'when the data bag item exists' do
+        before do
+          expect(subject).to receive(:load_data_bag_item)
+            .with('proj', subject.app_slug(app_name, app_version))
+            .and_return(data_bag_item)
+          allow(data_bag_item)
+            .to receive(:raw_data).and_return(expected_data_bag_item_content)
+        end
+
+        context 'when the stage is build or verify' do
+          %w(build verify).each do |current_stage|
+            let(:stage) { current_stage }
+
+            it 'warns the user' do
+              expect(Chef::Log).to receive(:warn)
+                .with(subject.wrong_stage_for_get_project_application_error)
+              expect(subject.get_project_application(app_name))
+                .to eq(expected_data_bag_item_content)
+            end
           end
         end
 
-        context 'when the version pin cannot be found' do
-          before(:each) do
-            allow(env.override_attributes)
-              .to receive(:[]).with('applications').and_return({})
-          end
-
-          it_behaves_like 'when the app cannot be found'
-        end
-
-        context 'when the data bag item cannot be found' do
-          let(:code) { '404' }
-          before(:each) do
-            expect(subject).to receive(:load_data_bag_item)
-              .with('proj', subject.app_slug(app_name, app_version)).and_raise(exception)
-          end
-
-          it_behaves_like 'when the app cannot be found'
-        end
-
-        context 'when the data bag item exists' do
-          before do
-            expect(subject).to receive(:load_data_bag_item)
-              .with('proj', subject.app_slug(app_name, app_version))
-              .and_return(data_bag_item)
-            allow(data_bag_item)
-              .to receive(:raw_data).and_return(expected_data_bag_item_content)
-          end
-
-          it 'calls load_data_bag_item with the proper input' do
-            expect(subject.get_project_application(app_name))
-              .to eq(expected_data_bag_item_content)
-          end
+        it 'calls load_data_bag_item with the proper input' do
+          expect(subject.get_project_application(app_name))
+            .to eq(expected_data_bag_item_content)
         end
       end
     end
