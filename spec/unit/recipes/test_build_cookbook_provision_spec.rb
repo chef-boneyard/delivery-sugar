@@ -12,8 +12,10 @@ describe 'test-build-cookbook::provision' do
       double('error!' => true)
     end
     let(:node) { chef_client.node }
+    # rubocop:disable Style/StringLiterals
     let(:state_out) { "{ \"instance\" : \"running\" }" }
     let(:state_saved) { { "instance" => "running" } }
+    # rubocop:enable Style/StringLiterals
 
     before do
       allow_any_instance_of(Chef::Mixin::ShellOut).to receive(:shell_out)
