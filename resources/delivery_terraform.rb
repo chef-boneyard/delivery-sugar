@@ -68,10 +68,7 @@ action_class do
   end
 
   def state
-    s = shell_out(
-      cmd('state pull'),
-      cwd: new_resource.repo_path
-    ).stdout
+    s = shell_out(cmd('state pull'), cwd: new_resource.repo_path).stdout
     s == '' ? {} : JSON.parse(s)
   end
 
@@ -80,22 +77,10 @@ action_class do
     Chef::Log.info("Terraform state updated in node.run_state['terraform-state']")
   end
 
-  def destroy
-    shell_out(
-      cmd('destroy'),
-      cwd: new_resource.repo_path,
-      live_stream: STDOUT
-    )
-  end
-
   def run(action)
-    shell_out!(
-      cmd(action),
-      cwd: new_resource.repo_path,
-      live_stream: STDOUT
-    )
+    shell_out!(cmd(action), cwd: new_resource.repo_path, live_stream: STDOUT)
   rescue Mixlib::ShellOut::ShellCommandFailed, Mixlib::ShellOut::CommandTimeout
-    destroy
+    shell_out(cmd('destroy'), cwd: new_resource.repo_path, live_stream: STDOUT)
     raise
   ensure
     save_state
