@@ -133,6 +133,13 @@ describe DeliverySugar::DSL do
     end
   end
 
+  describe '.change_log' do
+    it 'gets a list of commit log entries' do
+      expect(subject).to receive_message_chain(:change, :change_log)
+      subject.change_log
+    end
+  end
+
   describe '.automate_chef_server_details' do
     let(:chef_server_configuration) { double 'a configuration hash' }
 

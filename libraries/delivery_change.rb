@@ -112,7 +112,7 @@ module DeliverySugar
     #
     # Return a list of directories that have changed in the current changeset
     #
-    # @param split [true, false] Whether to include each parent directory
+    # @param depth [Integer] The directorty depth to keep
     # @return [Array<String>]
     #
     def changed_dirs(depth = nil)
@@ -124,7 +124,25 @@ module DeliverySugar
         modified_dirs.merge(changed_dir_tree.take(true_depth).map(&:to_s))
       end
 
+      # If there were _any_ changed files, add that root was also changed
+      modified_dirs << '.' unless modified_dirs.empty?
+
       modified_dirs.to_a
+    end
+
+    #
+    # Return an array of commits from the SCM log.
+    #
+    # @return [Array<String>]
+    def change_log
+      if @merge_sha.empty?
+        merge_base = scm_client.merge_base(@workspace_repo, "origin/#{@pipeline}",
+                                           "origin/#{@patchset_branch}")
+        scm_client.commit_log(@workspace_repo, merge_base,
+                              "origin/#{@patchset_branch}")
+      else
+        scm_client.commit_log(@workspace_repo, "#{@merge_sha}^", @merge_sha)
+      end
     end
 
     #
@@ -226,7 +244,7 @@ module DeliverySugar
     # @return [Chef::Environment]
     #
     def define_project_application(app_name, app_version, app_attributes)
-      raise wrong_stage_for_define_project_application_error if @stage != 'build'
+      Chef::Log.warn wrong_stage_for_define_project_application_error if @stage != 'build'
       update_data_bag_with_application_attributes(app_name, app_version, app_attributes)
       set_application_pin_on_acceptance_environment(app_name, app_version)
     end
@@ -244,7 +262,7 @@ module DeliverySugar
     #
     def get_project_application(app_name)
       if @stage == 'build' || @stage == 'verify'
-        raise wrong_stage_for_get_project_application_error
+        Chef::Log.warn wrong_stage_for_get_project_application_error
       end
 
       env = begin

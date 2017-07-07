@@ -184,6 +184,14 @@ module DeliverySugar
     end
 
     #
+    # Return a list of commit log entries in reverse chronological order.
+    #
+    # @return [Array<String>]
+    def change_log
+      change.change_log
+    end
+
+    #
     # Return the name of the Chef environment that corresponds with the stage
     # for the current phase run.
     #
