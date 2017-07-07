@@ -28,7 +28,7 @@ action :destroy do
 end
 
 action :test do
-  %w[init plan apply show destroy].each { |x| tf(x) }
+  %w(init plan apply show destroy).each { |x| tf(x) }
 end
 
 action_class do
