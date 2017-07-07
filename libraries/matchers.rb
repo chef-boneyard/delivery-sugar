@@ -60,4 +60,28 @@ if defined?(ChefSpec)
   def test_delivery_test_kitchen(resource_name)
     ChefSpec::Matchers::ResourceMatcher.new(:delivery_test_kitchen, :test, resource_name)
   end
+
+  def init_delivery_terraform(resource_name)
+    ChefSpec::Matchers::ResourceMatcher.new(:delivery_terraform, :init, resource_name)
+  end
+
+  def plan_delivery_terraform(resource_name)
+    ChefSpec::Matchers::ResourceMatcher.new(:delivery_terraform, :plan, resource_name)
+  end
+
+  def apply_delivery_terraform(resource_name)
+    ChefSpec::Matchers::ResourceMatcher.new(:delivery_terraform, :apply, resource_name)
+  end
+
+  def show_delivery_terraform(resource_name)
+    ChefSpec::Matchers::ResourceMatcher.new(:delivery_terraform, :show, resource_name)
+  end
+
+  def destroy_delivery_terraform(resource_name)
+    ChefSpec::Matchers::ResourceMatcher.new(:delivery_terraform, :destroy, resource_name)
+  end
+
+  def test_delivery_terraform(resource_name)
+    ChefSpec::Matchers::ResourceMatcher.new(:delivery_terraform, :test, resource_name)
+  end
 end

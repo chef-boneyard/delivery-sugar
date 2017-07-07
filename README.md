@@ -197,6 +197,12 @@ Supermarket.
 
 Find a list of available categories [here](https://docs.chef.io/plugin_knife_supermarket.html#share).
 
+## Terraform
+The resource `delivery_terraform` will allow your projects to use [Terraform](https://www.terraform.io)
+in order to provision ephemeral nodes.
+
+More on that topic [here](examples/terraform/.delivery/build_cookbook/README_TERRAFORM.md)
+
 ## Test Kitchen
 
 The resource `delivery_test_kitchen` will enable your projects to use [Test Kitchen](http://kitchen.ci)
@@ -420,7 +426,7 @@ Using the DSL method `get_chef_vault_data` will return a merged Ruby hash from t
 Chef Vaults in `workflow-vaults` on your Automate Chef Server.
 
 In order to use this DSL method you must use the following naming standard for your
-Chef Vaults under `workflow_vaults`:
+Chef Vault items under the `workflow_vaults` vault:
 
   - `#{ent_name}`
   - `#{ent_name}-#{org_name}`
@@ -436,6 +442,20 @@ You can access the data like so:
 ```
 vault_data = get_chef_vault_data
 puts vault_data['my_key']
+```
+
+Example Creation of the `workflow_vaults` Chef Vault and a vault item for the following:
+ - Workflow Enterprise: `brewinc`
+ - Workflow Organization: `breworg`
+ - Workflow Project: `mysql-server`
+
+```bash
+$ cat tmp/secrets.json
+{
+  "id": "brewinc-breworg-mysql-server",
+  "openstack-password": "secret-password"
+}
+$ knife vault create workflow-vaults brewinc-breworg-mysql-server -S "name:automate_runner**" -A "delivery,admin" -J tmp/secrets.json -M client
 ```
 
 _NOTE: We recommend to have always the latest version of ChefDK installed on your Runners._
