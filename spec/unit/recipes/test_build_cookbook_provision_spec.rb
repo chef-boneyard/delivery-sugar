@@ -16,14 +16,16 @@ describe 'test-build-cookbook::provision' do
     let(:state_out) { "{ \"instance\" : \"running\" }" }
     let(:state_saved) { { "instance" => "running" } }
     # rubocop:enable Style/StringLiterals
+    let(:plans) do
+      '/workspace/path/to/phase/repo/.delivery/build_cookbook/files/default/terraform'
+    end
 
     before do
       allow_any_instance_of(Chef::Mixin::ShellOut).to receive(:shell_out)
         .and_return(mock_shell_out)
       allow(mock_shell_out).to receive(:stdout).and_return(state_out)
       ::File.stub(:exist?).with(anything).and_call_original
-      ::File.stub(:exist?).with('/workspace/path/to/phase/repo').and_return true
-      ::File.stub(:exist?).with('/path/to/plans').and_return true
+      ::File.stub(:exist?).with(plans).and_return true
     end
 
     it 'converges successfully' do
