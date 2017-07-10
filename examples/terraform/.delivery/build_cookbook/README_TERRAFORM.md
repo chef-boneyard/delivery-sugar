@@ -27,7 +27,7 @@ Exception handling exists to catch errors that may occur during the execution of
 
 Property | Type | Required | Suggested Value | Purpose
 --- | --- | --- | --- | ---
-plan_dir | String | True | "#{delivery_workspace_repo}/.delivery/build_cookbook/files/default/terraform" | Fully qualified path to location of terraform plans
+plan_dir | String | True | "#{workflow_workspace_repo}/.delivery/build_cookbook/files/default/terraform" | Fully qualified path to location of terraform plans
 
 ### Example Usage
 In addition to having the `terraform` binary installed on the Runners, the `delivery_terraform` requires that you provide your own Plans and secrets management.
@@ -36,7 +36,7 @@ In addition to having the `terraform` binary installed on the Runners, the `deli
 # recipes/provision.rb
 
 delivery_terraform 'terraform-plans' do
-  plan_dir "#{delivery_workspace_repo}/.delivery/build_cookbook/files/default/terraform"
+  plan_dir "#{workflow_workspace_repo}/.delivery/build_cookbook/files/default/terraform"
   only_if { workflow_stage?('acceptance') }
 end
 ```

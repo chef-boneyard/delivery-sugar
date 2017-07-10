@@ -63,7 +63,7 @@ action_class do
   end
 
   def state
-    s = shell_out(cmd('state pull'), cwd: delivery_workspace_repo).stdout
+    s = shell_out(cmd('state pull'), cwd: workflow_workspace_repo).stdout
     s == '' ? {} : JSON.parse(s)
   end
 
@@ -73,9 +73,9 @@ action_class do
   end
 
   def run(action)
-    shell_out!(cmd(action), cwd: delivery_workspace_repo, live_stream: STDOUT)
+    shell_out!(cmd(action), cwd: workflow_workspace_repo, live_stream: STDOUT)
   rescue Mixlib::ShellOut::ShellCommandFailed, Mixlib::ShellOut::CommandTimeout
-    shell_out(cmd('destroy'), cwd: delivery_workspace_repo, live_stream: STDOUT)
+    shell_out(cmd('destroy'), cwd: workflow_workspace_repo, live_stream: STDOUT)
     raise
   ensure
     save_state
