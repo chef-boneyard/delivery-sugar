@@ -1,9 +1,6 @@
 resource_name :delivery_terraform
 
-extend DeliverySugar::DSL
-
-property :plan_dir, String, default: "#{delivery_workspace_repo}/files/default/terraform"
-property :repo_path, String, default: delivery_workspace_repo
+property :plan_dir, String, required: true
 
 default_action :test
 
@@ -34,6 +31,7 @@ end
 action_class do
   require 'json'
   include Chef::Mixin::ShellOut
+  include DeliverySugar::DSL
 
   def tf(action)
     preflight
@@ -48,9 +46,6 @@ action_class do
     msg = 'Terraform preflight check: No such path for'
     fail "#{msg} plan_dir: #{new_resource.plan_dir}" unless ::File.exist?(
       new_resource.plan_dir
-    )
-    fail "#{msg} repo_path: #{new_resource.repo_path}" unless ::File.exist?(
-      new_resource.repo_path
     )
   end
 
@@ -68,7 +63,7 @@ action_class do
   end
 
   def state
-    s = shell_out(cmd('state pull'), cwd: new_resource.repo_path).stdout
+    s = shell_out(cmd('state pull'), cwd: workflow_workspace_repo).stdout
     s == '' ? {} : JSON.parse(s)
   end
 
@@ -78,9 +73,9 @@ action_class do
   end
 
   def run(action)
-    shell_out!(cmd(action), cwd: new_resource.repo_path, live_stream: STDOUT)
+    shell_out!(cmd(action), cwd: workflow_workspace_repo, live_stream: STDOUT)
   rescue Mixlib::ShellOut::ShellCommandFailed, Mixlib::ShellOut::CommandTimeout
-    shell_out(cmd('destroy'), cwd: new_resource.repo_path, live_stream: STDOUT)
+    shell_out(cmd('destroy'), cwd: workflow_workspace_repo, live_stream: STDOUT)
     raise
   ensure
     save_state
