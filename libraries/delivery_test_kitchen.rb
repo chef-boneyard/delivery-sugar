@@ -26,7 +26,6 @@ module DeliverySugar
   # We are disabling the ClassLength cop for now, but we will want to refactor
   # this to be cleaner in the future.
   #
-  # rubocop:disable ClassLength
   class TestKitchen
     include Chef::DSL::Recipe
     include DeliverySugar::DSL
@@ -91,6 +90,8 @@ module DeliverySugar
         prepare_kitchen_dokken
       when 'azurerm'
         prepare_kitchen_azurerm
+      when 'vsphere'
+        prepare_kitchen_vsphere
       else
         fail "The test kitchen driver '#{@driver}' is not supported"
       end
@@ -99,8 +100,6 @@ module DeliverySugar
     #
     # Specific requirements for EC2 driver
     #
-    # rubocop:disable AbcSize
-    # rubocop:disable Metrics/MethodLength
     def prepare_kitchen_ec2
       fail 'Kitchen YAML file not found' unless kitchen_yaml?
 
@@ -129,7 +128,7 @@ module DeliverySugar
       chef_gem.run_action(:install)
 
       # Create directories for AWS credentials and SSH key
-      %w(.aws .ssh).each do |d|
+      %w[.aws .ssh].each do |d|
         directory = Chef::Resource::Directory.new(File.join(cache, d), run_context)
         directory.recursive true
         directory.run_action(:create)
@@ -209,7 +208,7 @@ aws_secret_access_key = #{secrets['ec2']['secret_key']}
       end
 
       # Create directories for Azure credentials and SSH key
-      %w(.azure .ssh).each do |d|
+      %w[.azure .ssh].each do |d|
         directory = Chef::Resource::Directory.new(File.join(cache, d), run_context)
         directory.recursive true
         directory.run_action(:create)
@@ -227,6 +226,35 @@ aws_secret_access_key = #{secrets['ec2']['secret_key']}
       EOF
       end
       file.run_action(:create)
+    end
+
+    #
+    # Specific requirements for EC2 driver
+    #
+    def prepare_kitchen_vsphere
+      fail 'Kitchen YAML file not found' unless kitchen_yaml?
+
+      # Load secrets from delivery-secrets data bag
+      secrets = get_project_secrets
+      msg = 'Could not find secrets for kitchen-vsphere driver ' \
+            'in delivery-secrets data bag.'
+      fail msg if secrets['vsphere'].nil?
+
+      # Variables used for configuring and running test kitchen EC2
+      kitchen_instance_name = "test-kitchen-#{delivery_project}-#{delivery_change_id}"
+      insecure              = secrets['vsphere']['insecure'] || true
+
+      @environment.merge!(
+          'VSPHERE_HOST'              => secrets['vsphere']['host'],
+          'VSPHERE_USER'              => secrets['vsphere']['user'],
+          'VSPHERE_PASSWORD'          => secrets['vsphere']['password'],
+          'VSPHERE_CONN_INSECURE'     => insecure,
+          'KITCHEN_INSTANCE_NAME'      => kitchen_instance_name
+      )
+
+      # Installing kitchen-ec2 driver
+      chef_gem = Chef::Resource::ChefGem.new('chef-provisioning-vsphere', run_context)
+      chef_gem.run_action(:install)
     end
 
     # See if the kitchen YAML file exist in the repo
