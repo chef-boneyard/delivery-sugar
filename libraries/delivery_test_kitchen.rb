@@ -242,7 +242,7 @@ aws_secret_access_key = #{secrets['ec2']['secret_key']}
 
       # Variables used for configuring and running test kitchen EC2
       kitchen_instance_name = "test-kitchen-#{delivery_project}-#{delivery_change_id}"
-      insecure              = secrets['vsphere']['insecure'] || true
+      insecure              = secrets['vsphere']['insecure'] || 'true'
 
       @environment.merge!(
           'VSPHERE_HOST'              => secrets['vsphere']['host'],
