@@ -35,6 +35,7 @@ class Chef
         @options   = ''
         @repo_path = delivery_workspace_repo
 
+        @timeout   = 3600
         @action    = :test
         %w(create converge setup verify destroy test).each do |a|
           @allowed_actions.push(a.to_sym)
@@ -94,6 +95,17 @@ class Chef
           :options,
           arg,
           kind_of: String
+        )
+      end
+
+      #
+      # Timeout for test-kitchen
+      #
+      def timeout(arg = nil)
+        set_or_return(
+          :timeout,
+          arg,
+          kind_of: Integer
         )
       end
     end
