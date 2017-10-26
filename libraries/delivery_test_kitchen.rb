@@ -32,7 +32,7 @@ module DeliverySugar
     include DeliverySugar::DSL
     include Chef::Mixin::ShellOut
     attr_reader :driver, :repo_path, :environment, :options
-    attr_accessor :suite, :yaml, :run_context
+    attr_accessor :suite, :timeout, :yaml, :run_context
 
     #
     # Create a new TestKitchen object
@@ -56,7 +56,7 @@ module DeliverySugar
       @suite = parameters[:suite]
       @options = parameters[:options] || ''
       @environment = parameters[:environment] || {}
-      @timeout = parameters[:timeout] || 3600
+      @timeout = parameters[:timeout]
     end
 
     #
