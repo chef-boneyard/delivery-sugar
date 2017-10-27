@@ -121,11 +121,14 @@ provide an integer to specify the desired directory depth.
 
 #### `workflow_project_slug`
 Returns a unique string that can be used to identify the current project.
-**Format:** <ENTERPRISE>-<ORGANIZATION>-<PROJECT>
+
+**Format:** `<ENTERPRISE>-<ORGANIZATION>-<PROJECT>`
 
 #### `workflow_organization_slug`
 Returns a unique string that can be used to identify the organization associated
-with the current project. **Format:** <ENTERPRISE>-<ORGANIZATION>
+with the current project.
+
+**Format:** `<ENTERPRISE>-<ORGANIZATION>`
 
 #### `workflow_enterprise_slug`
 Returns a unique string that can be used to identify the current enterprise.
