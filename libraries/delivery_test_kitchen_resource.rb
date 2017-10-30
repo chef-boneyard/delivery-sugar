@@ -33,6 +33,7 @@ class Chef
         @yaml      = '.kitchen.yml'
         @suite     = 'all'
         @options   = ''
+        @timeout   = 3600
         @repo_path = delivery_workspace_repo
 
         @timeout   = 3600
@@ -99,7 +100,7 @@ class Chef
       end
 
       #
-      # Timeout for test-kitchen
+      # Adjustable timeout for Test Kitchen
       #
       def timeout(arg = nil)
         set_or_return(
