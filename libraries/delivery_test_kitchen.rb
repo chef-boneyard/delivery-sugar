@@ -26,6 +26,7 @@ module DeliverySugar
   # We are disabling the ClassLength cop for now, but we will want to refactor
   # this to be cleaner in the future.
   #
+  # rubocop:disable ClassLength
   class TestKitchen
     include Chef::DSL::Recipe
     include DeliverySugar::DSL
@@ -84,6 +85,7 @@ module DeliverySugar
     #
     # Prepare the kitchen with specific driver configuration
     #
+    # rubocop:disable Metrics/MethodLength
     def prepare_kitchen
       case @driver
       when 'ec2'
@@ -102,6 +104,7 @@ module DeliverySugar
     #
     # Specific requirements for EC2 driver
     #
+    # rubocop:disable AbcSize
     def prepare_kitchen_ec2
       fail 'Kitchen YAML file not found' unless kitchen_yaml?
 
@@ -130,7 +133,7 @@ module DeliverySugar
       chef_gem.run_action(:install)
 
       # Create directories for AWS credentials and SSH key
-      %w[.aws .ssh].each do |d|
+      %w(.aws .ssh).each do |d|
         directory = Chef::Resource::Directory.new(File.join(cache, d), run_context)
         directory.recursive true
         directory.run_action(:create)
@@ -210,7 +213,7 @@ aws_secret_access_key = #{secrets['ec2']['secret_key']}
       end
 
       # Create directories for Azure credentials and SSH key
-      %w[.azure .ssh].each do |d|
+      %w(.azure .ssh).each do |d|
         directory = Chef::Resource::Directory.new(File.join(cache, d), run_context)
         directory.recursive true
         directory.run_action(:create)
@@ -247,11 +250,11 @@ aws_secret_access_key = #{secrets['ec2']['secret_key']}
       insecure              = secrets['vsphere']['insecure'] || true
 
       @environment.merge!(
-          'VSPHERE_HOST'              => secrets['vsphere']['host'],
-          'VSPHERE_USER'              => secrets['vsphere']['user'],
-          'VSPHERE_PASSWORD'          => secrets['vsphere']['password'],
-          'VSPHERE_CONN_INSECURE'     => insecure,
-          'KITCHEN_INSTANCE_NAME'      => kitchen_instance_name
+        'VSPHERE_HOST'              => secrets['vsphere']['host'],
+        'VSPHERE_USER'              => secrets['vsphere']['user'],
+        'VSPHERE_PASSWORD'          => secrets['vsphere']['password'],
+        'VSPHERE_CONN_INSECURE'     => insecure,
+        'KITCHEN_INSTANCE_NAME'     => kitchen_instance_name
       )
 
       # Installing kitchen-ec2 driver
