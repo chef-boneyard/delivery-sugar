@@ -234,7 +234,7 @@ aws_secret_access_key = #{secrets['ec2']['secret_key']}
     end
 
     #
-    # Specific requirements for EC2 driver
+    # Specific requirements for Vsphere driver
     #
     def prepare_kitchen_vsphere
       fail 'Kitchen YAML file not found' unless kitchen_yaml?
@@ -245,7 +245,7 @@ aws_secret_access_key = #{secrets['ec2']['secret_key']}
             'in delivery-secrets data bag.'
       fail msg if secrets['vsphere'].nil?
 
-      # Variables used for configuring and running test kitchen EC2
+      # Variables used for configuring and running test kitchen Vsphere
       kitchen_instance_name = "test-kitchen-#{delivery_project}-#{delivery_change_id}"
       insecure              = secrets['vsphere']['insecure'] || true
 
@@ -257,7 +257,7 @@ aws_secret_access_key = #{secrets['ec2']['secret_key']}
         'KITCHEN_INSTANCE_NAME'     => kitchen_instance_name
       )
 
-      # Installing kitchen-ec2 driver
+      # Installing kitchen-vsphere driver
       chef_gem = Chef::Resource::ChefGem.new('chef-provisioning-vsphere', run_context)
       chef_gem.run_action(:install)
     end
