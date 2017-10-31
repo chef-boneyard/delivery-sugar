@@ -131,6 +131,21 @@ module DeliverySugar
     end
 
     #
+    # Return an array of commits from the SCM log.
+    #
+    # @return [Array<String>]
+    def change_log
+      if @merge_sha.empty?
+        merge_base = scm_client.merge_base(@workspace_repo, "origin/#{@pipeline}",
+                                           "origin/#{@patchset_branch}")
+        scm_client.commit_log(@workspace_repo, merge_base,
+                              "origin/#{@patchset_branch}")
+      else
+        scm_client.commit_log(@workspace_repo, "#{@merge_sha}^", @merge_sha)
+      end
+    end
+
+    #
     # Gets the metadata for a given cookbook at a specified revision.
     #
     # @param [String] the path to the cookbook.

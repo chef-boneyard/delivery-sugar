@@ -76,4 +76,25 @@ describe DeliverySugar::SCM::Git do
       end
     end
   end
+
+  describe '#commit_log' do
+    let(:ref1) { 'ref1' }
+    let(:ref2) { 'ref2' }
+    let(:cmd) { 'git log ref1..ref2' }
+    let(:output) do
+      [
+        "commit ref1\nAuthor: Foo\nDate:  Mon May 8 19:19:19 2017 +0000\n\n    Test ref1",
+        "commit ref2\nAuthor: Foo\nDate:  Mon May 7 19:19:19 2017 +0000\n\n    Test ref2"
+      ]
+    end
+    let(:error) { false }
+    let(:show_shellout) { double('shellout', stdout: output.join("\n"), error?: error) }
+
+    it 'runs a valid git command to get the commit log' do
+      expect(@scm).to receive(:shell_out!).with(cmd, options)
+        .and_return(show_shellout)
+
+      expect(@scm.commit_log(workspace, ref1, ref2)).to eql(output)
+    end
+  end
 end

@@ -77,6 +77,26 @@ module DeliverySugar
         cmd = shell_out("git show #{ref}:#{path}", cwd: workspace)
         cmd.stdout unless cmd.error?
       end
+
+      #
+      # Get the commit log for all commits between two refs inclusive. Resulting
+      # array has commits in reverse chronological order.
+      #
+      # @param [String] workspace
+      #   The fully-qualified path to the git repo on disk
+      # @param [String] ref1
+      #   A git reference (branch, sha, etc)
+      # @param [String] ref2
+      #   A git reference (branch, sha, etc)
+      #
+      # @return [Array<String>]
+      #
+      def commit_log(workspace, ref1, ref2)
+        log = shell_out!("git log #{ref1}..#{ref2}", cwd: workspace).stdout
+        log = log.split(/^commit /)
+        log.shift
+        log.map { |l| "commit #{l}".chomp }
+      end
     end
   end
 end

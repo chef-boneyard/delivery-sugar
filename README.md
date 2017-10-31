@@ -119,6 +119,9 @@ scoped to the project root.
 Returns a list of all the directories modified in the current change. Optionally
 provide an integer to specify the desired directory depth.
 
+#### `change_log`
+Returns a list of commits from the SCM log in reverse chronological order.
+
 #### `workflow_project_slug`
 Returns a unique string that can be used to identify the current project.
 
