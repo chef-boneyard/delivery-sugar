@@ -85,6 +85,7 @@ module DeliverySugar
     #
     # Prepare the kitchen with specific driver configuration
     #
+    # rubocop:disable Metrics/MethodLength
     def prepare_kitchen
       case @driver
       when 'ec2'
@@ -93,6 +94,8 @@ module DeliverySugar
         prepare_kitchen_dokken
       when 'azurerm'
         prepare_kitchen_azurerm
+      when 'vsphere'
+        prepare_kitchen_vsphere
       else
         fail "The test kitchen driver '#{@driver}' is not supported"
       end
@@ -102,7 +105,6 @@ module DeliverySugar
     # Specific requirements for EC2 driver
     #
     # rubocop:disable AbcSize
-    # rubocop:disable Metrics/MethodLength
     def prepare_kitchen_ec2
       fail 'Kitchen YAML file not found' unless kitchen_yaml?
 
@@ -229,6 +231,35 @@ aws_secret_access_key = #{secrets['ec2']['secret_key']}
       EOF
       end
       file.run_action(:create)
+    end
+
+    #
+    # Specific requirements for Vsphere driver
+    #
+    def prepare_kitchen_vsphere
+      fail 'Kitchen YAML file not found' unless kitchen_yaml?
+
+      # Load secrets from delivery-secrets data bag
+      secrets = get_project_secrets
+      msg = 'Could not find secrets for kitchen-vsphere driver ' \
+            'in delivery-secrets data bag.'
+      fail msg if secrets['vsphere'].nil?
+
+      # Variables used for configuring and running test kitchen Vsphere
+      kitchen_instance_name = "test-kitchen-#{delivery_project}-#{delivery_change_id}"
+      insecure              = secrets['vsphere']['insecure'] || true
+
+      @environment.merge!(
+        'VSPHERE_HOST'              => secrets['vsphere']['host'],
+        'VSPHERE_USER'              => secrets['vsphere']['user'],
+        'VSPHERE_PASSWORD'          => secrets['vsphere']['password'],
+        'VSPHERE_CONN_INSECURE'     => insecure,
+        'KITCHEN_INSTANCE_NAME'     => kitchen_instance_name
+      )
+
+      # Installing kitchen-vsphere driver
+      chef_gem = Chef::Resource::ChefGem.new('chef-provisioning-vsphere', run_context)
+      chef_gem.run_action(:install)
     end
 
     # See if the kitchen YAML file exist in the repo
