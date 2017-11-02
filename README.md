@@ -289,7 +289,7 @@ Additionally at this point, installing the `kitchen-azurerm` requires build tool
     ```json
     {
       "id": "<ent>-<org>-<project>",
-      "azure": {
+      "azurerm": {
         "subscription_id": "<YOUR-SUBSCRIPTION-ID-HERE>",
         "client_id": "<48b9bba3-YOUR-GUID-HERE-90f0b68ce8ba>",
         "client_secret": "<your-client-secret-here>",
@@ -336,6 +336,47 @@ Additionally at this point, installing the `kitchen-azurerm` requires build tool
 
         ```
 
+#### Docker
+
+You can leverage the [kitchen-dokken](https://github.com/someara/kitchen-dokken) driver in your tests
+as well. This does not require the use of `delivery-secrets`. To enable `kitchen-dokken`, do the following to
+install Docker on all of your builders/runners:
+
+Add `depends 'docker', '~> 2.0'` to the `metadata.rb` of the build cookbook.
+Add the following code to the `default.rb` of the build cookbook:
+
+```ruby
+docker_service 'default' do
+  action [:create, :start]
+end
+
+group 'docker' do
+  action :modify
+  members 'dbuild'
+  append true
+end
+```
+
+#### Vsphere
+
+Ensure you have a vCenter and valid login credentials according to the [chef-provisioning-vsphere README](https://github.com/chef-partners/chef-provisioning-vsphere)
+
+* Add the following items to the appropriate data bag as specified in the [Handling Secrets](#handling-secrets-alpha) section
+
+    **delivery-secrets <ent>-<org>-<project> encrypted data bag item**
+    ```json
+    {
+      "id": "<ent>-<org>-<project>",
+      "vsphere": {
+        "insecure": true | false,
+        "host": "<your-vsphere-host-here>",
+        "user": "<your-vsphere-username-here>",
+        "password": "<your-vsphere-password-here>"
+       }
+     }
+    ```
+
+  * Customize your kitchen YAML file with all the required information needed by the [chef-vsphere-provisioning driver](https://github.com/chef-partners/chef-provisioning-vsphere#kitchen-driver) driver.
 
 ### Usage
 
@@ -383,27 +424,6 @@ delivery_test_kitchen 'unit_create' do
   suite 'default'
   timeout 1200
   action :create
-end
-```
-
-#### Docker
-
-You can leverage the [kitchen-dokken](https://github.com/someara/kitchen-dokken) driver in your tests
-as well. This does not require the use of `delivery-secrets`. To enable `kitchen-dokken`, do the following to
-install Docker on all of your builders/runners:
-
-Add `depends 'docker', '~> 2.0'` to the `metadata.rb` of the build cookbook.
-Add the following code to the `default.rb` of the build cookbook:
-
-```ruby
-docker_service 'default' do
-  action [:create, :start]
-end
-
-group 'docker' do
-  action :modify
-  members 'dbuild'
-  append true
 end
 ```
 
