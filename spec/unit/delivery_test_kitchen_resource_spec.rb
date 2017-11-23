@@ -16,6 +16,7 @@ describe Chef::Resource::DeliveryTestKitchen do
       expect(@resource.yaml).to eql('.kitchen.yml')
       expect(@resource.suite).to eql('all')
       expect(@resource.repo_path).to eql('/workspace/path/to/phase/repo')
+      expect(@resource.environment).to eql({})
     end
 
     it 'has a resource name of :delivery_test_kitchen' do
@@ -33,6 +34,14 @@ describe Chef::Resource::DeliveryTestKitchen do
     it 'is required' do
       resource = described_class.new('unit_test')
       expect { resource.driver }.to raise_error(Chef::Exceptions::ValidationFailed)
+    end
+  end
+
+  describe '#environment' do
+    it 'must be a hash' do
+      @resource.environemnt {}
+      expect(@resource.environment).to eql({})
+      expect { @resource.send(:environment, ['r']) }.to raise_error(ArgumentError)
     end
   end
 
