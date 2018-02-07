@@ -51,8 +51,10 @@ action_class do
 
   def cmd(action)
     case action
-    when 'init', 'plan', 'apply'
-      "terraform #{action} -lock=false #{new_resource.plan_dir}"
+    when 'apply'
+      "terraform  #{action} -input=false -auto-approve -lock=false #{new_resource.plan_dir}"
+    when 'init', 'plan'
+      "terraform  #{action} -lock=false #{new_resource.plan_dir}"
     when 'destroy'
       "terraform #{action} -lock=false --force #{new_resource.plan_dir}"
     when 'show'
