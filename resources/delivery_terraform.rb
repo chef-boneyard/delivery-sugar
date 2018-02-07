@@ -49,12 +49,13 @@ action_class do
     )
   end
 
-  def cmd(action)
+  def cmd(action) # rubocop:disable Metrics/MethodLength
     case action
     when 'apply'
-      "terraform  #{action} -input=false -auto-approve -lock=false #{new_resource.plan_dir}"
+      "terraform #{action} -input=false -auto-approve \
+        -lock=false #{new_resource.plan_dir}"
     when 'init', 'plan'
-      "terraform  #{action} -lock=false #{new_resource.plan_dir}"
+      "terraform #{action} -lock=false #{new_resource.plan_dir}"
     when 'destroy'
       "terraform #{action} -lock=false --force #{new_resource.plan_dir}"
     when 'show'
