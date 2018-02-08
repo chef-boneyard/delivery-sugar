@@ -1,6 +1,7 @@
 resource_name :delivery_terraform
 
 property :plan_dir, String, required: true
+property :timeout, Integer, default: 600, required: false
 
 default_action :test
 
@@ -51,7 +52,9 @@ action_class do
 
   def cmd(action)
     case action
-    when 'init', 'plan', 'apply'
+    when 'apply'
+      "terraform #{action} -input=false -auto-approve -lock=false #{new_resource.plan_dir}"     
+    when 'init', 'plan'
       "terraform #{action} -lock=false #{new_resource.plan_dir}"
     when 'destroy'
       "terraform #{action} -lock=false --force #{new_resource.plan_dir}"
@@ -73,9 +76,9 @@ action_class do
   end
 
   def run(action)
-    shell_out!(cmd(action), cwd: workflow_workspace_repo, live_stream: STDOUT)
+    shell_out!(cmd(action), cwd: workflow_workspace_repo, live_stream: STDOUT, timeout: new_resource.timeout)
   rescue Mixlib::ShellOut::ShellCommandFailed, Mixlib::ShellOut::CommandTimeout
-    shell_out(cmd('destroy'), cwd: workflow_workspace_repo, live_stream: STDOUT)
+    shell_out(cmd('destroy'), cwd: workflow_workspace_repo, live_stream: STDOUT, timeout: new_resource.timeout)
     raise
   ensure
     save_state
