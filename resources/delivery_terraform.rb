@@ -74,9 +74,9 @@ action_class do
   end
 
   def run(action)
-    shell_out!(cmd(action), cwd: workflow_workspace_repo, live_stream: STDOUT, new_resource.timeout)
+    shell_out!(cmd(action), cwd: workflow_workspace_repo, live_stream: STDOUT, timeout: new_resource.timeout)
   rescue Mixlib::ShellOut::ShellCommandFailed, Mixlib::ShellOut::CommandTimeout
-    shell_out(cmd('destroy'), cwd: workflow_workspace_repo, live_stream: STDOUT, new_resource.timeout)
+    shell_out(cmd('destroy'), cwd: workflow_workspace_repo, live_stream: STDOUT, timeout: new_resource.timeout)
     raise
   ensure
     save_state
