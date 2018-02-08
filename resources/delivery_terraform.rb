@@ -1,6 +1,7 @@
 resource_name :delivery_terraform
 
 property :plan_dir, String, required: true
+property :timeout, Integer, default: 600, required: false
 
 default_action :test
 
@@ -73,9 +74,9 @@ action_class do
   end
 
   def run(action)
-    shell_out!(cmd(action), cwd: workflow_workspace_repo, live_stream: STDOUT)
+    shell_out!(cmd(action), cwd: workflow_workspace_repo, live_stream: STDOUT, new_resource.timeout)
   rescue Mixlib::ShellOut::ShellCommandFailed, Mixlib::ShellOut::CommandTimeout
-    shell_out(cmd('destroy'), cwd: workflow_workspace_repo, live_stream: STDOUT)
+    shell_out(cmd('destroy'), cwd: workflow_workspace_repo, live_stream: STDOUT, new_resource.timeout)
     raise
   ensure
     save_state
