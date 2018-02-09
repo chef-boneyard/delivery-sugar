@@ -1,6 +1,7 @@
 resource_name :delivery_terraform
 
 property :plan_dir, String, required: true
+property :timeout, Integer, default: 1800, required: false
 
 default_action :test
 
@@ -75,10 +76,16 @@ action_class do
     Chef::Log.info("Terraform state updated in node.run_state['terraform-state']")
   end
 
-  def run(action)
-    shell_out!(cmd(action), cwd: workflow_workspace_repo, live_stream: STDOUT)
+  def run(action) # rubocop:disable Metrics/MethodLength
+    shell_out!(cmd(action),
+               cwd: workflow_workspace_repo,
+               live_stream: STDOUT,
+               timeout: new_resource.timeout)
   rescue Mixlib::ShellOut::ShellCommandFailed, Mixlib::ShellOut::CommandTimeout
-    shell_out(cmd('destroy'), cwd: workflow_workspace_repo, live_stream: STDOUT)
+    shell_out(cmd('destroy'),
+              cwd: workflow_workspace_repo,
+              live_stream: STDOUT,
+              timeout: new_resource.timeout)
     raise
   ensure
     save_state

@@ -19,6 +19,9 @@ describe 'test-build-cookbook::provision' do
     let(:plans) do
       '/workspace/path/to/phase/repo/.delivery/build_cookbook/files/default/terraform'
     end
+    let(:timeout) do
+      1200
+    end
 
     before do
       allow_any_instance_of(Chef::Mixin::ShellOut).to receive(:shell_out)
@@ -34,6 +37,7 @@ describe 'test-build-cookbook::provision' do
 
     it 'runs the test action' do
       expect(chef_client).to test_delivery_terraform('terraform-plans')
+        .with(timeout: timeout, plan_dir: plans)
     end
 
     it 'saves the state' do
