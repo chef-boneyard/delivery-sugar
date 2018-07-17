@@ -35,6 +35,7 @@ class Chef
         @options   = ''
         @timeout   = 3600
         @repo_path = delivery_workspace_repo
+        @environment = {}
 
         @timeout   = 3600
         @action    = :test
@@ -52,6 +53,17 @@ class Chef
           arg,
           kind_of: String,
           required: true
+        )
+      end
+
+      #
+      # The test kitchen shell environemnt variables
+      #
+      def environment(arg = nil)
+        set_or_return(
+          :environment,
+          arg,
+          kind_of: Hash
         )
       end
 

@@ -212,7 +212,7 @@ More on that topic [here](examples/terraform/.delivery/build_cookbook/README_TER
 ## Test Kitchen
 
 The resource `delivery_test_kitchen` will enable your projects to use [Test Kitchen](http://kitchen.ci)
-in Delivery. Currently, we only support the [kitchen-ec2 driver](https://github.com/test-kitchen/kitchen-ec2) and  [kitchen-azurerm](https://github.com/pendrica/kitchen-azurerm) drivers.
+in Delivery. Currently, we support: [kitchen-ec2 driver](https://github.com/test-kitchen/kitchen-ec2) and [kitchen-azurerm](https://github.com/pendrica/kitchen-azurerm), [kitchen-dokken](https://github.com/someara/kitchen-dokken), and [chef-provisioning-vsphere](https://github.com/chef-partners/chef-provisioning-vsphere) drivers.
 
 ### Prerequisites
 
@@ -425,6 +425,26 @@ delivery_test_kitchen 'unit_create' do
   timeout 1200
   action :create
 end
+```
+
+Trigger a kitchen create injecting arbitrary environment variables
+
+```ruby
+delivery_test_kitchen 'unit_create' do
+  driver 'ec2'
+  suite 'default'
+  environment('TK_EC2_REGION' => 'us-west-2', 'TK_MACHINE_SIZE' => 't2.micro')
+  action :test
+end
+```
+
+This assumes your `.kitchen.yml` is leveraging environment variables e.g.:
+
+```ruby
+driver:
+  name: ec2
+  region: <%= ENV['TK_EC2_REGION'] %>
+  instance_type: <%= ENV['TK_INSTANCE_TYPE'] %>
 ```
 
 ## InSpec
