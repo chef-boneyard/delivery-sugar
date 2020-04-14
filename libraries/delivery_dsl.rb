@@ -236,7 +236,7 @@ module DeliverySugar
     # @return [String]
     #
     # Rubocop disabled because this is established API
-    # rubocop:disable AccessorMethodName
+    # rubocop:disable Naming/AccessorMethodName
     def get_acceptance_environment
       change.acceptance_environment
     end

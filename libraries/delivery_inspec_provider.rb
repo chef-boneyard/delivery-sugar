@@ -20,10 +20,6 @@ class Chef
     class DeliveryInspec < Chef::Provider
       attr_reader :inspec
 
-      def whyrun_supported?
-        true
-      end
-
       def load_current_resource
         # There is no existing resource to evaluate, but we are required
         # to override it.

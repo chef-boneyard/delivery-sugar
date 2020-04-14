@@ -24,10 +24,13 @@ class Chef
       include DeliverySugar::DSL
       provides :delivery_test_kitchen
 
-      # rubocop:disable MethodLength
+      # rubocop:disable Metrics/MethodLength
+      resource_name :delivery_test_kitchen
+
+      default_action :test
+
       def initialize(name, run_context = nil)
         super
-        @resource_name = :delivery_test_kitchen
         @provider = Chef::Provider::DeliveryTestKitchen
 
         @yaml      = '.kitchen.yml'
@@ -37,8 +40,7 @@ class Chef
         @repo_path = delivery_workspace_repo
         @environment = {}
 
-        @timeout   = 3600
-        @action    = :test
+        @timeout = 3600
         %w(create converge setup verify destroy test).each do |a|
           @allowed_actions.push(a.to_sym)
         end

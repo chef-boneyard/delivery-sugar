@@ -40,7 +40,7 @@ describe Chef::Provider::DeliveryChefCookbook do
       context 'when upload fails' do
         it 'fails the resource' do
           expect(provider).to receive(:upload_cookbook).with(chef_server1)
-            .and_raise(Mixlib::ShellOut::ShellCommandFailed, 'Error Message')
+                                                       .and_raise(Mixlib::ShellOut::ShellCommandFailed, 'Error Message')
           expect(Chef::Log).to receive(:error).with('Error Message')
           expect { provider.action_upload }
             .to raise_error(DeliverySugar::Exceptions::CookbookUploadFailed)
@@ -65,7 +65,7 @@ describe Chef::Provider::DeliveryChefCookbook do
         it 'finishes all the uploads, then fails the resource' do
           expect(provider).to receive(:upload_cookbook).with(chef_server1).and_return(nil)
           expect(provider).to receive(:upload_cookbook).with(chef_server2)
-            .and_raise(Mixlib::ShellOut::ShellCommandFailed, 'Error Message')
+                                                       .and_raise(Mixlib::ShellOut::ShellCommandFailed, 'Error Message')
           expect(Chef::Log).to receive(:error).with('Error Message')
           expect { provider.action_upload }
             .to raise_error(DeliverySugar::Exceptions::CookbookUploadFailed)
@@ -76,9 +76,9 @@ describe Chef::Provider::DeliveryChefCookbook do
       context 'when all uploads fail' do
         it 'fails the resource and marks it as unchanged' do
           expect(provider).to receive(:upload_cookbook).with(chef_server1)
-            .and_raise(Mixlib::ShellOut::ShellCommandFailed, 'Error Message 1')
+                                                       .and_raise(Mixlib::ShellOut::ShellCommandFailed, 'Error Message 1')
           expect(provider).to receive(:upload_cookbook).with(chef_server2)
-            .and_raise(Mixlib::ShellOut::ShellCommandFailed, 'Error Message 2')
+                                                       .and_raise(Mixlib::ShellOut::ShellCommandFailed, 'Error Message 2')
           expect(Chef::Log).to receive(:error).with('Error Message 1')
           expect(Chef::Log).to receive(:error).with('Error Message 2')
           expect { provider.action_upload }

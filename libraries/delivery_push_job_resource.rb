@@ -24,9 +24,12 @@ class Chef
       include DeliverySugar::DSL
       provides :delivery_push_job
 
+      resource_name :delivery_push_job
+
+      default_action :dispatch
+
       def initialize(name, run_context = nil)
         super
-        @resource_name = :delivery_push_job
 
         @command = name
         @timeout = 30 * 60 # 30 minutes
@@ -35,7 +38,6 @@ class Chef
         @chef_config_file = delivery_knife_rb
 
         @provider = Chef::Provider::DeliveryPushJob
-        @action = :dispatch
         @allowed_actions.push(:dispatch)
       end
 

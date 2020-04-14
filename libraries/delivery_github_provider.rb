@@ -23,10 +23,6 @@ class Chef
     class DeliveryGithub < Chef::Provider
       include Chef::Mixin::ShellOut
 
-      def whyrun_supported?
-        true
-      end
-
       def load_current_resource
         @current_resource = Chef::Resource::DeliveryGithub.new(new_resource.name)
 
@@ -55,7 +51,7 @@ class Chef
       # For information about setting up a github deploy key, please visit
       # https://developer.github.com/guides/managing-deploy-keys/#deploy-keys
       #
-      # rubocop:disable AbcSize
+      # rubocop:disable Metrics/AbcSize
       #
       def create_deploy_key
         file = Chef::Resource::File.new('deploy_key', run_context).tap do |f|
@@ -145,7 +141,7 @@ ssh -o CheckHostIP=no \
           command,
           cwd: new_resource.repo_path,
           env: {
-            'GIT_SSH' => ::File.join(new_resource.cache_path, 'git_ssh')
+            'GIT_SSH' => ::File.join(new_resource.cache_path, 'git_ssh'),
           }
         )
       end

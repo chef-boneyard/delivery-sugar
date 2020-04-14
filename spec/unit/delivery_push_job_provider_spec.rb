@@ -10,7 +10,7 @@ describe Chef::Provider::DeliveryPushJob do
   let(:node_objects) do
     [
       double('Chef::Node - 1'),
-      double('Chef::Node - 2')
+      double('Chef::Node - 2'),
     ]
   end
   let(:chef_config_file) { '/workspace/.chef/knife.rb' }

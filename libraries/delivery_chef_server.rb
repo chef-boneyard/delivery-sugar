@@ -71,7 +71,7 @@ module DeliverySugar
     def encrypted_data_bag_item(bag_name, item_id, secret_key = secret_key_file)
       with_server_config do
         secret_file = Chef::EncryptedDataBagItem.load_secret(secret_key)
-        Chef::EncryptedDataBagItem.load(bag_name, item_id, secret_file)
+        data_bag_item(bag_name, item_id, secret_file)
       end
     end
 
@@ -121,8 +121,8 @@ module DeliverySugar
         chef_server_url: @server_config[:chef_server_url],
         options: {
           client_name: @server_config[:node_name],
-          signing_key_filename: @server_config[:client_key]
-        }
+          signing_key_filename: @server_config[:client_key],
+        },
       }
     end
 

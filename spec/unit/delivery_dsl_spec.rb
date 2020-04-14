@@ -179,7 +179,7 @@ describe DeliverySugar::DSL do
     let(:data_bag_contents) do
       {
         'id' => 'ent-org-proj',
-        'secret' => 'password'
+        'secret' => 'password',
       }
     end
 
@@ -199,7 +199,7 @@ describe DeliverySugar::DSL do
     let(:data_bag_contents) do
       {
         'id' => 'ent-org',
-        'secret' => 'password'
+        'secret' => 'password',
       }
     end
 
@@ -230,13 +230,13 @@ describe DeliverySugar::DSL do
     let(:node) do
       {
         'delivery_builder' => {
-          'build_user' => 'dbuild'
+          'build_user' => 'dbuild',
         },
         'delivery' => {
           'workspace' => {
             'repo' => 'workspace_repo',
             'cache' => 'workspace_cache',
-            'chef' => 'workspace_chef'
+            'chef' => 'workspace_chef',
           },
           'change' => {
             'stage' => 'stage_name',
@@ -245,9 +245,9 @@ describe DeliverySugar::DSL do
             'project' => 'proj',
             'pipeline' => 'pipe',
             'patchset_branch' => 'patchset_branch',
-            'sha' => ''
-          }
-        }
+            'sha' => '',
+          },
+        },
       }
     end
 
@@ -319,7 +319,7 @@ describe DeliverySugar::DSL do
       [
         { ent_data: 'from_ent_vault', overwritten: 'no' },
         { org_data: 'from_org_vault', overwritten: 'no' },
-        { project_data: 'from_project_vault', overwritten: 'yes' }
+        { project_data: 'from_project_vault', overwritten: 'yes' },
       ]
     end
 
@@ -328,7 +328,7 @@ describe DeliverySugar::DSL do
         ent_data: 'from_ent_vault',
         org_data: 'from_org_vault',
         project_data: 'from_project_vault',
-        overwritten: 'yes'
+        overwritten: 'yes',
       }
     end
 

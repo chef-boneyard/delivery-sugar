@@ -19,7 +19,7 @@ describe DeliverySugar::SCM::Git do
 
     it 'runs a valid git command to get changed files' do
       expect(@scm).to receive(:shell_out!).with(cmd, options)
-        .and_return(diff_shellout)
+                                          .and_return(diff_shellout)
 
       expect(@scm.changed_files(workspace, ref1, ref2))
         .to eql(['src/file1.txt', 'test/file2.txt'])
@@ -34,7 +34,7 @@ describe DeliverySugar::SCM::Git do
 
     it 'runs a valid git command to get the merge_base' do
       expect(@scm).to receive(:shell_out!).with(cmd, options)
-        .and_return(sha_shellout)
+                                          .and_return(sha_shellout)
 
       expect(@scm.merge_base(workspace, ref1, ref2)).to eql('abcdef')
     end
@@ -50,7 +50,7 @@ describe DeliverySugar::SCM::Git do
 
     before do
       expect(@scm).to receive(:shell_out).with(cmd, options)
-        .and_return(show_shellout)
+                                         .and_return(show_shellout)
     end
 
     context 'with a valid ref' do
@@ -84,7 +84,7 @@ describe DeliverySugar::SCM::Git do
     let(:output) do
       [
         "commit ref1\nAuthor: Foo\nDate:  Mon May 8 19:19:19 2017 +0000\n\n    Test ref1",
-        "commit ref2\nAuthor: Foo\nDate:  Mon May 7 19:19:19 2017 +0000\n\n    Test ref2"
+        "commit ref2\nAuthor: Foo\nDate:  Mon May 7 19:19:19 2017 +0000\n\n    Test ref2",
       ]
     end
     let(:error) { false }
@@ -92,7 +92,7 @@ describe DeliverySugar::SCM::Git do
 
     it 'runs a valid git command to get the commit log' do
       expect(@scm).to receive(:shell_out!).with(cmd, options)
-        .and_return(show_shellout)
+                                          .and_return(show_shellout)
 
       expect(@scm.commit_log(workspace, ref1, ref2)).to eql(output)
     end

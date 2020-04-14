@@ -25,18 +25,18 @@ class Chef
     class DeliveryGithub < Chef::Resource
       provides :delivery_github
 
+      resource_name :delivery_github
+
+      default_action :push
+
       def initialize(name, run_context = nil)
         super
-
-        @resource_name = :delivery_github
         @provider = Chef::Provider::DeliveryGithub
 
         @branch = 'master'
         @repo = name
         @remote_name = 'github'
         @tag = nil
-
-        @action = :push
         @allowed_actions.push(:push)
       end
 
