@@ -31,7 +31,6 @@ end
 
 action_class do
   require 'json'
-  include Chef::Mixin::ShellOut
   include DeliverySugar::DSL
 
   def tf(action)

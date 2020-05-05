@@ -24,15 +24,16 @@ class Chef
       include DeliverySugar::DSL
       provides :delivery_inspec
 
+      resource_name :delivery_inspec
+
+      default_action :test
+
       def initialize(name, run_context = nil)
         super
-        @resource_name = :delivery_inspec
         @provider = Chef::Provider::DeliveryInspec
 
         @inspec_test_path = '/test/recipes/'
         @repo_path = delivery_workspace_repo
-
-        @action = :test
         @allowed_actions.push(:test)
       end
 

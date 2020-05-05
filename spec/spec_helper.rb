@@ -29,14 +29,14 @@ module SharedLetDeclarations
   let(:cli_node) do
     {
       'delivery_builder' => {
-        'build_user' => 'dbuild'
+        'build_user' => 'dbuild',
       },
       'delivery' => {
         'workspace_path' => '/workspace',
         'workspace' => {
           'repo' => '/workspace/path/to/phase/repo',
           'cache' => '/workspace/path/to/phase/cache',
-          'chef' => '/workspace/path/to/phase/chef'
+          'chef' => '/workspace/path/to/phase/chef',
         },
         'change' => {
           'stage' => 'stage',
@@ -46,9 +46,9 @@ module SharedLetDeclarations
           'change_id' => 'id',
           'pipeline' => 'pipe',
           'patchset_branch' => 'branch',
-          'sha' => 'sha'
-        }
-      }
+          'sha' => 'sha',
+        },
+      },
     }
   end
 end

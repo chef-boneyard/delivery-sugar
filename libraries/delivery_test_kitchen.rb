@@ -26,7 +26,7 @@ module DeliverySugar
   # We are disabling the ClassLength cop for now, but we will want to refactor
   # this to be cleaner in the future.
   #
-  # rubocop:disable ClassLength
+  # rubocop:disable Metrics/ClassLength
   class TestKitchen
     include Chef::DSL::Recipe
     include DeliverySugar::DSL
@@ -104,7 +104,7 @@ module DeliverySugar
     #
     # Specific requirements for EC2 driver
     #
-    # rubocop:disable AbcSize
+    # rubocop:disable Metrics/AbcSize
     def prepare_kitchen_ec2
       fail 'Kitchen YAML file not found' unless kitchen_yaml?
 

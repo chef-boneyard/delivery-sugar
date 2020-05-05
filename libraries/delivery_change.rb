@@ -20,7 +20,7 @@ module DeliverySugar
   # This class will represent a Delivery change object and provide information
   # and helpers for use inside Delivery phase run recipes.
   #
-  # rubocop:disable ClassLength
+  # rubocop:disable Metrics/ClassLength
   #
   class Change
     attr_reader :enterprise, :organization, :project, :pipeline,
@@ -36,11 +36,11 @@ module DeliverySugar
     #
     # @return [DeliverySugar::Change]
     #
-    # rubocop:disable AbcSize
+    # rubocop:disable Metrics/AbcSize
     # rubocop:disable Metrics/MethodLength
-    # rubocop:disable AccessorMethodName
-    # rubocop:disable CyclomaticComplexity
-    # rubocop:disable PerceivedComplexity
+    # rubocop:disable Naming/AccessorMethodName
+    # rubocop:disable Metrics/CyclomaticComplexity
+    # rubocop:disable Metrics/PerceivedComplexity
     #
     def initialize(node)
       change = node['delivery']['change']
@@ -317,7 +317,7 @@ module DeliverySugar
       data_bag_item_data = {
         'id' => app_slug(app_name, app_version),
         'version' => app_version,
-        'name' => app_name
+        'name' => app_name,
       }
       data_bag_item_data.merge!(app_attributes)
       data_bag_item = new_data_bag_item
@@ -459,7 +459,7 @@ module DeliverySugar
 
     def load_data_bag_item(data_bag_name, data_bag_item_name)
       chef_server.with_server_config do
-        Chef::DataBagItem.load(data_bag_name, data_bag_item_name)
+        data_bag_item(data_bag_name, data_bag_item_name)
       end
     end
 

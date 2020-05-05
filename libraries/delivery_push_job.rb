@@ -62,7 +62,7 @@ module DeliverySugar
         'command' => @command,
         'nodes' => @nodes,
         'run_timeout' => @timeout,
-        'quorum' => @quorum
+        'quorum' => @quorum,
       }
 
       resp = @chef_server.rest(:post, '/pushy/jobs', {}, body)

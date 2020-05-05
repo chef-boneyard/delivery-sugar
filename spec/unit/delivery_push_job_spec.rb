@@ -23,7 +23,7 @@ describe DeliverySugar::PushJob do
       'status' => status,
       'created_at' => 'Tue, 04 Sep 2012 23:01:02 GMT',
       'updated_at' => 'Tue, 04 Sep 2012 23:07:56 GMT',
-      'nodes' => nodes_body
+      'nodes' => nodes_body,
     }
   end
 
@@ -31,7 +31,7 @@ describe DeliverySugar::PushJob do
 
   before do
     allow(DeliverySugar::ChefServer).to receive(:new).with(chef_config_file)
-      .and_return(chef_server)
+                                                     .and_return(chef_server)
   end
 
   describe '#initialize' do
@@ -46,7 +46,7 @@ describe DeliverySugar::PushJob do
       let(:nodes) do
         [
           double('node1'),
-          double('node2')
+          double('node2'),
         ]
       end
 
@@ -77,13 +77,13 @@ describe DeliverySugar::PushJob do
         'command' => command,
         'nodes' => nodes,
         'run_timeout' => timeout,
-        'quorum' => quorum
+        'quorum' => quorum,
       }
     end
 
     it 'submits job to Push Job Server' do
       expect(chef_server).to receive(:rest).with(:post, '/pushy/jobs', {}, body)
-        .and_return(response)
+                                           .and_return(response)
       allow(chef_server).to receive(:rest).with(:get, job_uri).and_return(job)
       subject.dispatch
       expect(subject.job_uri).to eql(job_uri)
@@ -170,7 +170,7 @@ describe DeliverySugar::PushJob do
       context 'and all nodes were successful' do
         let(:nodes_body) do
           {
-            'succeeded' => nodes
+            'succeeded' => nodes,
           }
         end
 
@@ -183,7 +183,7 @@ describe DeliverySugar::PushJob do
         let(:nodes_body) do
           {
             'succeeded' => ['node1'],
-            'failed' => ['node2']
+            'failed' => ['node2'],
           }
         end
 
@@ -214,7 +214,7 @@ describe DeliverySugar::PushJob do
       context 'and all nodes were successful' do
         let(:nodes_body) do
           {
-            'succeeded' => nodes
+            'succeeded' => nodes,
           }
         end
 
@@ -227,7 +227,7 @@ describe DeliverySugar::PushJob do
         let(:nodes_body) do
           {
             'succeeded' => ['node1'],
-            'failed' => ['node2']
+            'failed' => ['node2'],
           }
         end
 

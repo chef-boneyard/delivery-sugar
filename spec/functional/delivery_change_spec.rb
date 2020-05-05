@@ -13,11 +13,11 @@ describe DeliverySugar::Change do
   let(:node) do
     {
       'delivery_builder' => {
-        'build_user' => 'dbuild'
+        'build_user' => 'dbuild',
       },
       'delivery' => {
         'workspace' => {
-          'repo' => workspace
+          'repo' => workspace,
         },
         'change' => {
           'stage' => stage,
@@ -26,9 +26,9 @@ describe DeliverySugar::Change do
           'project' => 'proj',
           'pipeline' => pipeline,
           'patchset_branch' => patchset_branch,
-          'sha' => sha
-        }
-      }
+          'sha' => sha,
+        },
+      },
     }
   end
 
@@ -96,7 +96,7 @@ describe DeliverySugar::Change do
       let(:non_empty_array) do
         [
           'a.txt',
-          'd.txt'
+          'd.txt',
         ]
       end
 
@@ -110,7 +110,7 @@ describe DeliverySugar::Change do
       let(:non_empty_array) do
         [
           'b.txt',
-          'c.txt'
+          'c.txt',
         ]
       end
 

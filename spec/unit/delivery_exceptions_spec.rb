@@ -52,8 +52,8 @@ describe DeliverySugar::Exceptions::PushJobFailed do
       'updated_at' => 'Tue, 04 Sep 2012 23:17:56 GMT',
       'nodes' => {
         'crashed' => %w(node1 node3),
-        'succeeded' => ['node2']
-      }
+        'succeeded' => ['node2'],
+      },
     }
   end
 
@@ -89,8 +89,8 @@ describe DeliverySugar::Exceptions::PushJobError do
       'updated_at' => 'Tue, 04 Sep 2012 23:17:56 GMT',
       'nodes' => {
         'crashed' => %w(node1 node3),
-        'succeeded' => ['node2']
-      }
+        'succeeded' => ['node2'],
+      },
     }
   end
 
@@ -126,8 +126,8 @@ describe DeliverySugar::Exceptions::PushJobFailed do
       'updated_at' => 'Tue, 04 Sep 2012 23:17:56 GMT',
       'nodes' => {
         'crashed' => %w(node1 node3),
-        'succeeded' => ['node2']
-      }
+        'succeeded' => ['node2'],
+      },
     }
   end
 
@@ -163,8 +163,8 @@ describe DeliverySugar::Exceptions::PushJobError do
       'updated_at' => 'Tue, 04 Sep 2012 23:17:56 GMT',
       'nodes' => {
         'crashed' => %w(node1 node3),
-        'succeeded' => ['node2']
-      }
+        'succeeded' => ['node2'],
+      },
     }
   end
 

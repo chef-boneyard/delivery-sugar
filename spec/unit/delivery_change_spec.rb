@@ -9,14 +9,14 @@ describe DeliverySugar::Change do
   let(:node) do
     {
       'delivery_builder' => {
-        'build_user' => 'dbuild'
+        'build_user' => 'dbuild',
       },
       'delivery' => {
         'workspace' => {
           'repo' => 'workspace_repo',
           'cache' => 'workspace_cache',
           'chef' => 'workspace_chef',
-          'root' => 'workspace_root'
+          'root' => 'workspace_root',
         },
         'change' => {
           'stage' => stage,
@@ -25,9 +25,9 @@ describe DeliverySugar::Change do
           'project' => 'proj',
           'pipeline' => 'pipe',
           'patchset_branch' => patchset_branch,
-          'sha' => sha
-        }
-      }
+          'sha' => sha,
+        },
+      },
     }
   end
 
@@ -38,14 +38,14 @@ describe DeliverySugar::Change do
   let(:app_attributes) do
     {
       'attr1' => 'value1',
-      'attr2' => %w(arr_value1 arr_value2)
+      'attr2' => %w(arr_value1 arr_value2),
     }
   end
   let(:expected_data_bag_item_content) do
     {
       'id' => 'ent-org-proj-our_app-1.1.1',
       'version' => app_version,
-      'name' => app_name
+      'name' => app_name,
     }.merge(app_attributes)
   end
   let(:data_bag) { instance_double(Chef::DataBag) }
@@ -128,7 +128,7 @@ describe DeliverySugar::Change do
         'cookbooks/a/recipe.rb',
         'cookbooks/b/attribute.rb',
         'README.md',
-        '.delivery/cookbooks/kilmer/metadata.rb'
+        '.delivery/cookbooks/kilmer/metadata.rb',
       ]
     end
 
@@ -141,7 +141,7 @@ describe DeliverySugar::Change do
           '.',
           '.delivery',
           '.delivery/cookbooks',
-          '.delivery/cookbooks/kilmer'
+          '.delivery/cookbooks/kilmer',
         ]
       end
 
@@ -156,7 +156,7 @@ describe DeliverySugar::Change do
         [
           'cookbooks',
           '.',
-          '.delivery'
+          '.delivery',
         ]
       end
 
@@ -174,7 +174,7 @@ describe DeliverySugar::Change do
           'cookbooks/b',
           '.',
           '.delivery',
-          '.delivery/cookbooks'
+          '.delivery/cookbooks',
         ]
       end
 
@@ -226,7 +226,7 @@ describe DeliverySugar::Change do
         'cookbooks/a/recipe.rb',
         'cookbooks/b/attribute.rb',
         'README.md',
-        '.delivery/cookbooks/kilmer/metadata.rb'
+        '.delivery/cookbooks/kilmer/metadata.rb',
       ]
     end
     let(:result) { ['cookbooks/a', 'cookbooks/b'] }

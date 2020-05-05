@@ -78,7 +78,7 @@ module DeliverySugar
     #
     # Create script for linux nodes
     #
-    # rubocop:disable AbcSize
+    # rubocop:disable Metrics/AbcSize
     # rubocop:disable Metrics/MethodLength
     def prepare_linux_inspec
       # Load secrets from delivery-secrets data bag

@@ -14,8 +14,8 @@ describe 'test-build-cookbook::functional' do
           'keypair_name' => 'username',
           'access_key' => 'KEY',
           'secret_key' => 'SECRET',
-          'private_key' => 'RSA PRIVATE KEY'
-        }
+          'private_key' => 'RSA PRIVATE KEY',
+        },
       }
     end
     let(:mock_shell_out) do

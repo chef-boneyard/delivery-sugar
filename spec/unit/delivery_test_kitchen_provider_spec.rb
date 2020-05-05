@@ -19,8 +19,8 @@ describe Chef::Provider::DeliveryTestKitchen do
     {
       cwd: 'workspace/repo',
       env: {
-        'GIT_SSH' => 'workspace/cache/git_ssh'
-      }
+        'GIT_SSH' => 'workspace/cache/git_ssh',
+      },
     }
   end
 

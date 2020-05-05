@@ -22,14 +22,15 @@ class Chef
     class DeliveryChefCookbook < Chef::Resource
       provides :delivery_chef_cookbook
 
+      resource_name :delivery_chef_cookbook
+
+      default_action :upload
+
       def initialize(name, run_context = nil)
         super
-
-        @resource_name = :delivery_chef_cookbook
         @cookbook_to_upload = name
 
         @provider = Chef::Provider::DeliveryChefCookbook
-        @action = :upload
         @allowed_actions.push(:upload)
       end
 

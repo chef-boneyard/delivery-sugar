@@ -136,8 +136,8 @@ describe DeliverySugar::ChefServer do
         chef_server_url: 'https://172.31.6.129/organizations/chef_delivery',
         options: {
           client_name: 'delivery',
-          signing_key_filename: File.join(SUPPORT_DIR, 'delivery.pem')
-        }
+          signing_key_filename: File.join(SUPPORT_DIR, 'delivery.pem'),
+        },
       }
     end
 
@@ -161,7 +161,7 @@ describe DeliverySugar::ChefServer do
         signing_key_filename: example_config[:client_key]
       ).and_return(rest_client)
       expect(rest_client).to receive(:request).with(type, path, headers, data)
-        .and_return(response)
+                                              .and_return(response)
       expect(subject.rest(type, path, headers, data)).to eql(response)
     end
   end
