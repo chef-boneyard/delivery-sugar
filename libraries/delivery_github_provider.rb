@@ -16,13 +16,10 @@
 #
 
 require 'chef/provider'
-require 'chef/mixin/shell_out'
 
 class Chef
   class Provider
     class DeliveryGithub < Chef::Provider
-      include Chef::Mixin::ShellOut
-
       def load_current_resource
         @current_resource = Chef::Resource::DeliveryGithub.new(new_resource.name)
 

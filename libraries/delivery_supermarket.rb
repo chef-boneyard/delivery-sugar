@@ -20,7 +20,7 @@ require_relative './delivery_dsl'
 
 class DeliverySupermarket < Chef::Resource
   include DeliverySugar::DSL
-  resource_name :delivery_supermarket
+  provides :delivery_supermarket
 
   # The cookbook object
   def sugar_cookbook

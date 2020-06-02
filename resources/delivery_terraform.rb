@@ -1,4 +1,4 @@
-resource_name :delivery_terraform
+provides :delivery_terraform
 
 property :plan_dir, String, required: true
 property :timeout, Integer, default: 1800, required: false
