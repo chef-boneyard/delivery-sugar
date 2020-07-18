@@ -49,7 +49,7 @@ class Chef
         )
       end
 
-      def action_dispatch
+      action :dispatch do
         if new_resource.nodes.empty?
           Chef::Log.info("Zero nodes passed to 'delivery_push_job'")
           return
