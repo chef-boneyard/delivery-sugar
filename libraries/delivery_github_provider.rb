@@ -28,7 +28,7 @@ class Chef
         @current_resource.remote_url match.nil? ? '' : match[1]
       end
 
-      def action_push
+      action :push do
         converge_by "Push #{new_resource.branch} branch to #{new_resource.remote_url}" do
           create_deploy_key
           create_ssh_wrapper_file

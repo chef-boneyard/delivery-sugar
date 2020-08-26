@@ -42,27 +42,27 @@ class Chef
         )
       end
 
-      def action_create
+      action :create do
         kitchen('create')
       end
 
-      def action_converge
+      action :converge do
         kitchen('converge')
       end
 
-      def action_setup
+      action :setup do
         kitchen('setup')
       end
 
-      def action_verify
+      action :verify do
         kitchen('verify')
       end
 
-      def action_destroy
+      action :destroy do
         kitchen('destroy')
       end
 
-      def action_test
+      action :test do
         # Destroy strategy to use after testing (passing, always, never)
         @test_kitchen.add_option('--destroy=always')
         kitchen('test')

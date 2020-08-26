@@ -30,7 +30,7 @@ class Chef
         # to override it.
       end
 
-      def action_upload
+      action :upload do
         converge_by "Upload cookbook #{new_resource.cookbook_to_upload} to " \
                     "#{chef_server_list}" do
           upload_cookbook_to_chef_servers

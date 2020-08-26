@@ -37,7 +37,7 @@ class Chef
         )
       end
 
-      def action_test
+      action :test do
         converge_by 'Run inspec tests' do
           @inspec.run_inspec
           new_resource.updated_by_last_action(true)
