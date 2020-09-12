@@ -71,7 +71,7 @@ module DeliverySugar
       when 'windows'
         prepare_windows_inspec
       else
-        fail "The operating system '#{@os}' is not supported"
+        raise "The operating system '#{@os}' is not supported"
       end
     end
 
@@ -84,7 +84,7 @@ module DeliverySugar
       # Load secrets from delivery-secrets data bag
       secrets = get_project_secrets
       if secrets['inspec'].nil?
-        fail 'Could not find secrets for inspec' \
+        raise 'Could not find secrets for inspec' \
              ' in delivery-secrets data bag.'
       end
       # Variables used for the linux inspec script
@@ -124,7 +124,7 @@ chef exec inspec exec #{node['delivery']['workspace']['repo']}#{@inspec_test_pat
       # Load secrets from delivery-secrets data bag
       secrets = get_project_secrets
       if secrets['inspec'].nil?
-        fail 'Could not find secrets for inspec' \
+        raise 'Could not find secrets for inspec' \
              ' in delivery-secrets data bag.'
       end
       # Variables used for the Windows inspec script
