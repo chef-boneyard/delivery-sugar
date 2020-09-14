@@ -97,7 +97,7 @@ module DeliverySugar
       when 'vsphere'
         prepare_kitchen_vsphere
       else
-        fail "The test kitchen driver '#{@driver}' is not supported"
+        raise "The test kitchen driver '#{@driver}' is not supported"
       end
     end
 
@@ -106,13 +106,13 @@ module DeliverySugar
     #
     # rubocop:disable Metrics/AbcSize
     def prepare_kitchen_ec2
-      fail 'Kitchen YAML file not found' unless kitchen_yaml?
+      raise 'Kitchen YAML file not found' unless kitchen_yaml?
 
       # Load secrets from delivery-secrets data bag
       secrets = get_project_secrets
       msg = 'Could not find secrets for kitchen-ec2 driver ' \
             'in delivery-secrets data bag.'
-      fail msg if secrets['ec2'].nil?
+      raise msg if secrets['ec2'].nil?
 
       # Variables used for configuring and running test kitchen EC2
       cache                 = delivery_workspace_cache
@@ -165,7 +165,7 @@ aws_secret_access_key = #{secrets['ec2']['secret_key']}
     #
 
     def prepare_kitchen_dokken
-      fail 'Kitchen YAML file not found' unless kitchen_yaml?
+      raise 'Kitchen YAML file not found' unless kitchen_yaml?
 
       # Installing kitchen-dokken driver
       chef_gem = Chef::Resource::ChefGem.new('kitchen-dokken', run_context)
@@ -176,13 +176,13 @@ aws_secret_access_key = #{secrets['ec2']['secret_key']}
     # Specific requirements for azurerm driver
     #
     def prepare_kitchen_azurerm
-      fail 'Kitchen YAML file not found' unless kitchen_yaml?
+      raise 'Kitchen YAML file not found' unless kitchen_yaml?
 
       # Load secrets from delivery-secrets data bag
       secrets = get_project_secrets
       msg = 'Could not find secrets for kitchen-azurerm driver ' \
             'in delivery-secrets data bag.'
-      fail msg if secrets['azurerm'].nil?
+      raise msg if secrets['azurerm'].nil?
 
       # Variables used for configuring and running test kitchen Azure
       cache                 = delivery_workspace_cache
@@ -237,13 +237,13 @@ aws_secret_access_key = #{secrets['ec2']['secret_key']}
     # Specific requirements for Vsphere driver
     #
     def prepare_kitchen_vsphere
-      fail 'Kitchen YAML file not found' unless kitchen_yaml?
+      raise 'Kitchen YAML file not found' unless kitchen_yaml?
 
       # Load secrets from delivery-secrets data bag
       secrets = get_project_secrets
       msg = 'Could not find secrets for kitchen-vsphere driver ' \
             'in delivery-secrets data bag.'
-      fail msg if secrets['vsphere'].nil?
+      raise msg if secrets['vsphere'].nil?
 
       # Variables used for configuring and running test kitchen Vsphere
       kitchen_instance_name = "test-kitchen-#{delivery_project}-#{delivery_change_id}"

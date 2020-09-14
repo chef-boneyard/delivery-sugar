@@ -45,7 +45,7 @@ action_class do
 
   def preflight
     msg = 'Terraform preflight check: No such path for'
-    fail "#{msg} plan_dir: #{new_resource.plan_dir}" unless ::File.exist?(
+    raise "#{msg} plan_dir: #{new_resource.plan_dir}" unless ::File.exist?(
       new_resource.plan_dir
     )
   end

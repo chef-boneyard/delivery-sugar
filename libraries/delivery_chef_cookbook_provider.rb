@@ -100,7 +100,7 @@ class Chef
       #
       def raise_if_an_upload_failed!
         return if @failures.empty?
-        fail DeliverySugar::Exceptions::CookbookUploadFailed.new(
+        raise DeliverySugar::Exceptions::CookbookUploadFailed.new(
           new_resource.cookbook_to_upload,
           @failures
         )
