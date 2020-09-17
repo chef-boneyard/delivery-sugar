@@ -10,6 +10,6 @@ describe 'z_dsl' do
     expect(Chef::Recipe).to receive(:include).with(DeliverySugar::DSL)
     expect(Chef::Resource).to receive(:include).with(DeliverySugar::DSL)
     expect(Chef::Provider).to receive(:include).with(DeliverySugar::DSL)
-    require_relative '../../libraries/z_dsl.rb'
+    require_relative '../../libraries/z_dsl'
   end
 end

@@ -16,7 +16,7 @@ end
 
 TOPDIR = File.expand_path(File.join(File.dirname(__FILE__), '..'))
 SUPPORT_DIR = File.join(TOPDIR, 'spec', 'support')
-$LOAD_PATH << File.expand_path(File.dirname(__FILE__))
+$LOAD_PATH << __dir__
 
 # Require all our libraries
 # We don't require 'z_dsl' here because we need to put assertions in place
