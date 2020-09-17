@@ -29,4 +29,3 @@
 
 Chef::DSL::Recipe.include DeliverySugar::DSL
 Chef::Resource.include DeliverySugar::DSL
-Chef::DSL::Recipe.include DeliverySugar::DSL
