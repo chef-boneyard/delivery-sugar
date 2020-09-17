@@ -27,6 +27,5 @@
 # is only intended to run inside Delivery Phase Runs, the risk of method naming
 # collissions is lessened.
 
-Chef::Recipe.include DeliverySugar::DSL
+Chef::DSL::Recipe.include DeliverySugar::DSL
 Chef::Resource.include DeliverySugar::DSL
-Chef::Provider.include DeliverySugar::DSL
