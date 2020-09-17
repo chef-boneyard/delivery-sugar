@@ -116,7 +116,7 @@ module DeliverySugar
       contents = file_contents("#{metadata_path}.json")
       return metadata.from_json(contents) unless contents.nil?
 
-      fail DeliverySugar::Exceptions::NotACookbook, cookbook_path
+      raise DeliverySugar::Exceptions::NotACookbook, cookbook_path
     end
 
     #

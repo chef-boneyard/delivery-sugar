@@ -46,7 +46,7 @@ module DeliverySugar
     # @return [DeliverySugar::PushJob]
     #
     def initialize(chef_config_file, command, nodes, timeout, quorum = nil)
-      fail "[#{self.class}] Expected nodes Array#String" unless valid_node_value?(nodes)
+      raise "[#{self.class}] Expected nodes Array#String" unless valid_node_value?(nodes)
       @command = command
       @nodes = nodes
       @timeout = timeout
@@ -76,8 +76,8 @@ module DeliverySugar
     def wait
       loop do
         refresh
-        fail Exceptions::PushJobFailed, @job if timed_out?
-        fail Exceptions::PushJobFailed, @job if failed?
+        raise Exceptions::PushJobFailed, @job if timed_out?
+        raise Exceptions::PushJobFailed, @job if failed?
         break if successful?
         pause
       end
@@ -95,7 +95,7 @@ module DeliverySugar
       when 'complete'
         true
       else
-        fail Exceptions::PushJobError, @job
+        raise Exceptions::PushJobError, @job
       end
     end
 
